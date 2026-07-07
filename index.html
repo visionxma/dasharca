@@ -310,9 +310,8 @@ svg text{font-family:inherit}
               <option value="admin">Administrador — vê tudo e gerencia acessos</option>
             </select>
           </div>
-          <div class="adm-field" id="acExpertWrap"><label>Expert vinculado (nome exato da planilha)</label>
-            <input id="acExpert" list="expertsList" placeholder="Ex.: Expert 1">
-            <datalist id="expertsList"></datalist>
+          <div class="adm-field" id="acExpertWrap"><label>Expert vinculado (da planilha)</label>
+            <select id="acExpert"></select>
           </div>
           <div class="login-msg" id="admMsg"></div>
           <button type="submit" class="login-btn" id="acBtn">Criar acesso</button>
@@ -882,11 +881,16 @@ function applyRoleFilter(){
 
 /* ---- Admin: gestão de usuários ---- */
 function fillAdminExperts(){
-  const dl=document.getElementById('expertsList');if(!dl)return;
+  const sel=document.getElementById('acExpert');if(!sel)return;
   const ex=new Set();
   DATA.resultados.forEach(r=>{if(r.expert&&r.expert!=='—'&&r.expert!=='Geral')ex.add(r.expert);});
   DATA.trafego.forEach(r=>{if(r.expert&&r.expert!=='—'&&r.expert!=='Geral')ex.add(r.expert);});
-  dl.innerHTML=[...ex].sort().map(e=>`<option value="${esc(e)}"></option>`).join('');
+  DATA.operacional.forEach(r=>{if(r.expert&&r.expert!=='—'&&r.expert!=='Geral')ex.add(r.expert);});
+  const list=[...ex].sort(), cur=sel.value;
+  sel.innerHTML='<option value="" disabled selected>Selecione o expert…</option>'
+    + (list.length ? list.map(e=>`<option value="${esc(e)}">${esc(e)}</option>`).join('')
+                   : '<option value="" disabled>(nenhum expert encontrado nas planilhas)</option>');
+  if(list.includes(cur)) sel.value=cur;
 }
 function admMsg(msg,ok){const el=document.getElementById('admMsg');el.textContent=msg||'';el.className='login-msg'+(ok?' ok':'');}
 async function loadUsers(){
@@ -911,7 +915,8 @@ async function adminCreate(ev){
     await fbDb.collection('users').doc(cred.user.uid).set({name:name||email,email:email,role:role,expert:role==='expert'?expert:'',active:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     await sec.auth().signOut();
     admMsg('Acesso criado com sucesso ✓',true);
-    document.getElementById('admCreate').reset();document.getElementById('acExpertWrap').style.display='none';
+    document.getElementById('admCreate').reset();
+    document.getElementById('acExpertWrap').style.display=document.getElementById('acRole').value==='expert'?'':'none';
     loadUsers();
   }catch(err){admMsg(fbErr(err));}
   finally{b.disabled=false;b.textContent='Criar acesso';}
