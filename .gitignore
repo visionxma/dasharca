@@ -1,0 +1,10 @@
+# Vídeo de referência do cliente (não versionar)
+*.mp4
+
+# Sistema operacional
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Node
+node_modules/
