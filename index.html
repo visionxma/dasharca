@@ -223,6 +223,9 @@ svg text{font-family:inherit}
     <div class="section-label">Resultado consolidado da empresa</div>
     <div class="kpis" id="kpiFin"></div>
 
+    <div class="section-label">Vendas e depósitos</div>
+    <div class="kpis" id="kpiVendasDep"></div>
+
     <div class="grid">
       <section class="card wide">
         <h3>Evolução financeira</h3><div class="csub">Receita, custo total e lucro por dia</div>
@@ -430,7 +433,7 @@ async function loadSheet(key){ const {id,gid}=SHEETS[key];
 }
 
 /* ================= Normalização ================= */
-function normResultados(rows){return rows.map(r=>{const d=toDate(r.Data);return{date:d,iso:isoOf(d),expert:str(r.Expert)||'—',operacao:str(r.Operacao)||'—',cpas:toNum(r.CPAs_Ativos),ftds:toNum(r.FTDs),cadastros:toNum(r.Cadastros),comiss:toNum(r.Comissionamento),netpl:toNum(r.Net_PL),revshare:toNum(r.RevShare),receita:toNum(r.Comissionamento)+toNum(r.RevShare)};}).filter(r=>r.date);}
+function normResultados(rows){return rows.map(r=>{const d=toDate(r.Data);return{date:d,iso:isoOf(d),expert:str(r.Expert)||'—',operacao:str(r.Operacao)||'—',cpas:toNum(r.CPAs_Ativos),ftds:toNum(r.FTDs),cadastros:toNum(r.Cadastros),comiss:toNum(r.Comissionamento),netpl:toNum(r.Net_PL),revshare:toNum(r.RevShare),vendas:toNum(r.Vendas),valorVendas:toNum(r.Valor_Vendas),receita:toNum(r.Comissionamento)+toNum(r.RevShare)};}).filter(r=>r.date);}
 function normTrafego(rows){return rows.map(r=>{const d=toDate(r.Data);return{date:d,iso:isoOf(d),expert:str(r.Expert)||'—',operacao:str(r.Operacao)||'—',plataforma:str(r.Plataforma)||'—',valor:toNum(r.Valor_Investido),tipo:str(r.Tipo_Campanha)};}).filter(r=>r.date);}
 function normOperacional(rows){return rows.map(r=>{const d=toDate(r.Data);return{date:d,iso:isoOf(d),expert:str(r.Expert)||'—',operacao:str(r.Operacao)||'—',categoria:str(r.Categoria)||'Outros',descricao:str(r.Descricao),valor:toNum(r.Valor)};}).filter(r=>r.date);}
 function normComercial(rows){return rows.map(r=>{const d=toDate(r.Data);return{date:d,iso:isoOf(d),colaborador:str(r.Colaborador)||'—',comprovantes:toNum(r.Comprovantes_Recebidos),cadastros:toNum(r.Cadastros),depositos:toNum(r.Depositos),valor:toNum(r.Valor_Total_Depositos)};}).filter(r=>r.date);}
@@ -512,9 +515,13 @@ function computeKPIs(f){
   const receita=sum(f.resultados,'receita'), comiss=sum(f.resultados,'comiss'), revshare=sum(f.resultados,'revshare'), netpl=sum(f.resultados,'netpl');
   const custoTraf=sum(f.trafego,'valor'), custoOp=sum(f.operacional,'valor'), custoTotal=custoTraf+custoOp;
   const lucro=receita-custoTotal, ftds=sum(f.resultados,'ftds'), cadastros=sum(f.resultados,'cadastros'), cpas=sum(f.resultados,'cpas');
+  const vendas=sum(f.resultados,'vendas'), valorVendas=sum(f.resultados,'valorVendas');
+  const depositosQtd=sum(f.comercial||[],'depositos'), depositosValor=sum(f.comercial||[],'valor');
   return {receita,comiss,revshare,netpl,custoTraf,custoOp,custoTotal,lucro,
     margem:receita?lucro/receita:0, roi:custoTotal?lucro/custoTotal:0, roas:custoTraf?receita/custoTraf:0,
-    ftds,cadastros,cpas, cac:ftds?custoTotal/ftds:0};
+    ftds,cadastros,cpas, cac:ftds?custoTotal/ftds:0,
+    vendas,valorVendas,ticketVenda:vendas?valorVendas/vendas:0,
+    depositosQtd,depositosValor,ticketDep:depositosQtd?depositosValor/depositosQtd:0};
 }
 function timeSeries(f){ const days=new Map(); const t=(iso)=>{if(!days.has(iso))days.set(iso,{iso,receita:0,custo:0});return days.get(iso);};
   f.resultados.forEach(r=>t(r.iso).receita+=r.receita); f.trafego.forEach(r=>t(r.iso).custo+=r.valor); f.operacional.forEach(r=>t(r.iso).custo+=r.valor);
@@ -708,6 +715,19 @@ function renderFinanceira(f){
   const k=computeKPIs(f);
   renderGauges('gaugeFin',k);
   document.getElementById('kpiFin').innerHTML=kpiSet(k);
+  /* Financeira = visão consolidada: depósitos somam todos os colaboradores do período
+     (ignora o filtro de colaborador, que é exclusivo da aba Comercial). */
+  const depAll=DATA.comercial.filter(r=>inRange(r));
+  k.depositosQtd=sum(depAll,'depositos'); k.depositosValor=sum(depAll,'valor');
+  k.ticketDep=k.depositosQtd?k.depositosValor/k.depositosQtd:0;
+  document.getElementById('kpiVendasDep').innerHTML=[
+    kpiHero('Vendas',fmtNum(k.vendas),'Quantidade no período',k.vendas>0?'pos':'','cash'),
+    kpi('Valor em vendas',fmtBRL(k.valorVendas),'Faturamento de vendas','coin'),
+    kpi('Ticket médio (venda)',fmtBRL(k.ticketVenda),'Valor / venda','bars'),
+    kpi('Depósitos',fmtNum(k.depositosQtd),'Quantidade no período','ucheck'),
+    kpi('Valor em depósitos',fmtBRL(k.depositosValor),'Total depositado (Time Comercial)','wallet'),
+    kpi('Ticket médio (depósito)',fmtBRL(k.ticketDep),'Valor / depósito','coin'),
+  ].join('');
   lineChart('chLinha',timeSeries(f),'lgLinha');
   const cc=custoCategorias(f); barsH('chCustos',cc,{color:cssv('--c8'),fmt:fmtBRL,vlabel:'Custo',pct:true,total:cc.reduce((a,b)=>a+b.value,0)});
   const tp=[...groupSum(f.trafego,'plataforma','valor').entries()].map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);
