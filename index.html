@@ -46,13 +46,25 @@ html[data-theme="dark"]{
 body{background:var(--page); color:var(--ink); font-family:'Montserrat',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased}
 .wrap{max-width:1360px; margin:0 auto; padding:22px 22px 90px}
 
-/* Header */
-.top{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px}
-.brand{display:flex; align-items:center; gap:10px}
+/* Shell: sidebar fixa + coluna de conteúdo */
+.shell{display:flex; min-height:100vh; align-items:flex-start}
+.main{flex:1; min-width:0}
+.side{width:242px; flex:none; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; position:sticky; top:0; height:100vh}
+.side-brand{display:flex; align-items:center; gap:11px; padding:17px 16px 15px; border-bottom:1px solid var(--grid)}
+.side-brand h1{font-size:15.5px; font-weight:700; margin:0; letter-spacing:-.01em; line-height:1.15}
+.side-brand .side-sub{display:block; font-size:10.5px; color:var(--muted); margin-top:2px; letter-spacing:.02em}
 .logo{width:34px;height:34px;border-radius:9px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;box-shadow:0 0 0 1px var(--border)}
 .logo img,.login-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.top h1{font-size:17px; font-weight:700; margin:0; letter-spacing:-.01em}
-.top .spacer{flex:1}
+.side-foot{padding:12px; border-top:1px solid var(--grid); display:flex; flex-direction:column; gap:9px}
+.side-foot .userchip{border-radius:10px; padding:8px 11px; width:100%}
+.side-foot .btn{justify-content:center}
+
+/* Barra superior do conteúdo */
+.topbar{display:flex; align-items:center; gap:12px; padding:13px 22px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:40; flex-wrap:wrap}
+.page-title{font-size:17px; font-weight:700; letter-spacing:-.01em; min-width:0}
+.topbar .spacer{flex:1}
+.menu-btn{display:none; padding:7px 10px}
+.side-backdrop{display:none}
 .tools{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .hdr-date{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-2); white-space:nowrap; font-variant-numeric:tabular-nums}
 .status{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-2)}
@@ -61,13 +73,26 @@ body{background:var(--page); color:var(--ink); font-family:'Montserrat',system-u
 .btn{appearance:none; border:1px solid var(--border); background:var(--surface); color:var(--ink); font:inherit; font-size:13px; padding:7px 12px; border-radius:9px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.12s}
 .btn:hover{background:var(--surface-2)} .btn:active{transform:translateY(1px)}
 
-/* Tabs */
-.tabs{display:flex; gap:2px; border-bottom:1px solid var(--border); margin:6px 0 18px; flex-wrap:wrap}
-.tab{padding:11px 18px; border:none; background:none; color:var(--ink-2); font:inherit; font-size:14px; font-weight:600; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; display:flex; align-items:center; gap:7px}
-.tab:hover{color:var(--ink)}
-.tab.active{color:var(--ink); border-bottom-color:var(--c1)}
+/* Navegação (itens da sidebar) */
+.tabs{display:flex; flex-direction:column; gap:2px; padding:12px 10px; flex:1; min-height:0; overflow-y:auto}
+.tab{display:flex; align-items:center; gap:11px; width:100%; text-align:left; padding:10px 12px; border:none; background:none; color:var(--ink-2); font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; border-radius:10px; transition:.12s}
+.tab:hover{background:var(--surface-2); color:var(--ink)}
+.tab.active{background:var(--ink); color:var(--surface)}
+.tab:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+.tab .tico{flex:none}
 .tabpane{display:none} .tabpane.active{display:block; animation:fade .2s}
 @keyframes fade{from{opacity:.4}to{opacity:1}}
+
+/* Sidebar vira gaveta no mobile */
+@media(max-width:900px){
+  .side{position:fixed; left:0; top:0; bottom:0; height:100dvh; z-index:130; transform:translateX(-100%); transition:transform .22s ease; box-shadow:0 0 40px rgba(0,0,0,.32)}
+  .side.open{transform:none}
+  .side-backdrop{display:block; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:125; opacity:0; pointer-events:none; transition:opacity .22s}
+  .side-backdrop.on{opacity:1; pointer-events:auto}
+  .menu-btn{display:inline-flex}
+  .topbar{padding:12px 16px}
+  .wrap{padding:18px 16px 90px}
+}
 
 /* Filters */
 .filters{display:flex; gap:14px 18px; flex-wrap:wrap; align-items:flex-end; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; margin-bottom:18px; box-shadow:var(--shadow)}
@@ -353,33 +378,44 @@ svg text{font-family:inherit}
 </style>
 </head>
 <body>
-<div class="wrap content">
+<div class="shell" id="appShell">
 
-  <div class="top">
-    <div class="brand">
-      <div class="logo"></div>
-      <h1>Arca Digital</h1>
-    </div>
-    <div class="spacer"></div>
-    <div class="tools">
-      <div class="userchip" id="userChip"><span class="u-name" id="userName"></span><span class="u-role" id="userRole"></span></div>
-      <div class="toolwrap" id="bellWrap" style="display:none">
-        <button class="btn bell" id="bellBtn" title="Meus cards no funil" aria-haspopup="true" aria-expanded="false"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z"/><path d="M10.4 19a1.9 1.9 0 0 0 3.2 0"/></svg><span id="bellCnt" class="cnt" style="display:none">0</span></button>
-        <div class="pop" id="bellPop" role="menu"></div>
-      </div>
-      <div class="hdr-date"><span class="dot" id="statusDot"></span><span id="statusText">—</span></div>
-      <button class="btn btn-ico" id="logoutBtn" title="Sair" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><polyline points="10 8 6 12 10 16"/><line x1="6" y1="12" x2="16" y2="12"/></svg><span>Sair</span></button>
-    </div>
+<aside class="side" id="side">
+  <div class="side-brand">
+    <div class="logo"></div>
+    <div><h1>Arca Digital</h1><span class="side-sub">Central de Inteligência</span></div>
   </div>
-
-  <div class="tabs" id="tabs">
+  <nav class="tabs" id="tabs" aria-label="Seções do painel">
     <button class="tab active" data-tab="financeira"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="10" width="3" height="9"/><rect x="10.5" y="5" width="3" height="14"/><rect x="15" y="13" width="3" height="6"/></svg>Financeira</button>
     <button class="tab" data-tab="expert"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>Performance por Expert</button>
     <button class="tab" data-tab="comercial"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a7 7 0 0 1 14 0"/><rect x="3.3" y="12.5" width="4" height="6" rx="1.6"/><rect x="16.7" y="12.5" width="4" height="6" rx="1.6"/></svg>Time Comercial</button>
     <button class="tab" data-tab="estrategia"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.2"/></svg>Estratégia</button>
     <button class="tab" data-tab="funil" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5h17l-6.5 7.6V20l-4-2.2v-5.2z"/></svg>Funil de Experts</button>
     <button class="tab" data-tab="admin" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg>Admin</button>
+  </nav>
+
+  <div class="side-foot">
+    <div class="userchip" id="userChip"><span class="u-name" id="userName"></span><span class="u-role" id="userRole"></span></div>
+    <button class="btn" id="logoutBtn" title="Sair" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><polyline points="10 8 6 12 10 16"/><line x1="6" y1="12" x2="16" y2="12"/></svg><span>Sair</span></button>
   </div>
+</aside>
+<div class="side-backdrop" id="sideBackdrop"></div>
+
+<main class="main">
+  <div class="topbar">
+    <button class="btn menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <div class="page-title" id="pageTitle">Financeira</div>
+    <div class="spacer"></div>
+    <div class="tools">
+      <div class="toolwrap" id="bellWrap" style="display:none">
+        <button class="btn bell" id="bellBtn" title="Meus cards no funil" aria-haspopup="true" aria-expanded="false"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z"/><path d="M10.4 19a1.9 1.9 0 0 0 3.2 0"/></svg><span id="bellCnt" class="cnt" style="display:none">0</span></button>
+        <div class="pop" id="bellPop" role="menu"></div>
+      </div>
+      <div class="hdr-date"><span class="dot" id="statusDot"></span><span id="statusText">—</span></div>
+    </div>
+  </div>
+
+  <div class="wrap content">
 
   <div id="noticeBox"></div>
 
@@ -538,7 +574,9 @@ svg text{font-family:inherit}
   <p class="muted" style="font-size:12px;margin-top:26px;text-align:center">
     Fonte: Planilha 1 (Resultados) · Planilha 2 (Custos de Tráfego) · Planilha 3 (Custos Operacionais) · Planilha 4 (Time Comercial) — Google Sheets ao vivo. Edite as planilhas e clique em <b>Atualizar</b>.
   </p>
-</div>
+  </div><!-- /.wrap -->
+</main>
+</div><!-- /.shell -->
 
 <div id="loginScreen">
   <div class="login-card">
@@ -1101,10 +1139,21 @@ function fieldVis(){
   document.querySelector('.filters').style.display = (TAB==='admin'||TAB==='funil') ? 'none' : '';
   document.getElementById('noticeBox').style.display = (TAB==='funil') ? 'none' : '';
 }
+/* título da barra superior = rótulo do item ativo da sidebar */
+function syncTitle(){
+  const b=document.querySelector('#tabs .tab[data-tab="'+TAB+'"]');
+  if(b)document.getElementById('pageTitle').textContent=b.textContent.trim();
+}
+function sideOpen(on){
+  document.getElementById('side').classList.toggle('open',on);
+  document.getElementById('sideBackdrop').classList.toggle('on',on);
+  document.getElementById('menuBtn').setAttribute('aria-expanded',on?'true':'false');
+}
 document.getElementById('tabs').addEventListener('click',e=>{ const b=e.target.closest('.tab'); if(!b)return;
   TAB=b.dataset.tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));
   document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+TAB));
+  syncTitle(); sideOpen(false); scrollTo({top:0,behavior:'smooth'});
   fieldVis();
   if(TAB==='admin' && ME.role==='admin'){ loadUsers(); }
   if(TAB==='funil'){ fnStart(); }
@@ -1124,7 +1173,8 @@ let rz; window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(ren
 (function(){const qt=new URLSearchParams(location.search).get('tab');
  if(qt&&document.getElementById('tab-'+qt)){TAB=qt;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===qt));
-  document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+qt));}})();
+  document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+qt));}
+ syncTitle();})();
 /* ================= AUTENTICAÇÃO (Firebase) ================= */
 /* Cole a config do seu projeto Firebase abaixo (ou use "Configurar servidor" na tela de login).
    Deixe apiKey vazio para rodar em MODO PÚBLICO (sem login, lendo as planilhas públicas). */
@@ -1146,7 +1196,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','
 function fbErr(e){const c=(e&&e.code)||'';const m={'auth/invalid-email':'E-mail inválido.','auth/user-disabled':'Acesso desativado. Fale com o admin.','auth/user-not-found':'E-mail ou senha inválidos.','auth/wrong-password':'E-mail ou senha inválidos.','auth/invalid-credential':'E-mail ou senha inválidos.','auth/too-many-requests':'Muitas tentativas. Aguarde e tente novamente.','auth/email-already-in-use':'Este e-mail já possui acesso.','auth/weak-password':'Senha fraca (mínimo 6 caracteres).','auth/network-request-failed':'Falha de rede. Verifique a internet.','auth/operation-not-allowed':'Ative o login por E-mail/Senha no Firebase.'};return m[c]||(e&&e.message)||'Erro inesperado.';}
 
 function showLogin(on){document.getElementById('loginScreen').style.display=on?'flex':'none';}
-function showApp(on){document.querySelector('.wrap').style.display=on?'':'none';}
+function showApp(on){document.getElementById('appShell').style.display=on?'':'none';}
 function loginError(msg,ok){const el=document.getElementById('loginMsg');el.textContent=msg||'';el.className='login-msg'+(ok?' ok':'');}
 function loginBusy(on){const b=document.getElementById('liBtn');b.disabled=on;b.textContent=on?'Entrando…':'Entrar';}
 
@@ -1165,6 +1215,7 @@ function applyRole(){
   const _dup=_nm && _rl && _nm.trim().toLowerCase()===_rl.trim().toLowerCase();
   _re.textContent=_dup?'':_rl; _re.style.display=(_dup||!_rl)?'none':'';
   document.getElementById('logoutBtn').style.display='';
+  syncTitle();
   fieldVis();
   fnStart();
 }
@@ -2055,6 +2106,10 @@ function boot(){
   document.getElementById('admCreate').addEventListener('submit',adminCreate);
   document.getElementById('admTable').addEventListener('click',adminTableClick);
   document.getElementById('admTable').addEventListener('change',adminTableChange);
+  /* gaveta da sidebar no mobile */
+  document.getElementById('menuBtn').addEventListener('click',()=>sideOpen(!document.getElementById('side').classList.contains('open')));
+  document.getElementById('sideBackdrop').addEventListener('click',()=>sideOpen(false));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false);});
   fnBind();
   fieldVis();
 
