@@ -119,8 +119,14 @@ Experts e o time comercial continuam sem acesso nenhum ao funil.
 | 5 | Publicação | William | Tráfego ativo | 3 dias |
 | 6 | Rodando | William (apoio Fábio/Mizag) | — (etapa final) | relatório a cada 7 dias |
 
-A movimentação é **manual**: a pessoa abre o card e clica em **Concluir etapa**. Ao mudar de
-etapa o dono troca sozinho — nenhum card fica órfão.
+A movimentação é **manual**, de dois jeitos: **arrastando o card** para outra coluna, ou
+abrindo o card e clicando em **Concluir etapa**. Nos dois casos valem as mesmas regras, e ao
+mudar de etapa o dono troca sozinho — nenhum card fica órfão.
+
+O arraste é de mouse (desktop). No celular, use o botão dentro do card.
+
+Quem é **equipe interna** avança uma etapa por vez e não devolve card. **Administrador** pode
+pular etapas e voltar, sempre com um aviso do que está deixando para trás.
 
 **Nada disso está preso ao código.** No botão **Configurações** (só admin) você edita as
 pessoas do time, quem é dono de cada etapa, os prazos e a lista de nichos. A tabela acima é só
@@ -180,10 +186,10 @@ Em vez de a Camily perguntar tudo no WhatsApp e digitar no card, o expert preenc
 **Como usar:** aba do funil → botão **Convites** → *Gerar link de convite*. Copie o link (ou
 use o atalho de WhatsApp) e mande para o expert. Ele abre, preenche e envia.
 
-**O que o expert preenche:** nome, e-mail, WhatsApp, nicho, se já opera e se tem resultado —
-e os materiais da landing page: **link do Drive** com as fotos, **ID do pixel** e **cores da
-marca**. Nome, e-mail e link do Drive são obrigatórios; pixel e cores podem ficar em branco
-se ele ainda não tiver.
+**O que o expert preenche:** nome, e-mail, WhatsApp, nicho, se já opera e **se já tem grupo**
+(respondendo que sim, ele precisa colar o link do grupo) — e os materiais da landing page:
+**link do Drive** com as fotos, **ID do pixel** e **cores da marca**. Nome, e-mail e link do
+Drive são obrigatórios; pixel e cores podem ficar em branco se ele ainda não tiver.
 
 **O que acontece depois:** a resposta aparece no botão **Convites** com um contador verde.
 Você confere os dados e clica em **Criar card no funil** — o card nasce na etapa 1, no nome

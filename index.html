@@ -188,46 +188,79 @@ td.pos{color:var(--pos-ink)} td.neg{color:var(--neg)}
 svg text{font-family:inherit}
 .hint{font-size:12.5px; color:var(--muted); margin:0 2px 16px}
 /* ===== Funil de Experts ===== */
-.funil-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.funil-bar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;margin-bottom:13px;box-shadow:var(--shadow);flex:none}
+.funil-bar .sep{width:1px;height:22px;background:var(--border);flex:none}
+.btn-ghost{border-color:transparent;background:none;color:var(--ink-2);font-size:12.5px;padding:6px 9px}
+.btn-ghost:hover{background:var(--surface-2);color:var(--ink)}
 .funil-bar input[type=search],.funil-bar select{font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink)}
 .funil-bar input[type=search]{min-width:190px}
 .btn-primary{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:650}
 .btn-primary:hover{background:var(--ink);opacity:.88}
-.fk{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
-.fk .kpi .k-val{font-size:22px}
+.fk{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:13px;flex:none}
+.fk .kpi{padding:9px 12px}
+.fk .kpi .k-label{font-size:11.5px}
+.fk .kpi .k-val{font-size:20px;margin-top:3px}
+.fk .kpi .k-sub{display:none}
 .fk .kpi.alert::before{background:var(--danger);opacity:1}
 .fk .kpi.alert .k-val{color:var(--danger)}
 
-/* Board */
-.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(268px,1fr);gap:14px;overflow-x:auto;padding-bottom:14px;align-items:start}
-.col{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);min-width:0;display:flex;flex-direction:column;max-height:none}
-.col-h{padding:12px 13px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface-2);border-radius:var(--r) var(--r) 0 0;z-index:2}
+/* Board estilo Trello: colunas de altura cheia, cada uma com rolagem própria */
+#tab-funil.active{display:flex;flex-direction:column;height:calc(100dvh - 128px);min-height:540px}
+#tab-funil > .hint{flex:none;margin-bottom:0}
+.board{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;align-items:stretch;
+  flex:1;min-height:0;padding:2px 2px 10px;scroll-snap-type:x proximity}
+.col{background:var(--surface-2);border:1px solid var(--border);border-radius:13px;
+  width:290px;flex:0 0 290px;display:flex;flex-direction:column;max-height:100%;scroll-snap-align:start;transition:background .15s}
+.col-h{padding:12px 13px 11px;border-bottom:1px solid var(--border);flex:none;border-radius:13px 13px 0 0}
 .col-h .c-n{display:flex;align-items:center;gap:8px}
-.col-h .c-step{width:20px;height:20px;border-radius:6px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
-.col-h .c-t{font-size:13px;font-weight:650;line-height:1.25;min-width:0}
-.col-h .c-count{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1px 8px;flex:none}
-.col-h .c-meta{font-size:11px;color:var(--muted);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap}
+.col-h .c-step{width:21px;height:21px;border-radius:7px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.col-h .c-t{font-size:13px;font-weight:680;line-height:1.25;min-width:0;letter-spacing:-.01em}
+.col-h .c-count{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1px 9px;flex:none;font-variant-numeric:tabular-nums}
+.col-h .c-meta{font-size:11px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.col-h .c-meta .av{width:17px;height:17px;font-size:9px}
 .col-h .c-meta b{font-weight:650;color:var(--ink-2)}
-.col-b{padding:10px;display:flex;flex-direction:column;gap:10px;min-height:70px}
-.col-empty{font-size:12px;color:var(--muted);text-align:center;padding:16px 6px;border:1px dashed var(--border);border-radius:10px}
+.col-h .c-prazo{margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap}
+.col-b{padding:10px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;flex:1;min-height:64px}
+.col-f{padding:0 10px 10px;flex:none}
+.col-add{width:100%;display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px dashed var(--border);
+  border-radius:10px;background:none;color:var(--ink-2);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:.12s}
+.col-add:hover{background:var(--surface);border-style:solid;color:var(--ink)}
+.col-empty{font-size:12px;color:var(--muted);text-align:center;padding:18px 8px;border:1px dashed var(--border);border-radius:10px;line-height:1.5}
+.col.drop{background:var(--surface)}
+.col.drop .col-b{outline:2px dashed var(--ink);outline-offset:-5px;border-radius:10px}
+@media(max-width:900px){
+  #tab-funil.active{height:auto;min-height:0;display:block}
+  .board{flex:none;overflow-y:visible;padding-bottom:6px}
+  .col{max-height:none}
+  .col-b{overflow-y:visible}
+}
 
 /* Card do expert */
-.fcard{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 12px;box-shadow:var(--shadow);cursor:pointer;transition:.12s;border-left:3px solid transparent;text-align:left;width:100%;font:inherit;color:inherit;display:block}
-.fcard:hover{transform:translateY(-1px);border-color:var(--ink-2)}
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 11px;
+  box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:grab;transition:.12s;text-align:left;width:100%;font:inherit;color:inherit;display:block;position:relative}
+.fcard:hover{border-color:var(--ink-2);box-shadow:var(--shadow);transform:translateY(-1px)}
 .fcard:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.fcard.late{border-left-color:var(--danger);background:var(--danger-bg)}
-.fcard.due{border-left-color:var(--attn);background:var(--attn-bg)}
-.fc-top{display:flex;align-items:flex-start;gap:8px}
-.fc-name{font-size:13.5px;font-weight:650;line-height:1.3;min-width:0;overflow-wrap:anywhere}
-.fc-flag{margin-left:auto;flex:none;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:20px;background:var(--danger);color:var(--danger-ink)}
-.fc-flag.due{background:var(--attn);color:var(--danger-ink)}
-.fc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.fcard:active{cursor:grabbing}
+.fcard.dragging{opacity:.4;transform:scale(.97)}
+.fc-labels{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.lab{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;
+  border-radius:6px;padding:2px 8px;background:var(--surface-2);border:1px solid var(--border);color:var(--ink-2);white-space:nowrap}
+.lab i{width:7px;height:7px;border-radius:2px;flex:none}
+.lab.late{background:var(--danger);border-color:var(--danger);color:var(--danger-ink);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.lab.due{background:var(--attn);border-color:var(--attn);color:var(--danger-ink);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.fc-name{font-size:13.5px;font-weight:640;line-height:1.35;overflow-wrap:anywhere}
+.fc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
 .tag{font-size:10.5px;font-weight:600;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap}
 .tag.warn{color:var(--attn);border-color:var(--attn)}
-.fc-foot{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--grid);font-size:11.5px;color:var(--ink-2)}
-.fc-days{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
-.fcard.late .fc-days{color:var(--danger);font-weight:700}
-.av{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none;font-style:normal}
+.tag.late{color:var(--danger);border-color:var(--danger);font-weight:700}
+.fc-foot{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+.fc-when{display:inline-flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums;
+  border-radius:6px;padding:2px 6px;white-space:nowrap}
+.fc-when svg{width:12px;height:12px;flex:none}
+.fcard.late .fc-when{background:var(--danger);color:var(--danger-ink);font-weight:700}
+.fcard.due .fc-when{background:var(--attn);color:var(--danger-ink);font-weight:700}
+.fc-foot .av{margin-left:auto}
+.av{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none;font-style:normal}
 .resp{display:inline-flex;align-items:center;gap:6px;font-weight:600;min-width:0}
 
 /* Modal */
@@ -559,14 +592,15 @@ svg text{font-family:inherit}
         <option value="mine">Só os meus</option>
       </select>
       <div style="flex:1"></div>
-      <button class="btn" id="fnCfgBtn" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9h-.2a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.4-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.9-.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1.1z"/></svg>Configurações</button>
-      <button class="btn" id="fnArch">Ver arquivados</button>
+      <button class="btn btn-ghost" id="fnCfgBtn" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9h-.2a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.4-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.9-.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1.1z"/></svg>Configurações</button>
+      <div class="sep"></div>
+      <button class="btn btn-ghost" id="fnArch">Arquivados</button>
       <button class="btn" id="fnConvBtn" title="Gerar link de convite para o expert preencher"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a4 4 0 0 0 5.7.4l3-3a4 4 0 1 0-5.7-5.7l-1.2 1.2"/><path d="M14 11a4 4 0 0 0-5.7-.4l-3 3a4 4 0 1 0 5.7 5.7l1.2-1.2"/></svg>Convites<span id="convCnt" class="cnt" style="display:none;position:static;margin-left:2px">0</span></button>
-      <button class="btn" id="fnGuiaBtn" title="Guia de primeiros passos e como o funil funciona"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.8-.9 1.4v.4"/><line x1="12" y1="16.6" x2="12" y2="16.7"/></svg>Como usar</button>
+      <button class="btn btn-ghost" id="fnGuiaBtn" title="Guia de primeiros passos e como o funil funciona"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.8-.9 1.4v.4"/><line x1="12" y1="16.6" x2="12" y2="16.7"/></svg>Como usar</button>
     </div>
     <div class="fk" id="fnKpis"></div>
     <div class="board" id="fnBoard"></div>
-    <p class="hint" style="margin-top:14px">A movimentação é manual: abra o card e clique em <b>Concluir etapa</b>. O responsável troca sozinho conforme a etapa — nenhum card fica sem dono.</p>
+    <p class="hint" style="margin-top:14px"><b>Arraste o card</b> para outra coluna, ou abra e clique em <b>Concluir etapa</b>. O responsável troca sozinho — nenhum card fica sem dono. <span class="muted">No celular, use o botão dentro do card.</span></p>
   </div>
 
   <!-- ===================== ABA ADMIN ===================== -->
@@ -667,7 +701,11 @@ svg text{font-family:inherit}
           </div>
           <div class="frow" style="margin-top:11px">
             <div class="ff"><label>Você já opera hoje?</label><select id="cvOpera"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
-            <div class="ff"><label>Já tem resultado comprovado?</label><select id="cvResult"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+            <div class="ff"><label>Você já tem grupo?</label><select id="cvGrupo"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+          </div>
+          <div class="ff" id="cvGrupoWrap" style="display:none;margin-top:11px"><label>Link do seu grupo <span class="req">*</span></label>
+            <input id="cvGrupoLink" type="url" placeholder="https://t.me/… ou https://chat.whatsapp.com/…">
+            <span class="fhint">Telegram, WhatsApp, Discord — onde sua audiência já está hoje.</span>
           </div>
         </div>
 
@@ -1456,7 +1494,7 @@ const FN_CFG_PADRAO={
 
 let FN_CFG=JSON.parse(JSON.stringify(FN_CFG_PADRAO));
 let FN_CARDS=[], FN_UNSUB=null, FN_CFG_UNSUB=null, FN_OPEN=null, FN_ARCH=false, FN_BOOTED=false, FN_FIRST=true, FN_BASE=null;
-let FN_CFG_EXISTS=false, FN_EQUIPE=null, FN_GUIA_AUTO=false;
+let FN_CFG_EXISTS=false, FN_EQUIPE=null, FN_GUIA_AUTO=false, FN_DRAG=null;
 const FN_F={q:'',resp:'all',nicho:'all',status:'all'};
 const SVT=()=>firebase.firestore.FieldValue.serverTimestamp();
 
@@ -1477,6 +1515,8 @@ function fnApoio(n){
   if(Number(n)!==6)return [];
   return (FN_CFG.apoio||[]).filter(k=>FN_PESSOAS[k]&&k!==fnDono(n));
 }
+/* cada nicho ganha um tom fixo da escala do tema — reconhecível sem sair do preto e branco */
+function fnNichoTom(n){let h=0;const t=String(n);for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return (h%8)+1;}
 function fnLista(ks){const n=ks.map(fnNome); return n.length<2?(n[0]||'') : n.slice(0,-1).join(', ')+' e '+n[n.length-1];}
 function fnSlug(s){
   return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
@@ -1629,25 +1669,39 @@ function fnRender(){
         if((sa.cls==='late')!==(sb.cls==='late'))return sa.cls==='late'?-1:1;
         return (tsDate(a.etapaDesde)||0)-(tsDate(b.etapaDesde)||0);});
     const sla=fnSla(et.n);
-    const prazo=et.n===6?'sem prazo fixo':(sla===0?'no mesmo dia':fnPlural(sla,'dia','dias'));
-    return `<section class="col"><div class="col-h">
+    const prazo=et.n===6?'sem prazo fixo':(sla===0?'mesmo dia':fnPlural(sla,'dia','dias'));
+    const dono=fnDono(et.n), apoio=fnApoio(et.n);
+    const vazio=FN_ARCH?'Nada arquivado nesta etapa'
+      :(et.n===1?'Nenhum expert aqui ainda.<br>Use <b>Novo expert</b> ou envie um <b>convite</b>.'
+                :'Arraste um card para cá quando esta etapa começar');
+    return `<section class="col" data-etapa="${et.n}"><div class="col-h">
       <div class="c-n"><span class="c-step">${et.n}</span><span class="c-t">${esc(et.nome)}</span><span class="c-count">${list.length}</span></div>
-      <div class="c-meta"><span><b>${esc(fnNome(fnDono(et.n)))}</b>${fnApoio(et.n).length?' · apoio de '+esc(fnLista(fnApoio(et.n))):''}</span><span>Prazo: ${esc(prazo)}</span></div>
-    </div><div class="col-b">${list.length?list.map(fnCardHTML).join(''):'<div class="col-empty">Nenhum card aqui</div>'}</div></section>`;
+      <div class="c-meta"><i class="av">${esc(fnIni(dono))}</i><b>${esc(fnNome(dono))}</b>${apoio.length?'<span>+ '+esc(fnLista(apoio))+'</span>':''}<span class="c-prazo" title="Prazo desta etapa"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>${esc(prazo)}</span></div>
+    </div><div class="col-b">${list.length?list.map(fnCardHTML).join(''):'<div class="col-empty">'+vazio+'</div>'}</div>
+    ${(et.n===1&&!FN_ARCH)?'<div class="col-f"><button class="col-add" data-novo="1"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo expert</button></div>':''}
+    </section>`;
   }).join('');
 }
 function fnCardHTML(c){
   const s=fnStatusCard(c), et=Number(c.etapa)||1;
   const tags=[];
-  if(c.nicho)tags.push('<span class="tag">'+esc(c.nicho)+'</span>');
   if(c.jaOpera)tags.push('<span class="tag">já opera</span>');
-  if(c.temResultado)tags.push('<span class="tag">com resultado</span>');
+  if(c.temGrupo)tags.push('<span class="tag">com grupo</span>');
   if(et>=3&&!String(c.operacaoAtual||'').trim())tags.push('<span class="tag warn">sem descrição da operação</span>');
-  const tempo=et===6?(s.dr===0?'relatório hoje':'último relatório há '+fnPlural(s.dr,'dia','dias')):(s.dias===0?'entrou hoje':'há '+fnPlural(s.dias,'dia','dias')+' na etapa');
-  return `<button class="fcard ${s.cls}" data-id="${esc(c.id)}">
-    <div class="fc-top"><span class="fc-name">${esc(c.nome||'(sem nome)')}</span>${s.label?`<span class="fc-flag ${s.cls==='due'?'due':''}">${esc(s.label)}</span>`:''}</div>
+  if(et===2&&!c.temCredenciais)tags.push('<span class="tag warn">sem credenciais</span>');
+  const labs=[];
+  if(s.label)labs.push('<span class="lab '+s.cls+'">'+esc(s.label)+'</span>');
+  if(c.nicho)labs.push('<span class="lab"><i style="background:var(--c'+fnNichoTom(c.nicho)+')"></i>'+esc(c.nicho)+'</span>');
+  const tempo=et===6
+    ? (s.dr===0?'relatório hoje':'relatório há '+fnPlural(s.dr,'dia','dias'))
+    : (s.dias===0?'entrou hoje':fnPlural(s.dias,'dia','dias')+' nesta etapa');
+  const relogio='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>';
+  return `<button class="fcard ${s.cls}" data-id="${esc(c.id)}" draggable="true" title="Arraste para outra coluna ou clique para abrir">
+    ${labs.length?'<div class="fc-labels">'+labs.join('')+'</div>':''}
+    <div class="fc-name">${esc(c.nome||'(sem nome)')}</div>
     ${tags.length?'<div class="fc-tags">'+tags.join('')+'</div>':''}
-    <div class="fc-foot"><span class="resp"><i class="av">${esc(fnIni(c.responsavel))}</i>${esc(fnNome(c.responsavel))}</span><span class="fc-days">${esc(tempo)}</span></div>
+    <div class="fc-foot"><span class="fc-when">${relogio}${esc(tempo)}</span>
+      <i class="av" title="${esc(fnNome(c.responsavel))}">${esc(fnIni(c.responsavel))}</i></div>
   </button>`;
 }
 
@@ -1752,7 +1806,8 @@ function fnModalHTML(c,novo){
       ${fnInp('f_entrada','Data de entrada',c.dataEntrada,'date','',ro)}
       ${fnSel('f_nicho','Nicho / vertical <span class="req">*</span>',c.nicho||'',nichos,ro)}
       ${fnSel('f_opera','Já opera hoje?',c.jaOpera?'sim':'nao',simnao,ro)}
-      ${fnSel('f_result','Tem resultado comprovado hoje?',c.temResultado?'sim':'nao',simnao,ro)}
+      ${fnSel('f_grupoTem','Já tem grupo?',c.temGrupo?'sim':'nao',simnao,ro)}
+      ${fnInp('f_grupoLink','Link do grupo do expert',c.linkGrupo,'url','https://t.me/…',ro)}
       ${fnInp('f_email','E-mail',c.email,'email','',ro)}
       ${fnInp('f_fone','WhatsApp',c.telefone,'tel','',ro)}
     </div></div>`;
@@ -1968,7 +2023,8 @@ function fnLeForm(){
     dataEntrada:g('f_entrada'),
     nicho:g('f_nicho'),
     jaOpera:g('f_opera')==='sim',
-    temResultado:g('f_result')==='sim',
+    temGrupo:g('f_grupoTem')==='sim',
+    linkGrupo:g('f_grupoLink').trim(),
     linkCard:g('f_linkcard').trim(),
     contratoLink:g('f_contrato').trim(),
     contratoObs:g('f_contratoObs').trim(),
@@ -2047,6 +2103,32 @@ async function fnMove(delta){
     fnPaintHeader(c2);document.getElementById('fnMFoot').innerHTML=fnFootHTML(c2);
     fnLoadHist(FN_OPEN);
   }catch(err){fnMsg(fbErr(err),'err');}
+}
+/* soltar o card numa coluna — mesmas regras do botão "Concluir etapa" */
+async function fnSoltarCard(id,para){
+  const card=FN_CARDS.find(c=>c.id===id);if(!card||card.arquivado)return;
+  const de=Number(card.etapa)||1;
+  if(!para||para===de)return;
+  if(para<de&&!fnAdmin()){
+    fnToast('Não dá para voltar etapa','Só administrador devolve um card para etapa anterior.',id);return;}
+  if(para>de+1&&!fnAdmin()){
+    fnToast('Uma etapa por vez','Conclua a etapa '+de+' antes de mandar para a '+para+'.',id);return;}
+  if(para>de){
+    const falta=fnFaltando(card,de,card);
+    if(falta.length){
+      const txt='Etapa '+de+' ainda precisa de: '+falta.join(', ')+'.';
+      if(!fnAdmin()){fnToast('Falta preencher',txt+' Clique para abrir o card.',id);return;}
+      if(!confirm(txt+'\n\nVocê é administrador e pode mover assim mesmo. Seguir?'))return;
+    }
+  }
+  const novoDono=fnDono(para);
+  try{
+    await fnCol().doc(id).update({etapa:para,responsavel:novoDono,etapaDesde:SVT(),
+      updatedAt:SVT(),updatedPor:ME.name||ME.email||''});
+    await fnHistAdd(id,'etapa',(para>de?'Etapa concluída: ':'Card devolvido: ')+de+' → '+para+
+      ' ('+fnEt(para).nome+') · responsável agora é '+fnNome(novoDono));
+    fnToast(card.nome||'Card movido','Etapa '+para+' · '+fnEt(para).nome+' — agora com '+fnNome(novoDono),id);
+  }catch(err){fnToast('Não deu para mover',fbErr(err),id);}
 }
 async function fnArchive(){
   if(!FN_OPEN||!fnAdmin())return;
@@ -2169,7 +2251,7 @@ function fnConvRender(){
       <div class="cv-item-h"><b>${esc(r.nome||'(sem nome)')}</b><span>respondeu em ${esc(fnDT(c.respondidoEm))}</span></div>
       <dl class="cv-dl">
         ${li('E-mail',r.email)}${li('WhatsApp',r.telefone)}${li('Nicho',r.nicho)}
-        ${li('Já opera',r.jaOpera?'Sim':'Não')}${li('Tem resultado',r.temResultado?'Sim':'Não')}
+        ${li('Já opera',r.jaOpera?'Sim':'Não')}${li('Já tem grupo',r.temGrupo?'Sim':'Não')}${li('Link do grupo',r.linkGrupo,true)}
         ${li('Materiais',r.drive,true)}${li('Pixel',r.pixel)}${li('Cores',r.cores)}${li('Observações',r.obs)}
       </dl>
       <div class="cv-acts"><button class="btn btn-primary" data-imp="${esc(c.token)}">Criar card no funil</button>
@@ -2204,7 +2286,7 @@ async function fnConvImportar(token){
   try{
     const ref=await fnCol().add({
       nome:r.nome||'', email:r.email||'', telefone:r.telefone||'', nicho:r.nicho||'',
-      jaOpera:!!r.jaOpera, temResultado:!!r.temResultado,
+      jaOpera:!!r.jaOpera, temGrupo:!!r.temGrupo, linkGrupo:r.linkGrupo||'',
       dataEntrada:isoOf(tsDate(c.respondidoEm)||new Date()),
       operacaoAtual:r.obs?('Enviado pelo expert no convite:\n'+r.obs):'',
       lpDrive:r.drive||'', lpPixel:r.pixel||'', lpCores:r.cores||'',
@@ -2270,12 +2352,14 @@ async function cvEnviar(){
   if(!nome){cvMsg('Preencha seu nome.','err');document.getElementById('cvNome').focus();return;}
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){cvMsg('Informe um e-mail válido.','err');document.getElementById('cvEmail').focus();return;}
   if(!drive){cvMsg('Cole o link do Drive com seus materiais.','err');document.getElementById('cvDrive').focus();return;}
+  const temGrupo=g('cvGrupo')==='sim', linkGrupo=g('cvGrupoLink');
+  if(temGrupo&&!linkGrupo){cvMsg('Cole o link do seu grupo.','err');document.getElementById('cvGrupoLink').focus();return;}
   const b=document.getElementById('cvSend');b.disabled=true;b.textContent='Enviando…';cvMsg('');
   try{
     await fnConvCol().doc(CV_TOKEN).update({
       usado:true, respondidoEm:SVT(),
       resposta:{nome:nome,email:email,telefone:g('cvFone'),nicho:g('cvNicho'),
-        jaOpera:g('cvOpera')==='sim', temResultado:g('cvResult')==='sim',
+        jaOpera:g('cvOpera')==='sim', temGrupo:temGrupo, linkGrupo:temGrupo?linkGrupo:'',
         drive:drive, pixel:g('cvPixel'), cores:g('cvCores'), obs:g('cvObs')}
     });
     cvShow('cvDone');
@@ -2409,9 +2493,39 @@ function fnBind(){
   $('fnResp').addEventListener('change',e=>{FN_F.resp=e.target.value;fnRender();});
   $('fnNicho').addEventListener('change',e=>{FN_F.nicho=e.target.value;fnRender();});
   $('fnStatus').addEventListener('change',e=>{FN_F.status=e.target.value;fnRender();});
-  $('fnArch').addEventListener('click',e=>{FN_ARCH=!FN_ARCH;e.target.textContent=FN_ARCH?'Ver ativos':'Ver arquivados';fnRender();});
+  $('fnArch').addEventListener('click',e=>{FN_ARCH=!FN_ARCH;e.target.textContent=FN_ARCH?'Ver ativos':'Arquivados';fnRender();});
   $('fnCfgBtn').addEventListener('click',fnCfgOpen);
-  $('fnBoard').addEventListener('click',e=>{const b=e.target.closest('.fcard');if(b)fnOpen(b.dataset.id);});
+  $('fnBoard').addEventListener('click',e=>{
+    if(e.target.closest('[data-novo]')){fnOpen(null);return;}
+    const b=e.target.closest('.fcard');if(b)fnOpen(b.dataset.id);
+  });
+
+  /* arrastar card entre colunas (desktop; no toque continua pelo botão do card) */
+  const board=$('fnBoard'), limpaDrop=()=>board.querySelectorAll('.col').forEach(c=>c.classList.remove('drop'));
+  board.addEventListener('dragstart',e=>{
+    const c=e.target.closest('.fcard');if(!c)return;
+    FN_DRAG=c.dataset.id;c.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+    try{e.dataTransfer.setData('text/plain',c.dataset.id);}catch(_){}
+  });
+  board.addEventListener('dragend',e=>{
+    const c=e.target.closest('.fcard');if(c)c.classList.remove('dragging');
+    FN_DRAG=null;limpaDrop();
+  });
+  board.addEventListener('dragover',e=>{
+    if(!FN_DRAG)return;
+    const col=e.target.closest('.col');if(!col)return;
+    e.preventDefault();e.dataTransfer.dropEffect='move';
+    board.querySelectorAll('.col').forEach(c=>c.classList.toggle('drop',c===col));
+  });
+  board.addEventListener('drop',e=>{
+    if(!FN_DRAG)return;
+    const col=e.target.closest('.col');if(!col)return;
+    e.preventDefault();
+    const id=FN_DRAG,para=Number(col.dataset.etapa);
+    FN_DRAG=null;limpaDrop();
+    fnSoltarCard(id,para);
+  });
 
   /* convites */
   $('fnConvBtn').addEventListener('click',fnConvOpen);
@@ -2522,6 +2636,8 @@ function boot(){
   const conviteTok=new URLSearchParams(location.search).get('convite');
   if(conviteTok){
     document.getElementById('cvSend').addEventListener('click',cvEnviar);
+    const cvG=document.getElementById('cvGrupo');
+    cvG.addEventListener('change',()=>{document.getElementById('cvGrupoWrap').style.display=cvG.value==='sim'?'':'none';});
     cvBoot(conviteTok);
     return;
   }
