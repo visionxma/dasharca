@@ -196,21 +196,26 @@ svg text{font-family:inherit}
 .funil-bar input[type=search]{min-width:190px}
 .btn-primary{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:650}
 .btn-primary:hover{background:var(--ink);opacity:.88}
-.fk{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:13px;flex:none}
-.fk .kpi{padding:9px 12px}
-.fk .kpi .k-label{font-size:11.5px}
-.fk .kpi .k-val{font-size:20px;margin-top:3px}
-.fk .kpi .k-sub{display:none}
+.fk{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;flex:none}
+.fstat{display:inline-flex;align-items:baseline;gap:6px;background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:5px 11px;font-size:12px;color:var(--ink-2);white-space:nowrap}
+.fstat b{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.fstat.alert{border-color:var(--danger);background:var(--danger-bg)}
+.fstat.alert b{color:var(--danger)}
 .fk .kpi.alert::before{background:var(--danger);opacity:1}
 .fk .kpi.alert .k-val{color:var(--danger)}
 
 /* Board estilo Trello: colunas de altura cheia, cada uma com rolagem própria */
-#tab-funil.active{display:flex;flex-direction:column;height:calc(100dvh - 128px);min-height:540px}
-#tab-funil > .hint{flex:none;margin-bottom:0}
-.board{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;align-items:stretch;
-  flex:1;min-height:0;padding:2px 2px 10px;scroll-snap-type:x proximity}
+.main.board-mode{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.main.board-mode .topbar{flex:none}
+.main.board-mode .wrap{flex:1;min-height:0;display:flex;flex-direction:column;max-width:none;padding:13px 16px 12px;overflow:hidden}
+.main.board-mode #tab-funil.active{flex:1;min-height:0}
+#tab-funil.active{display:flex;flex-direction:column}
+#funilNotice{flex:none}
+.board{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;align-items:stretch;
+  flex:1;min-height:0;padding:1px 1px 4px;scroll-snap-type:x proximity}
 .col{background:var(--surface-2);border:1px solid var(--border);border-radius:13px;
-  width:290px;flex:0 0 290px;display:flex;flex-direction:column;max-height:100%;scroll-snap-align:start;transition:background .15s}
+  flex:1 1 258px;min-width:248px;display:flex;flex-direction:column;max-height:100%;scroll-snap-align:start;transition:background .15s}
 .col-h{padding:12px 13px 11px;border-bottom:1px solid var(--border);flex:none;border-radius:13px 13px 0 0}
 .col-h .c-n{display:flex;align-items:center;gap:8px}
 .col-h .c-step{width:21px;height:21px;border-radius:7px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
@@ -229,8 +234,11 @@ svg text{font-family:inherit}
 .col.drop{background:var(--surface)}
 .col.drop .col-b{outline:2px dashed var(--ink);outline-offset:-5px;border-radius:10px}
 @media(max-width:900px){
-  #tab-funil.active{height:auto;min-height:0;display:block}
+  .main.board-mode{height:auto;display:block;overflow:visible}
+  .main.board-mode .wrap{display:block;overflow:visible;padding:16px 14px 40px}
+  #tab-funil.active{display:block}
   .board{flex:none;overflow-y:visible;padding-bottom:6px}
+  .col{flex:0 0 82vw;min-width:0}
   .col{max-height:none}
   .col-b{overflow-y:visible}
 }
@@ -600,7 +608,6 @@ svg text{font-family:inherit}
     </div>
     <div class="fk" id="fnKpis"></div>
     <div class="board" id="fnBoard"></div>
-    <p class="hint" style="margin-top:14px"><b>Arraste o card</b> para outra coluna, ou abra e clique em <b>Concluir etapa</b>. O responsável troca sozinho — nenhum card fica sem dono. <span class="muted">No celular, use o botão dentro do card.</span></p>
   </div>
 
   <!-- ===================== ABA ADMIN ===================== -->
@@ -641,7 +648,7 @@ svg text{font-family:inherit}
     </div>
   </div>
 
-  <p class="muted" style="font-size:12px;margin-top:26px;text-align:center">
+  <p class="muted" id="fonteNota" style="font-size:12px;margin-top:26px;text-align:center">
     Fonte: Planilha 1 (Resultados) · Planilha 2 (Custos de Tráfego) · Planilha 3 (Custos Operacionais) · Planilha 4 (Time Comercial) — Google Sheets ao vivo. Edite as planilhas e clique em <b>Atualizar</b>.
   </p>
   </div><!-- /.wrap -->
@@ -1308,7 +1315,11 @@ function fieldVis(){
   show('fld-colab', TAB==='comercial');
   /* o funil não vem das planilhas: filtros de período/expert não se aplicam */
   document.querySelector('.filters').style.display = (TAB==='admin'||TAB==='funil') ? 'none' : '';
+  /* o funil não vem de planilha: nota de fonte e avisos de carga não se aplicam */
   document.getElementById('noticeBox').style.display = (TAB==='funil') ? 'none' : '';
+  document.getElementById('fonteNota').style.display = (TAB==='funil'||TAB==='admin') ? 'none' : '';
+  /* no funil o board usa a tela toda: sem largura máxima e sem rolagem de página */
+  document.querySelector('.main').classList.toggle('board-mode', TAB==='funil');
 }
 /* título da barra superior = rótulo do item ativo da sidebar */
 function syncTitle(){
@@ -1655,12 +1666,14 @@ function fnRender(){
   const atras=ativos.filter(c=>fnStatusCard(c).cls==='late').length;
   const semana=ativos.filter(c=>dias(tsDate(c.dataEntrada))<7).length;
   const meus=fnEu()?ativos.filter(c=>c.responsavel===fnEu()).length:0;
+  const stat=(v,rot,cls,tit)=>`<div class="fstat ${cls||''}"${tit?` title="${esc(tit)}"`:''}><b>${v}</b><span>${esc(rot)}</span></div>`;
   document.getElementById('fnKpis').innerHTML=
-    kpi('Experts ativos',fmtNum(ativos.length),FN_ARCH?'você está vendo os arquivados':'no funil agora')
-    +`<div class="kpi${atras?' alert':''}"><div class="k-label">Atrasados</div><div class="k-val">${fmtNum(atras)}</div><div class="k-sub">${atras?'passaram do prazo da etapa':'nenhum card estourou o prazo'}</div></div>`
-    +kpi('Entraram em 7 dias',fmtNum(semana),'novos experts')
-    +kpi('Rodando',fmtNum(ativos.filter(c=>Number(c.etapa)===6).length),'etapa 6, com tráfego')
-    +kpi('Meus cards',fmtNum(meus),fnEu()?'sob responsabilidade de '+fnNome(fnEu()):'sem pessoa vinculada');
+    stat(fmtNum(ativos.length),FN_ARCH?'arquivados':'no funil')
+    +stat(fmtNum(atras),'atrasados',atras?'alert':'',atras?'passaram do prazo da etapa':'nenhum card estourou o prazo')
+    +stat(fmtNum(semana),'entraram em 7 dias')
+    +stat(fmtNum(ativos.filter(c=>Number(c.etapa)===6).length),'rodando','','Etapa 6, com tráfego ativo')
+    +stat(fmtNum(meus),'meus',''
+      ,fnEu()?'Sob responsabilidade de '+fnNome(fnEu()):'Seu acesso não está vinculado a uma pessoa do funil');
 
   const board=document.getElementById('fnBoard');
   board.innerHTML=FN_ETAPAS.map(et=>{
