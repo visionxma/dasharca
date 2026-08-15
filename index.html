@@ -23,6 +23,10 @@
   --receita:#0a0a0a; --custo:#9a9a9a; --lucro:#5a5a5a;
   --shadow:0 1px 2px rgba(11,11,11,.05),0 8px 24px rgba(11,11,11,.06);
   --r:14px;
+  /* alertas do funil — únicas cores fora da escala de cinza, por serem sinal e não decoração */
+  --danger:#c62828; --danger-bg:rgba(198,40,40,.07); --danger-ink:#fff;
+  --attn:#a86a00;   --attn-bg:rgba(168,106,0,.09);
+  --okc:#1f7a45;    --okc-bg:rgba(31,122,69,.08);
 }
 html[data-theme="dark"]{
   --page:#0a0a0a; --surface:#151515; --surface-2:#1f1f1f;
@@ -34,6 +38,9 @@ html[data-theme="dark"]{
   --pos:#ffffff; --pos-ink:#ffffff; --neg:#9a9a9a; --warn:#c0c0c0; --warn-ink:#c0c0c0;
   --receita:#ffffff; --custo:#8f8f8f; --lucro:#cfcfcf;
   --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.5);
+  --danger:#ff6b5e; --danger-bg:rgba(255,107,94,.12); --danger-ink:#160707;
+  --attn:#f0b34a;   --attn-bg:rgba(240,179,74,.12);
+  --okc:#4ecb84;    --okc-bg:rgba(78,203,132,.12);
 }
 *{box-sizing:border-box} html,body{margin:0}
 body{background:var(--page); color:var(--ink); font-family:'Montserrat',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased}
@@ -155,6 +162,135 @@ td.pos{color:var(--pos-ink)} td.neg{color:var(--neg)}
 .muted{color:var(--muted)} .empty{padding:40px 10px; text-align:center; color:var(--muted); font-size:13.5px}
 svg text{font-family:inherit}
 .hint{font-size:12.5px; color:var(--muted); margin:0 2px 16px}
+/* ===== Funil de Experts ===== */
+.funil-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;box-shadow:var(--shadow)}
+.funil-bar input[type=search],.funil-bar select{font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink)}
+.funil-bar input[type=search]{min-width:190px}
+.btn-primary{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:650}
+.btn-primary:hover{background:var(--ink);opacity:.88}
+.fk{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.fk .kpi .k-val{font-size:22px}
+.fk .kpi.alert::before{background:var(--danger);opacity:1}
+.fk .kpi.alert .k-val{color:var(--danger)}
+
+/* Board */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(268px,1fr);gap:14px;overflow-x:auto;padding-bottom:14px;align-items:start}
+.col{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);min-width:0;display:flex;flex-direction:column;max-height:none}
+.col-h{padding:12px 13px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface-2);border-radius:var(--r) var(--r) 0 0;z-index:2}
+.col-h .c-n{display:flex;align-items:center;gap:8px}
+.col-h .c-step{width:20px;height:20px;border-radius:6px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.col-h .c-t{font-size:13px;font-weight:650;line-height:1.25;min-width:0}
+.col-h .c-count{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1px 8px;flex:none}
+.col-h .c-meta{font-size:11px;color:var(--muted);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap}
+.col-h .c-meta b{font-weight:650;color:var(--ink-2)}
+.col-b{padding:10px;display:flex;flex-direction:column;gap:10px;min-height:70px}
+.col-empty{font-size:12px;color:var(--muted);text-align:center;padding:16px 6px;border:1px dashed var(--border);border-radius:10px}
+
+/* Card do expert */
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 12px;box-shadow:var(--shadow);cursor:pointer;transition:.12s;border-left:3px solid transparent;text-align:left;width:100%;font:inherit;color:inherit;display:block}
+.fcard:hover{transform:translateY(-1px);border-color:var(--ink-2)}
+.fcard:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.fcard.late{border-left-color:var(--danger);background:var(--danger-bg)}
+.fcard.due{border-left-color:var(--attn);background:var(--attn-bg)}
+.fc-top{display:flex;align-items:flex-start;gap:8px}
+.fc-name{font-size:13.5px;font-weight:650;line-height:1.3;min-width:0;overflow-wrap:anywhere}
+.fc-flag{margin-left:auto;flex:none;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:20px;background:var(--danger);color:var(--danger-ink)}
+.fc-flag.due{background:var(--attn);color:var(--danger-ink)}
+.fc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.tag{font-size:10.5px;font-weight:600;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap}
+.tag.warn{color:var(--attn);border-color:var(--attn)}
+.fc-foot{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--grid);font-size:11.5px;color:var(--ink-2)}
+.fc-days{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.fcard.late .fc-days{color:var(--danger);font-weight:700}
+.av{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none;font-style:normal}
+.resp{display:inline-flex;align-items:center;gap:6px;font-weight:600;min-width:0}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto}
+.modal.on{display:flex}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);width:100%;max-width:760px;margin:auto}
+.modal-h{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);border-radius:16px 16px 0 0;z-index:3}
+.modal-h h3{margin:0;font-size:18px;font-weight:680;line-height:1.25;overflow-wrap:anywhere}
+.modal-h .m-sub{font-size:12px;color:var(--muted);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.x{margin-left:auto;flex:none;background:none;border:none;color:var(--ink-2);font-size:22px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:8px}
+.x:hover{background:var(--surface-2);color:var(--ink)}
+.modal-b{padding:6px 20px 18px}
+.modal-f{display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding:14px 20px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--surface);border-radius:0 0 16px 16px}
+.fsec{border-top:1px solid var(--grid);padding-top:14px;margin-top:16px}
+.fsec:first-child{border-top:none;margin-top:8px;padding-top:0}
+.fsec-h{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+.fsec-h .st{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:10px;letter-spacing:0;color:var(--ink-2)}
+.fsec.now .fsec-h{color:var(--ink)} .fsec.now .fsec-h .st{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:11px 14px}
+.frow.one{grid-template-columns:1fr}
+@media(max-width:620px){.frow{grid-template-columns:1fr}}
+.ff{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ff label{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.ff input,.ff select,.ff textarea{font:inherit;font-size:13.5px;padding:8px 10px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink);width:100%}
+.ff textarea{resize:vertical;min-height:96px;line-height:1.5}
+.ff input:disabled,.ff textarea:disabled,.ff select:disabled{opacity:.6;cursor:not-allowed}
+.ff .fhint{font-size:11px;color:var(--muted);line-height:1.4}
+.req{color:var(--danger)}
+.inline{display:flex;gap:8px;align-items:center}
+.inline .ff{flex:1}
+
+/* Credenciais */
+.cred{background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:12px 13px}
+.cred-lock{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.cred-lock svg{flex:none;color:var(--muted)}
+.mask{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;color:var(--muted)}
+
+/* Anexos / fotos */
+.thumbs{display:flex;gap:9px;flex-wrap:wrap;margin-top:9px}
+.thumb{position:relative;width:78px;height:78px;border-radius:9px;overflow:hidden;border:1px solid var(--border);background:var(--surface-2);flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .fileico{display:flex;align-items:center;justify-content:center;height:100%;font-size:10px;color:var(--ink-2);text-align:center;padding:6px;overflow-wrap:anywhere}
+.thumb .del{position:absolute;top:3px;right:3px;width:19px;height:19px;border-radius:50%;border:none;background:rgba(0,0,0,.62);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+
+/* Histórico / relatórios */
+.hist{list-style:none;margin:0;padding:0;font-size:12.5px}
+.hist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--grid);color:var(--ink-2);line-height:1.45}
+.hist li:last-child{border-bottom:none}
+.hist .h-when{color:var(--muted);font-size:11.5px;white-space:nowrap;font-variant-numeric:tabular-nums;flex:none;min-width:104px}
+.rep{border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:9px;background:var(--surface-2)}
+.rep-h{display:flex;align-items:center;gap:9px;font-size:11.5px;color:var(--muted);margin-bottom:7px;flex-wrap:wrap}
+.rep-h b{color:var(--ink);font-size:12.5px;font-weight:650}
+.rep-txt{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.rep-nums{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin-bottom:6px}
+.rep-nums span{color:var(--ink-2)} .rep-nums b{font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* Sino de notificações */
+.bell{position:relative}
+.bell .cnt{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--danger);color:var(--danger-ink);font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.pop{position:absolute;right:0;top:calc(100% + 8px);width:308px;max-height:396px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);z-index:60;display:none;padding:6px}
+.pop.on{display:block}
+.pop-h{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:9px 10px 7px}
+.pop-i{display:block;width:100%;text-align:left;font:inherit;background:none;border:none;color:inherit;padding:9px 10px;border-radius:9px;cursor:pointer;border-left:3px solid transparent}
+.pop-i:hover{background:var(--surface-2)}
+.pop-i.late{border-left-color:var(--danger)}
+.pop-i .p-n{font-size:13px;font-weight:640}
+.pop-i .p-s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.pop-empty{font-size:12.5px;color:var(--muted);padding:14px 10px;text-align:center}
+.toolwrap{position:relative}
+
+/* Avisos flutuantes */
+#fnToasts{position:fixed;right:18px;bottom:18px;z-index:180;display:flex;flex-direction:column;gap:9px;max-width:330px}
+.toast{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:11px;box-shadow:var(--shadow);padding:11px 13px;font:inherit;color:inherit;text-align:left;cursor:pointer;animation:slidein .22s}
+@keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast .t-t{font-size:13.5px;font-weight:650}
+.toast .t-s{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Config do funil */
+.cfg-nichos{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:4px 6px 4px 11px}
+.chip button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0 3px;border-radius:50%}
+.chip button:hover{color:var(--danger)}
+.sla-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:11px}
+.msg{font-size:12.5px;min-height:16px;line-height:1.4}
+.msg.err{color:var(--danger)} .msg.ok{color:var(--okc)}
+
 /* ===== Login / Admin ===== */
 #loginScreen{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:var(--page);padding:20px}
 .login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:30px 28px}
@@ -190,6 +326,10 @@ svg text{font-family:inherit}
     <div class="spacer"></div>
     <div class="tools">
       <div class="userchip" id="userChip"><span class="u-name" id="userName"></span><span class="u-role" id="userRole"></span></div>
+      <div class="toolwrap" id="bellWrap" style="display:none">
+        <button class="btn bell" id="bellBtn" title="Meus cards no funil" aria-haspopup="true" aria-expanded="false"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z"/><path d="M10.4 19a1.9 1.9 0 0 0 3.2 0"/></svg><span id="bellCnt" class="cnt" style="display:none">0</span></button>
+        <div class="pop" id="bellPop" role="menu"></div>
+      </div>
       <div class="hdr-date"><span class="dot" id="statusDot"></span><span id="statusText">—</span></div>
       <button class="btn btn-ico" id="logoutBtn" title="Sair" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><polyline points="10 8 6 12 10 16"/><line x1="6" y1="12" x2="16" y2="12"/></svg><span>Sair</span></button>
     </div>
@@ -200,6 +340,7 @@ svg text{font-family:inherit}
     <button class="tab" data-tab="expert"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>Performance por Expert</button>
     <button class="tab" data-tab="comercial"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a7 7 0 0 1 14 0"/><rect x="3.3" y="12.5" width="4" height="6" rx="1.6"/><rect x="16.7" y="12.5" width="4" height="6" rx="1.6"/></svg>Time Comercial</button>
     <button class="tab" data-tab="estrategia"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.2"/></svg>Estratégia</button>
+    <button class="tab" data-tab="funil" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5h17l-6.5 7.6V20l-4-2.2v-5.2z"/></svg>Funil de Experts</button>
     <button class="tab" data-tab="admin" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg>Admin</button>
   </div>
 
@@ -295,6 +436,29 @@ svg text{font-family:inherit}
     <div class="scoregrid" id="scoreGrid"></div>
   </div>
 
+  <!-- ===================== ABA FUNIL DE EXPERTS ===================== -->
+  <div class="tabpane" id="tab-funil">
+    <div id="funilNotice"></div>
+    <div class="funil-bar">
+      <button class="btn btn-primary" id="fnNew"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo expert</button>
+      <input type="search" id="fnQ" placeholder="Buscar expert…" aria-label="Buscar expert">
+      <select id="fnResp" aria-label="Filtrar por responsável"></select>
+      <select id="fnNicho" aria-label="Filtrar por nicho"></select>
+      <select id="fnStatus" aria-label="Filtrar por status">
+        <option value="all">Todos os status</option>
+        <option value="late">Só atrasados</option>
+        <option value="due">Vence hoje</option>
+        <option value="mine">Só os meus</option>
+      </select>
+      <div style="flex:1"></div>
+      <button class="btn" id="fnCfgBtn" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9h-.2a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.4-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.9-.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1.1z"/></svg>Prazos e nichos</button>
+      <button class="btn" id="fnArch">Ver arquivados</button>
+    </div>
+    <div class="fk" id="fnKpis"></div>
+    <div class="board" id="fnBoard"></div>
+    <p class="hint" style="margin-top:14px">A movimentação é manual: abra o card e clique em <b>Concluir etapa</b>. O responsável troca sozinho conforme a etapa — nenhum card fica sem dono.</p>
+  </div>
+
   <!-- ===================== ABA ADMIN ===================== -->
   <div class="tabpane" id="tab-admin">
     <div class="section-label">Gerenciar acessos</div>
@@ -310,11 +474,16 @@ svg text{font-family:inherit}
             <select id="acRole">
               <option value="expert">Expert — vê só a própria performance</option>
               <option value="comercial">Comercial — vê só o Time Comercial</option>
-              <option value="admin">Administrador — vê tudo e gerencia acessos</option>
+              <option value="equipe">Equipe interna — vê só o Funil de Experts</option>
+              <option value="admin">Administrador — vê tudo, gerencia acessos e credenciais</option>
             </select>
           </div>
           <div class="adm-field" id="acExpertWrap"><label>Expert vinculado (da planilha)</label>
             <select id="acExpert"></select>
+          </div>
+          <div class="adm-field" id="acPessoaWrap" style="display:none"><label>Pessoa no funil</label>
+            <select id="acPessoa"></select>
+            <span class="fhint muted" style="font-size:11px">Define quais cards do funil caem para esta pessoa. Sem isso ela vê o board, mas nenhum card fica no nome dela.</span>
           </div>
           <div class="login-msg" id="admMsg"></div>
           <button type="submit" class="login-btn" id="acBtn">Criar acesso</button>
@@ -349,6 +518,50 @@ svg text{font-family:inherit}
   </div>
 </div>
 
+<!-- Modal do card do expert -->
+<div class="modal" id="fnModal" role="dialog" aria-modal="true" aria-labelledby="fnMTitle">
+  <div class="modal-card">
+    <div class="modal-h">
+      <div style="min-width:0">
+        <h3 id="fnMTitle">—</h3>
+        <div class="m-sub" id="fnMSub"></div>
+      </div>
+      <button class="x" id="fnMClose" title="Fechar" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="modal-b" id="fnMBody"></div>
+    <div class="modal-f" id="fnMFoot"></div>
+  </div>
+</div>
+
+<!-- Modal de configuração (prazos por etapa + lista de nichos) -->
+<div class="modal" id="cfgModal" role="dialog" aria-modal="true" aria-labelledby="cfgMTitle">
+  <div class="modal-card" style="max-width:600px">
+    <div class="modal-h">
+      <div><h3 id="cfgMTitle">Prazos e nichos</h3><div class="m-sub">Vale para todo o time. Só administradores editam.</div></div>
+      <button class="x" id="cfgMClose" title="Fechar" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="modal-b">
+      <div class="fsec">
+        <div class="fsec-h">Prazo esperado por etapa (dias corridos)</div>
+        <div class="sla-grid" id="cfgSlas"></div>
+        <p class="fhint muted" style="font-size:11.5px;margin:10px 0 0">Prazo <b>0</b> = tem que sair no mesmo dia. O card fica marcado como atrasado quando passa desse tempo parado na etapa.</p>
+      </div>
+      <div class="fsec">
+        <div class="fsec-h">Relatório semanal (etapa 6)</div>
+        <div class="ff" style="max-width:230px"><label>Alertar se ficar sem relatório por</label><div class="inline"><input type="number" id="cfgRep" min="1" max="60" step="1"><span class="muted" style="font-size:13px">dias</span></div></div>
+      </div>
+      <div class="fsec">
+        <div class="fsec-h">Nichos / verticais</div>
+        <div class="inline"><div class="ff"><input id="cfgNichoNew" placeholder="Ex.: apostas esportivas"></div><button class="btn" id="cfgNichoAdd">Adicionar</button></div>
+        <div class="cfg-nichos" id="cfgNichos"></div>
+      </div>
+      <div class="msg" id="cfgMsg"></div>
+    </div>
+    <div class="modal-f"><button class="btn btn-primary" id="cfgSave">Salvar</button><button class="btn" id="cfgCancel">Cancelar</button></div>
+  </div>
+</div>
+
+<div id="fnToasts"></div>
 <div class="tip" id="tip"></div>
 <div class="overlay" id="overlay"><div class="spinner"></div><div class="muted" id="overlayText">Carregando dados das planilhas…</div></div>
 
@@ -705,6 +918,7 @@ function kpiSet(k){
 /* ================= Render por aba ================= */
 function renderAll(){
   if(TAB==='admin') return;
+  if(TAB==='funil'){ fnRender(); return; }
   const f=filtered();
   if(TAB==='financeira') renderFinanceira(f);
   else if(TAB==='expert') renderExpertTab(f);
@@ -824,9 +1038,11 @@ function fieldVis(){
   const show=(id,on)=>document.getElementById(id).classList.toggle('hide',!on);
   const expertRole = ME && ME.role==='expert';
   show('fld-expert', (TAB==='financeira'||TAB==='expert') && !expertRole);
-  show('fld-operacao', TAB!=='comercial' && TAB!=='admin');
+  show('fld-operacao', TAB!=='comercial' && TAB!=='admin' && TAB!=='funil');
   show('fld-colab', TAB==='comercial');
-  document.querySelector('.filters').style.display = (TAB==='admin') ? 'none' : '';
+  /* o funil não vem das planilhas: filtros de período/expert não se aplicam */
+  document.querySelector('.filters').style.display = (TAB==='admin'||TAB==='funil') ? 'none' : '';
+  document.getElementById('noticeBox').style.display = (TAB==='funil') ? 'none' : '';
 }
 document.getElementById('tabs').addEventListener('click',e=>{ const b=e.target.closest('.tab'); if(!b)return;
   TAB=b.dataset.tab;
@@ -834,6 +1050,7 @@ document.getElementById('tabs').addEventListener('click',e=>{ const b=e.target.c
   document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+TAB));
   fieldVis();
   if(TAB==='admin' && ME.role==='admin'){ loadUsers(); }
+  if(TAB==='funil'){ fnStart(); }
   renderAll();
 });
 function onFilterChange(){ readFilters(); renderAll(); }
@@ -866,8 +1083,8 @@ let FIREBASE_CONFIG = {
 const AUTH_ON = !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && window.firebase);
 let ME = {role:null,name:null,expert:null,email:null,uid:null};
 let fbAuth=null, fbDb=null;
-const ROLE_TABS = {admin:['financeira','expert','comercial','estrategia','admin'], expert:['expert'], comercial:['comercial']};
-function roleLabel(r){return r==='admin'?'Administrador':r==='expert'?'Expert':r==='comercial'?'Comercial':(r||'');}
+const ROLE_TABS = {admin:['financeira','expert','comercial','estrategia','funil','admin'], expert:['expert'], comercial:['comercial'], equipe:['funil']};
+function roleLabel(r){return r==='admin'?'Administrador':r==='expert'?'Expert':r==='comercial'?'Comercial':r==='equipe'?'Equipe interna':(r||'');}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fbErr(e){const c=(e&&e.code)||'';const m={'auth/invalid-email':'E-mail inválido.','auth/user-disabled':'Acesso desativado. Fale com o admin.','auth/user-not-found':'E-mail ou senha inválidos.','auth/wrong-password':'E-mail ou senha inválidos.','auth/invalid-credential':'E-mail ou senha inválidos.','auth/too-many-requests':'Muitas tentativas. Aguarde e tente novamente.','auth/email-already-in-use':'Este e-mail já possui acesso.','auth/weak-password':'Senha fraca (mínimo 6 caracteres).','auth/network-request-failed':'Falha de rede. Verifique a internet.','auth/operation-not-allowed':'Ative o login por E-mail/Senha no Firebase.'};return m[c]||(e&&e.message)||'Erro inesperado.';}
 
@@ -892,11 +1109,13 @@ function applyRole(){
   _re.textContent=_dup?'':_rl; _re.style.display=(_dup||!_rl)?'none':'';
   document.getElementById('logoutBtn').style.display='';
   fieldVis();
+  fnStart();
 }
 function applyRoleFilter(){
   if(!AUTH_ON||!ME.role)return;
   if(ME.role==='expert'){const e=ME.expert;DATA.resultados=DATA.resultados.filter(r=>r.expert===e);DATA.trafego=DATA.trafego.filter(r=>r.expert===e);DATA.operacional=DATA.operacional.filter(r=>r.expert===e);DATA.comercial=[];}
   else if(ME.role==='comercial'){DATA.resultados=[];DATA.trafego=[];DATA.operacional=[];}
+  else if(ME.role==='equipe'){DATA.resultados=[];DATA.trafego=[];DATA.operacional=[];DATA.comercial=[];}
 }
 
 /* ---- Admin: gestão de usuários ---- */
@@ -919,24 +1138,29 @@ async function loadUsers(){
   try{
     const snap=await fbDb.collection('users').get();const rows=[];snap.forEach(d=>{const x=d.data();x.uid=d.id;rows.push(x);});
     rows.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
-    let h='<thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Expert</th><th>Status</th><th></th></tr></thead><tbody>';
-    rows.forEach(u=>{const ativo=u.active!==false;h+=`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${roleLabel(u.role)}</td><td>${esc(u.expert||'—')}</td><td>${ativo?'<span class="badge b-esc">Ativo</span>':'<span class="badge b-red">Inativo</span>'}</td><td style="text-align:right;white-space:nowrap"><button class="mini" data-act="toggle" data-uid="${esc(u.uid)}" data-on="${ativo}">${ativo?'Desativar':'Ativar'}</button> <button class="mini" data-act="reset" data-email="${esc(u.email)}">Reset senha</button> <button class="mini" data-act="del" data-uid="${esc(u.uid)}" data-name="${esc(u.name)}">Excluir</button></td></tr>`;});
+    let h='<thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Expert</th><th>Pessoa no funil</th><th>Status</th><th></th></tr></thead><tbody>';
+    rows.forEach(u=>{const ativo=u.active!==false;const _fn=(u.role==='admin'||u.role==='equipe');
+      const _sp=_fn?`<select class="mini" data-act="pessoa" data-uid="${esc(u.uid)}" style="min-width:106px">${['',...Object.keys(FN_PESSOAS)].map(k=>`<option value="${esc(k)}"${(u.pessoa||'')===k?' selected':''}>${k?esc(FN_PESSOAS[k]):'— nenhuma —'}</option>`).join('')}</select>`:'<span class="muted">—</span>';
+      h+=`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${roleLabel(u.role)}</td><td>${esc(u.expert||'—')}</td><td>${_sp}</td><td>${ativo?'<span class="badge b-esc">Ativo</span>':'<span class="badge b-red">Inativo</span>'}</td><td style="text-align:right;white-space:nowrap"><button class="mini" data-act="toggle" data-uid="${esc(u.uid)}" data-on="${ativo}">${ativo?'Desativar':'Ativar'}</button> <button class="mini" data-act="reset" data-email="${esc(u.email)}">Reset senha</button> <button class="mini" data-act="del" data-uid="${esc(u.uid)}" data-name="${esc(u.name)}">Excluir</button></td></tr>`;});
     h+='</tbody>';t.innerHTML=h;
   }catch(err){t.innerHTML='<tbody><tr><td class="neg" style="padding:14px">'+esc(fbErr(err))+'</td></tr></tbody>';}
 }
 async function adminCreate(ev){
   ev.preventDefault();
-  const name=document.getElementById('acName').value.trim(),email=document.getElementById('acEmail').value.trim(),pass=document.getElementById('acPass').value,role=document.getElementById('acRole').value,expert=document.getElementById('acExpert').value.trim();
+  const name=document.getElementById('acName').value.trim(),email=document.getElementById('acEmail').value.trim(),pass=document.getElementById('acPass').value,role=document.getElementById('acRole').value,expert=document.getElementById('acExpert').value.trim(),pessoa=document.getElementById('acPessoa').value;
   if(role==='expert'&&!expert){admMsg('Informe o Expert vinculado (nome igual ao da planilha).');return;}
+  if(role==='equipe'&&!pessoa){admMsg('Escolha a Pessoa no funil (Camily, William, Márcio, Fábio ou Mizag).');return;}
   const b=document.getElementById('acBtn');b.disabled=true;b.textContent='Criando…';admMsg('');
   try{
     const sec=firebase.apps.find(a=>a.name==='secondary')||firebase.initializeApp(FIREBASE_CONFIG,'secondary');
     const cred=await sec.auth().createUserWithEmailAndPassword(email,pass);
-    await fbDb.collection('users').doc(cred.user.uid).set({name:name||email,email:email,role:role,expert:role==='expert'?expert:'',active:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    await fbDb.collection('users').doc(cred.user.uid).set({name:name||email,email:email,role:role,expert:role==='expert'?expert:'',pessoa:(role==='equipe'||role==='admin')?pessoa:'',active:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
     await sec.auth().signOut();
     admMsg('Acesso criado com sucesso ✓',true);
     document.getElementById('admCreate').reset();
-    document.getElementById('acExpertWrap').style.display=document.getElementById('acRole').value==='expert'?'':'none';
+    const _r=document.getElementById('acRole').value;
+    document.getElementById('acExpertWrap').style.display=_r==='expert'?'':'none';
+    document.getElementById('acPessoaWrap').style.display=(_r==='equipe'||_r==='admin')?'':'none';
     loadUsers();
   }catch(err){admMsg(fbErr(err));}
   finally{b.disabled=false;b.textContent='Criar acesso';}
@@ -948,6 +1172,674 @@ async function adminTableClick(e){
     else if(act==='reset'){await fbAuth.sendPasswordResetEmail(btn.dataset.email);admMsg('E-mail de redefinição de senha enviado para '+btn.dataset.email,true);}
     else if(act==='del'){if(!confirm('Excluir o acesso de '+(btn.dataset.name||'')+'? A pessoa perde o acesso ao dashboard.'))return;await fbDb.collection('users').doc(btn.dataset.uid).delete();loadUsers();}
   }catch(err){admMsg(fbErr(err));}
+}
+async function adminTableChange(e){
+  const sel=e.target.closest('select[data-act="pessoa"]');if(!sel)return;
+  try{
+    await fbDb.collection('users').doc(sel.dataset.uid).update({pessoa:sel.value||''});
+    if(sel.dataset.uid===ME.uid){ME.pessoa=sel.value||'';fnRender();}
+    admMsg('Pessoa no funil atualizada ✓',true);
+  }catch(err){admMsg(fbErr(err));}
+}
+
+/* ============================================================
+   FUNIL DE EXPERTS — board de 6 etapas, dono único, alerta de atraso
+   Dados vivem no Firestore (não vêm das planilhas).
+   ============================================================ */
+const FN_PESSOAS={camily:'Camily',william:'William',marcio:'Márcio',fabio:'Fábio',mizag:'Mizag'};
+const FN_ETAPAS=[
+  {n:1,nome:'Entrada / Boas-vindas',dono:'camily',sai:'Dados do expert captados',sla:0},
+  {n:2,nome:'Organização',dono:'camily',sai:'Card, grupo, contrato e credenciais registrados',sla:1},
+  {n:3,nome:'Alinhamento da operação',dono:'william',sai:'Descrição da operação documentada',sla:1},
+  {n:4,nome:'Criação da LP',dono:'marcio',sai:'LP pronta',sla:2},
+  {n:5,nome:'Publicação',dono:'william',sai:'Tráfego ativo',sla:3},
+  {n:6,nome:'Rodando',dono:'william',sai:'Acompanhamento contínuo',sla:null,apoio:'apoio de Fábio e Mizag'}
+];
+const FN_NICHOS_PADRAO=['Apostas esportivas','Cassino ao vivo','Roleta','Aviator / Crash','Slots','Poker','Bingo','E-sports','Outro'];
+const FN_CFG_PADRAO={slas:{1:0,2:1,3:1,4:2,5:3},relatorioDias:7,nichos:FN_NICHOS_PADRAO.slice()};
+
+let FN_CFG=JSON.parse(JSON.stringify(FN_CFG_PADRAO));
+let FN_CARDS=[], FN_UNSUB=null, FN_CFG_UNSUB=null, FN_OPEN=null, FN_ARCH=false, FN_BOOTED=false, FN_FIRST=true, FN_BASE=null;
+const FN_F={q:'',resp:'all',nicho:'all',status:'all'};
+const SVT=()=>firebase.firestore.FieldValue.serverTimestamp();
+
+/* ---- permissões e identidade ---- */
+function fnPode(){return !!(AUTH_ON&&fbDb&&(ME.role==='admin'||ME.role==='equipe'));}
+function fnAdmin(){return ME.role==='admin';}
+function fnEu(){return ME.pessoa||'';}
+function fnNome(k){return FN_PESSOAS[k]||'—';}
+function fnIni(k){return (FN_PESSOAS[k]||'?').charAt(0).toUpperCase();}
+function fnEt(n){return FN_ETAPAS[Math.max(0,Math.min(5,(Number(n)||1)-1))];}
+function fnSla(n){const v=FN_CFG.slas?FN_CFG.slas[n]:undefined;return (v===0||v>0)?Number(v):fnEt(n).sla;}
+function fnCol(){return fbDb.collection('experts_funil');}
+
+/* ---- datas ---- */
+/* aceita Timestamp do Firestore, Date ou string; usa o toDate() do projeto para que
+   "2026-08-15" seja lido como data local — new Date() leria como UTC e voltaria um dia */
+function tsDate(v){if(!v)return null;if(v.toDate)try{return v.toDate();}catch(e){return null;}if(v instanceof Date)return v;return toDate(v);}
+function dias(d){if(!d)return 0;const a=new Date(d.getFullYear(),d.getMonth(),d.getDate()),n=new Date(),b=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.max(0,Math.round((b-a)/864e5));}
+function fnDT(d){d=tsDate(d);if(!d)return '—';return pad(d.getDate())+'/'+pad(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes());}
+function fnD(v){const d=tsDate(v);return d?pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear():'—';}
+function fnPlural(n,s,p){return n+' '+(n===1?s:p);}
+
+/* ---- status de prazo ---- */
+function fnStatusCard(c){
+  const et=Number(c.etapa)||1, d=dias(tsDate(c.etapaDesde));
+  if(et===6){
+    const lim=Number(FN_CFG.relatorioDias)||7;
+    const ref=tsDate(c.ultimoRelatorio)||tsDate(c.etapaDesde);
+    const dr=dias(ref);
+    if(dr>lim)return{cls:'late',dias:d,dr:dr,label:'Relatório atrasado'};
+    if(dr===lim)return{cls:'due',dias:d,dr:dr,label:'Relatório vence hoje'};
+    return{cls:'',dias:d,dr:dr,label:''};
+  }
+  const sla=fnSla(et);
+  if(d>sla)return{cls:'late',dias:d,sla:sla,label:'Atrasado'};
+  if(d===sla)return{cls:'due',dias:d,sla:sla,label:'Vence hoje'};
+  return{cls:'',dias:d,sla:sla,label:''};
+}
+
+/* ---- assinatura em tempo real ---- */
+function fnStart(){
+  if(!fnPode()||FN_BOOTED)return;
+  FN_BOOTED=true;
+  document.getElementById('bellWrap').style.display='';
+  document.getElementById('fnCfgBtn').style.display=fnAdmin()?'':'none';
+  fnFillFiltros(); /* popula os selects já com os padrões, antes da 1ª resposta do Firestore */
+  FN_CFG_UNSUB=fbDb.collection('config').doc('funil').onSnapshot(s=>{
+    const d=s.exists?s.data():null;
+    FN_CFG={
+      slas:Object.assign({},FN_CFG_PADRAO.slas,(d&&d.slas)||{}),
+      relatorioDias:(d&&Number(d.relatorioDias))||FN_CFG_PADRAO.relatorioDias,
+      nichos:(d&&Array.isArray(d.nichos)&&d.nichos.length)?d.nichos.slice():FN_NICHOS_PADRAO.slice()
+    };
+    fnFillFiltros();fnRender();
+  },()=>{});
+  FN_UNSUB=fnCol().onSnapshot(snap=>{
+    const antes=new Map(FN_CARDS.map(c=>[c.id,c.responsavel]));
+    FN_CARDS=[];snap.forEach(doc=>{const x=doc.data();x.id=doc.id;FN_CARDS.push(x);});
+    if(!FN_FIRST)fnAvisaNovos(antes);
+    FN_FIRST=false;
+    fnFillFiltros();fnRender();fnBell();
+    if(FN_OPEN){const c=FN_CARDS.find(x=>x.id===FN_OPEN);if(c&&!document.querySelector('#fnMBody :focus'))fnPaintHeader(c);}
+  },err=>{
+    document.getElementById('funilNotice').innerHTML='<div class="notice">Não foi possível carregar o funil: '+esc(fbErr(err))+' — confira se as regras do Firestore para <code>experts_funil</code> foram publicadas.</div>';
+  });
+}
+function fnStop(){if(FN_UNSUB)FN_UNSUB();if(FN_CFG_UNSUB)FN_CFG_UNSUB();FN_UNSUB=FN_CFG_UNSUB=null;FN_BOOTED=false;}
+
+/* avisa quando um card cai no seu colo (aba aberta) */
+function fnAvisaNovos(antes){
+  const eu=fnEu();if(!eu)return;
+  FN_CARDS.forEach(c=>{
+    if(c.arquivado||c.responsavel!==eu)return;
+    if(!antes.has(c.id)||antes.get(c.id)===eu)return;
+    fnToast(c.nome||'Novo card',(fnEt(c.etapa).nome)+' — agora é com você',c.id);
+  });
+}
+function fnToast(titulo,texto,id){
+  const w=document.getElementById('fnToasts');if(!w)return;
+  const el=document.createElement('button');el.className='toast';
+  el.innerHTML='<div class="t-t">'+esc(titulo)+'</div><div class="t-s">'+esc(texto)+'</div>';
+  el.addEventListener('click',()=>{el.remove();fnGoto(id);});
+  w.appendChild(el);setTimeout(()=>el.remove(),12000);
+  try{if(window.Notification&&Notification.permission==='granted')new Notification(titulo,{body:texto});}catch(e){}
+}
+
+/* ---- filtros ---- */
+function fnFillFiltros(){
+  const r=document.getElementById('fnResp'),n=document.getElementById('fnNicho');
+  const rv=r.value||'all',nv=n.value||'all';
+  r.innerHTML='<option value="all">Todos os responsáveis</option>'+Object.keys(FN_PESSOAS).map(k=>`<option value="${k}">${esc(FN_PESSOAS[k])}</option>`).join('');
+  n.innerHTML='<option value="all">Todos os nichos</option>'+FN_CFG.nichos.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  r.value=[...r.options].some(o=>o.value===rv)?rv:'all';
+  n.value=[...n.options].some(o=>o.value===nv)?nv:'all';
+}
+function fnVisiveis(){
+  const q=FN_F.q.trim().toLowerCase();
+  return FN_CARDS.filter(c=>{
+    if(!!c.arquivado!==FN_ARCH)return false;
+    if(FN_F.resp!=='all'&&c.responsavel!==FN_F.resp)return false;
+    if(FN_F.nicho!=='all'&&c.nicho!==FN_F.nicho)return false;
+    if(q&&!String(c.nome||'').toLowerCase().includes(q))return false;
+    if(FN_F.status==='mine'&&c.responsavel!==fnEu())return false;
+    if(FN_F.status==='late'&&fnStatusCard(c).cls!=='late')return false;
+    if(FN_F.status==='due'&&fnStatusCard(c).cls!=='due')return false;
+    return true;
+  });
+}
+
+/* ---- render do board ---- */
+function fnRender(){
+  if(!document.getElementById('fnBoard'))return;
+  const nb=document.getElementById('funilNotice');
+  if(!fnPode()){
+    nb.innerHTML='<div class="notice">O Funil de Experts precisa de login com perfil <b>Administrador</b> ou <b>Equipe interna</b>.</div>';
+    document.getElementById('fnBoard').innerHTML='';document.getElementById('fnKpis').innerHTML='';return;
+  }
+  if(!fnEu())nb.innerHTML='<div class="notice">Seu acesso ainda não está vinculado a uma <b>pessoa do funil</b>, então nenhum card aparece como seu. Um administrador resolve isso na aba <b>Admin</b>.</div>';
+  else nb.innerHTML='';
+
+  const vis=fnVisiveis(), ativos=FN_CARDS.filter(c=>!c.arquivado);
+  const atras=ativos.filter(c=>fnStatusCard(c).cls==='late').length;
+  const semana=ativos.filter(c=>dias(tsDate(c.dataEntrada))<7).length;
+  const meus=fnEu()?ativos.filter(c=>c.responsavel===fnEu()).length:0;
+  document.getElementById('fnKpis').innerHTML=
+    kpi('Experts ativos',fmtNum(ativos.length),FN_ARCH?'você está vendo os arquivados':'no funil agora')
+    +`<div class="kpi${atras?' alert':''}"><div class="k-label">Atrasados</div><div class="k-val">${fmtNum(atras)}</div><div class="k-sub">${atras?'passaram do prazo da etapa':'nenhum card estourou o prazo'}</div></div>`
+    +kpi('Entraram em 7 dias',fmtNum(semana),'novos experts')
+    +kpi('Rodando',fmtNum(ativos.filter(c=>Number(c.etapa)===6).length),'etapa 6, com tráfego')
+    +kpi('Meus cards',fmtNum(meus),fnEu()?'sob responsabilidade de '+fnNome(fnEu()):'sem pessoa vinculada');
+
+  const board=document.getElementById('fnBoard');
+  board.innerHTML=FN_ETAPAS.map(et=>{
+    const list=vis.filter(c=>(Number(c.etapa)||1)===et.n)
+      .sort((a,b)=>{const sa=fnStatusCard(a),sb=fnStatusCard(b);
+        if((sa.cls==='late')!==(sb.cls==='late'))return sa.cls==='late'?-1:1;
+        return (tsDate(a.etapaDesde)||0)-(tsDate(b.etapaDesde)||0);});
+    const sla=fnSla(et.n);
+    const prazo=et.n===6?'sem prazo fixo':(sla===0?'no mesmo dia':fnPlural(sla,'dia','dias'));
+    return `<section class="col"><div class="col-h">
+      <div class="c-n"><span class="c-step">${et.n}</span><span class="c-t">${esc(et.nome)}</span><span class="c-count">${list.length}</span></div>
+      <div class="c-meta"><span><b>${esc(fnNome(et.dono))}</b>${et.apoio?' · '+esc(et.apoio):''}</span><span>Prazo: ${esc(prazo)}</span></div>
+    </div><div class="col-b">${list.length?list.map(fnCardHTML).join(''):'<div class="col-empty">Nenhum card aqui</div>'}</div></section>`;
+  }).join('');
+}
+function fnCardHTML(c){
+  const s=fnStatusCard(c), et=Number(c.etapa)||1;
+  const tags=[];
+  if(c.nicho)tags.push('<span class="tag">'+esc(c.nicho)+'</span>');
+  if(c.jaOpera)tags.push('<span class="tag">já opera</span>');
+  if(c.temResultado)tags.push('<span class="tag">com resultado</span>');
+  if(et>=3&&!String(c.operacaoAtual||'').trim())tags.push('<span class="tag warn">sem descrição da operação</span>');
+  const tempo=et===6?(s.dr===0?'relatório hoje':'último relatório há '+fnPlural(s.dr,'dia','dias')):(s.dias===0?'entrou hoje':'há '+fnPlural(s.dias,'dia','dias')+' na etapa');
+  return `<button class="fcard ${s.cls}" data-id="${esc(c.id)}">
+    <div class="fc-top"><span class="fc-name">${esc(c.nome||'(sem nome)')}</span>${s.label?`<span class="fc-flag ${s.cls==='due'?'due':''}">${esc(s.label)}</span>`:''}</div>
+    ${tags.length?'<div class="fc-tags">'+tags.join('')+'</div>':''}
+    <div class="fc-foot"><span class="resp"><i class="av">${esc(fnIni(c.responsavel))}</i>${esc(fnNome(c.responsavel))}</span><span class="fc-days">${esc(tempo)}</span></div>
+  </button>`;
+}
+
+/* ---- sino / notificações no painel ---- */
+function fnSeenKey(){return 'fnSeen:'+(ME.uid||'x');}
+function fnSeen(){try{const v=localStorage.getItem(fnSeenKey());
+  if(v)return Number(v);
+  /* primeira visita: marca agora, senão todo card antigo apareceria como "novo" */
+  const n=Date.now();localStorage.setItem(fnSeenKey(),String(n));return n;}catch(e){return Date.now();}}
+function fnMeus(){const eu=fnEu();return eu?FN_CARDS.filter(c=>!c.arquivado&&c.responsavel===eu):[];}
+function fnPendentes(){
+  const seen=fnSeen();
+  return fnMeus().map(c=>{const s=fnStatusCard(c),d=tsDate(c.etapaDesde);
+    return{c:c,s:s,novo:!!(d&&d.getTime()>seen)};})
+    .filter(x=>x.novo||x.s.cls==='late'||x.s.cls==='due')
+    .sort((a,b)=>(b.s.cls==='late')-(a.s.cls==='late'));
+}
+function fnBell(){
+  const w=document.getElementById('bellWrap');if(!w)return;
+  w.style.display=fnPode()?'':'none';
+  const n=fnPendentes().length,el=document.getElementById('bellCnt');
+  el.textContent=n>99?'99+':n;el.style.display=n?'flex':'none';
+}
+function fnBellPop(){
+  const pop=document.getElementById('bellPop'),itens=fnPendentes();
+  let h='<div class="pop-h">Meus cards — '+esc(fnEu()?fnNome(fnEu()):'sem pessoa vinculada')+'</div>';
+  if(!fnEu())h+='<div class="pop-empty">Seu acesso não está vinculado a uma pessoa do funil. Peça a um administrador para vincular na aba Admin.</div>';
+  else if(!itens.length)h+='<div class="pop-empty">Nada pendente. Todos os seus cards estão dentro do prazo.</div>';
+  else h+=itens.map(x=>`<button class="pop-i ${x.s.cls}" data-id="${esc(x.c.id)}"><div class="p-n">${esc(x.c.nome||'(sem nome)')}</div><div class="p-s">Etapa ${Number(x.c.etapa)||1} · ${esc(fnEt(x.c.etapa).nome)} — ${esc(x.s.label||(x.novo?'novo com você':''))}</div></button>`).join('');
+  const total=fnMeus().length;
+  h+=`<div class="pop-h" style="border-top:1px solid var(--grid);margin-top:4px">${total} card(s) no seu nome no total</div>`;
+  pop.innerHTML=h;
+  try{localStorage.setItem(fnSeenKey(),String(Date.now()));}catch(e){}
+  try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission();}catch(e){}
+}
+function fnGoto(id){
+  if(TAB!=='funil'){const b=document.querySelector('#tabs .tab[data-tab="funil"]');if(b)b.click();}
+  document.getElementById('bellPop').classList.remove('on');
+  fnOpen(id);
+}
+
+/* ---- modal do card ---- */
+function fnOpen(id){
+  const novo=!id;
+  const c=novo?{etapa:1,responsavel:'camily',dataEntrada:isoOf(new Date()),grupoStatus:'pendente'}:FN_CARDS.find(x=>x.id===id);
+  if(!c){alert('Card não encontrado.');return;}
+  FN_OPEN=novo?null:id;
+  document.getElementById('fnMBody').innerHTML=fnModalHTML(c,novo);
+  fnPaintHeader(c,novo);
+  document.getElementById('fnMFoot').innerHTML=novo
+    ? '<button class="btn btn-primary" id="fnCreate">Criar card</button><button class="btn" id="fnCancel">Cancelar</button><span class="msg" id="fnMsg"></span>'
+    : fnFootHTML(c);
+  document.getElementById('fnModal').classList.add('on');
+  document.body.style.overflow='hidden';
+  fnMarcaSalvo();
+  const f=document.getElementById('f_nome');if(f&&novo)setTimeout(()=>f.focus(),50);
+  if(!novo){fnLoadAnexos(id);fnLoadRelatorios(id);fnLoadHist(id);}
+}
+/* guarda de alterações não salvas: o texto da operação é longo, ninguém pode perdê-lo por fechar sem querer */
+function fnMarcaSalvo(){FN_BASE=JSON.stringify(fnLeForm());}
+function fnSujo(){return FN_BASE!==null&&JSON.stringify(fnLeForm())!==FN_BASE;}
+function fnClose(forcar){
+  if(!forcar&&fnSujo()&&!confirm('Há alterações não salvas neste card. Fechar mesmo assim e perder o que foi digitado?'))return;
+  document.getElementById('fnModal').classList.remove('on');document.body.style.overflow='';FN_OPEN=null;FN_BASE=null;
+}
+function fnPaintHeader(c,novo){
+  document.getElementById('fnMTitle').textContent=novo?'Novo expert':(c.nome||'(sem nome)');
+  if(novo){document.getElementById('fnMSub').innerHTML='Entra na etapa 1 — <b>Entrada / Boas-vindas</b>, sob responsabilidade de <b>Camily</b>.';return;}
+  const s=fnStatusCard(c),et=fnEt(c.etapa);
+  document.getElementById('fnMSub').innerHTML=
+    `<span><b>Etapa ${et.n}</b> · ${esc(et.nome)}</span>`
+    +`<span class="resp"><i class="av">${esc(fnIni(c.responsavel))}</i>${esc(fnNome(c.responsavel))}</span>`
+    +`<span>nesta etapa desde ${esc(fnD(c.etapaDesde))} (${esc(s.dias===0?'hoje':fnPlural(s.dias,'dia','dias'))})</span>`
+    +`<span>entrou em ${esc(fnD(c.dataEntrada))}</span>`
+    +(s.label?`<span class="fc-flag ${s.cls==='due'?'due':''}">${esc(s.label)}</span>`:'');
+}
+function fnFootHTML(c){
+  const et=Number(c.etapa)||1;
+  let h='<button class="btn btn-primary" id="fnSave">Salvar alterações</button>';
+  if(!c.arquivado){
+    if(et<6)h+=`<button class="btn" id="fnNext">Concluir etapa ${et} → ir para ${et+1}</button>`;
+    if(fnAdmin()&&et>1)h+='<button class="btn" id="fnPrev">Voltar etapa</button>';
+  }
+  if(fnAdmin())h+=`<button class="btn" id="fnArchive">${c.arquivado?'Reativar card':'Arquivar'}</button>`;
+  h+='<span class="msg" id="fnMsg"></span>';
+  return h;
+}
+function fnSel(id,label,val,opts,dis){
+  return `<div class="ff"><label>${label}</label><select id="${id}"${dis?' disabled':''}>${opts.map(o=>`<option value="${esc(o[0])}"${String(val)===String(o[0])?' selected':''}>${esc(o[1])}</option>`).join('')}</select></div>`;
+}
+function fnInp(id,label,val,tipo,ph,dis,hint){
+  return `<div class="ff"><label>${label}</label><input id="${id}" type="${tipo||'text'}" value="${esc(val==null?'':val)}"${ph?` placeholder="${esc(ph)}"`:''}${dis?' disabled':''}>${hint?`<span class="fhint">${hint}</span>`:''}</div>`;
+}
+function fnModalHTML(c,novo){
+  const et=Number(c.etapa)||1, ro=!!c.arquivado;
+  const nichos=[['','— selecione —']].concat(FN_CFG.nichos.map(x=>[x,x]));
+  const simnao=[['nao','Não'],['sim','Sim']];
+  let h='';
+  h+=`<div class="fsec${et===1?' now':''}"><div class="fsec-h"><span class="st">Etapa 1</span>Dados básicos</div>
+    <div class="frow">
+      ${fnInp('f_nome','Nome do expert <span class="req">*</span>',c.nome,'text','',ro)}
+      ${fnInp('f_entrada','Data de entrada',c.dataEntrada,'date','',ro)}
+      ${fnSel('f_nicho','Nicho / vertical <span class="req">*</span>',c.nicho||'',nichos,ro)}
+      ${fnSel('f_opera','Já opera hoje?',c.jaOpera?'sim':'nao',simnao,ro)}
+      ${fnSel('f_result','Tem resultado comprovado hoje?',c.temResultado?'sim':'nao',simnao,ro)}
+    </div></div>`;
+  if(novo)return h+'<p class="hint" style="margin:16px 0 0">Depois de criar, o card abre com todos os campos das etapas seguintes.</p>';
+
+  h+=`<div class="fsec${et===2?' now':''}"><div class="fsec-h"><span class="st">Etapa 2</span>Organização</div>
+    <div class="frow">
+      ${fnInp('f_linkcard','Link do card / grupo',c.linkCard,'url','https://…',ro)}
+      ${fnInp('f_contrato','Contrato / acordo (link)',c.contratoLink,'url','https://…',ro)}
+    </div>
+    <div class="frow one" style="margin-top:11px">
+      ${fnInp('f_contratoObs','Observação do contrato',c.contratoObs,'text','Ex.: 30% revshare, assinado em 12/03',ro)}
+    </div>
+    <div class="ff" style="margin-top:11px"><label>Anexos do contrato</label>
+      <div id="fnAnexosContrato" class="thumbs"><span class="fhint">Carregando…</span></div>
+      ${ro?'':'<div style="margin-top:8px"><label class="btn filebtn">Anexar arquivo (até 700 KB)<input type="file" id="f_upContrato" accept="image/*,application/pdf"></label> <span class="fhint" id="f_upContratoMsg"></span></div>'}
+      <span class="fhint">Para arquivos maiores, use o campo de link acima (Drive, Dropbox…).</span>
+    </div>
+    <div class="ff" style="margin-top:14px"><label>Login e senha da zona de jogo</label>${fnCredHTML(c)}</div>
+  </div>`;
+
+  h+=`<div class="fsec${et===3?' now':''}"><div class="fsec-h"><span class="st">Etapa 3</span>Como o expert opera hoje</div>
+    <div class="ff"><label>Descrição da operação atual <span class="req">*</span></label>
+      <textarea id="f_operacao" style="min-height:150px" placeholder="Como ele roda a estrutura atual, por que funciona e qual o resultado de hoje."${ro?' disabled':''}>${esc(c.operacaoAtual||'')}</textarea>
+      <span class="fhint">Este texto é o histórico da operação: é o que qualquer pessoa do time lê antes de mexer em qualquer coisa. Ele precisa existir sempre.</span>
+    </div></div>`;
+
+  h+=`<div class="fsec${et===4?' now':''}"><div class="fsec-h"><span class="st">Etapa 4</span>Landing page</div>
+    <div class="frow">
+      ${fnInp('f_lpModelo','LP de referência (link)',c.lpModelo,'url','https://…',ro)}
+      ${fnInp('f_lpDestino','Link de destino do botão',c.lpLinkDestino,'url','https://…',ro)}
+      ${fnSel('f_grupo','Status do grupo',c.grupoStatus||'pendente',[['pendente','Pendente'],['pronto','Pronto']],ro)}
+    </div>
+    <div class="ff" style="margin-top:12px"><label>Fotos do expert</label>
+      <div id="fnFotos" class="thumbs"><span class="fhint">Carregando…</span></div>
+      ${ro?'':'<div style="margin-top:8px"><label class="btn filebtn">Enviar fotos<input type="file" id="f_upFoto" accept="image/*" multiple></label> <span class="fhint" id="f_upFotoMsg"></span></div>'}
+      <span class="fhint">As imagens são reduzidas automaticamente antes de salvar.</span>
+    </div></div>`;
+
+  h+=`<div class="fsec${et===6?' now':''}"><div class="fsec-h"><span class="st">Etapa 6</span>Relatórios semanais</div>
+    <div id="fnRelatorios"><span class="fhint">Carregando…</span></div>
+    ${ro?'':`<div style="margin-top:12px;border:1px solid var(--border);border-radius:11px;padding:12px 13px">
+      <div class="frow">
+        ${fnInp('r_semana','Semana (início)',isoOf(new Date()),'date')}
+        ${fnInp('r_invest','Investimento (R$)','','text','0,00')}
+        ${fnInp('r_receita','Receita (R$)','','text','0,00')}
+        ${fnInp('r_ftds','FTDs','','text','0')}
+      </div>
+      <div class="ff" style="margin-top:11px"><label>Feedback qualitativo</label><textarea id="r_texto" style="min-height:84px" placeholder="O que aconteceu na semana, o que travou, o que vem agora."></textarea></div>
+      <div style="margin-top:10px"><button class="btn" id="fnAddRel">Adicionar relatório da semana</button> <span class="msg" id="fnRelMsg"></span></div>
+    </div>`}
+  </div>`;
+
+  h+=`<div class="fsec"><div class="fsec-h">Histórico do card</div><ul class="hist" id="fnHist"><li><span class="fhint">Carregando…</span></li></ul></div>`;
+  return h;
+}
+function fnCredHTML(c){
+  if(!fnAdmin())return `<div class="cred"><div class="cred-lock">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+    <span>Dado sensível — visível apenas para administradores. <b>${c.temCredenciais?'Credenciais cadastradas':'Ainda não cadastradas'}</b></span></div>
+    <div class="mask" style="margin-top:8px">•••••••••••• / ••••••••••••</div></div>`;
+  return `<div class="cred">
+    <div class="cred-lock"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+      <span>${c.temCredenciais?'Credenciais cadastradas.':'Nenhuma credencial cadastrada.'} Toda revelação fica registrada em log com seu nome e a data.</span></div>
+    <div id="fnCredArea" style="margin-top:10px"><button class="btn" id="fnCredShow" type="button">${c.temCredenciais?'Revelar credenciais':'Cadastrar credenciais'}</button> <span class="msg" id="fnCredMsg"></span></div>
+  </div>`;
+}
+
+/* ---- credenciais (somente admin, com log de acesso) ---- */
+function fnCredDoc(id){return fnCol().doc(id).collection('secure').doc('credenciais');}
+async function fnCredReveal(){
+  if(!fnAdmin()||!FN_OPEN)return;
+  const area=document.getElementById('fnCredArea'),msg=(t,k)=>{const m=document.getElementById('fnCredMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}};
+  msg('Carregando…');
+  try{
+    const s=await fnCredDoc(FN_OPEN).get();
+    const d=s.exists?s.data():{};
+    const card=FN_CARDS.find(x=>x.id===FN_OPEN)||{};
+    if(s.exists){
+      fbDb.collection('credLog').add({cardId:FN_OPEN,expert:card.nome||'',uid:ME.uid,nome:ME.name||'',email:ME.email||'',em:SVT()}).catch(()=>{});
+    }
+    area.innerHTML=`<div class="frow">
+      ${fnInp('f_credLogin','Login',d.login||'','text')}
+      ${fnInp('f_credSenha','Senha',d.senha||'','text')}
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-primary" id="fnCredSave" type="button">Salvar credenciais</button> <button class="btn" id="fnCredHide" type="button">Ocultar</button> <span class="msg" id="fnCredMsg"></span></div>
+    ${d.updatedAt?`<div class="fhint" style="margin-top:8px">Última atualização: ${esc(fnDT(d.updatedAt))} por ${esc(d.updatedBy||'—')}</div>`:''}`;
+  }catch(err){msg(fbErr(err),'err');}
+}
+async function fnCredSave(){
+  if(!fnAdmin()||!FN_OPEN)return;
+  const msg=(t,k)=>{const m=document.getElementById('fnCredMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}};
+  const login=document.getElementById('f_credLogin').value.trim(),senha=document.getElementById('f_credSenha').value;
+  msg('Salvando…');
+  try{
+    await fnCredDoc(FN_OPEN).set({login:login,senha:senha,updatedAt:SVT(),updatedBy:ME.name||ME.email||''},{merge:true});
+    const tem=!!(login||senha);
+    await fnCol().doc(FN_OPEN).update({temCredenciais:tem,updatedAt:SVT()});
+    await fnHistAdd(FN_OPEN,'cred','Credenciais da zona de jogo atualizadas');
+    msg('Credenciais salvas ✓','ok');
+  }catch(err){msg(fbErr(err),'err');}
+}
+
+/* ---- anexos e fotos (guardados no próprio Firestore, sem custo de Storage) ---- */
+function fnAnxCol(id){return fnCol().doc(id).collection('anexos');}
+async function fnLoadAnexos(id){
+  const cont=document.getElementById('fnAnexosContrato'),fot=document.getElementById('fnFotos');
+  try{
+    const snap=await fnAnxCol(id).get();const arr=[];snap.forEach(d=>{const x=d.data();x.id=d.id;arr.push(x);});
+    const paint=(el,tipo)=>{if(!el)return;const l=arr.filter(a=>a.tipo===tipo);
+      el.innerHTML=l.length?l.map(a=>`<div class="thumb">${String(a.mime||'').startsWith('image/')?`<img src="${a.data}" alt="${esc(a.nome)}">`:`<div class="fileico">${esc(a.nome||'arquivo')}</div>`}<button class="del" data-anx="${esc(a.id)}" title="Remover">&times;</button></div>`).join(''):'<span class="fhint">Nenhum arquivo.</span>';};
+    paint(cont,'contrato');paint(fot,'foto');
+  }catch(err){if(cont)cont.innerHTML='<span class="fhint">'+esc(fbErr(err))+'</span>';if(fot)fot.innerHTML='';}
+}
+function fnShrink(file,maxPx,q){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onerror=()=>rej(new Error('Não foi possível ler o arquivo.'));
+    fr.onload=()=>{
+      if(!String(file.type).startsWith('image/')){
+        if(file.size>700*1024)return rej(new Error('Arquivo grande demais (máx. 700 KB). Use o campo de link.'));
+        return res(fr.result);
+      }
+      const img=new Image();
+      img.onerror=()=>rej(new Error('Imagem inválida.'));
+      img.onload=()=>{
+        let w=img.width,h=img.height;const m=Math.max(w,h);
+        if(m>maxPx){w=Math.round(w*maxPx/m);h=Math.round(h*maxPx/m);}
+        const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        const out=cv.toDataURL('image/jpeg',q);
+        if(out.length>900000)return rej(new Error('Imagem pesada demais mesmo após reduzir.'));
+        res(out);
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+async function fnUpload(files,tipo,msgId){
+  if(!FN_OPEN||!files||!files.length)return;
+  const m=document.getElementById(msgId),set=t=>{if(m)m.textContent=t||'';};
+  set('Enviando…');
+  try{
+    for(const f of files){
+      const data=await fnShrink(f,1200,.72);
+      await fnAnxCol(FN_OPEN).add({tipo:tipo,nome:f.name||'arquivo',mime:f.type||'',data:data,por:ME.name||ME.email||'',em:SVT()});
+    }
+    set('Enviado ✓');await fnLoadAnexos(FN_OPEN);
+  }catch(err){set(err.message||fbErr(err));}
+}
+
+/* ---- relatórios semanais ---- */
+function fnRelCol(id){return fnCol().doc(id).collection('relatorios');}
+async function fnLoadRelatorios(id){
+  const el=document.getElementById('fnRelatorios');if(!el)return;
+  try{
+    const snap=await fnRelCol(id).orderBy('semana','desc').limit(20).get();
+    const arr=[];snap.forEach(d=>{const x=d.data();x.id=d.id;arr.push(x);});
+    el.innerHTML=arr.length?arr.map(r=>{
+      const nums=[];
+      if(r.investimento)nums.push(`<span>Investimento <b>${fmtBRL(r.investimento)}</b></span>`);
+      if(r.receita)nums.push(`<span>Receita <b>${fmtBRL(r.receita)}</b></span>`);
+      if(r.ftds)nums.push(`<span>FTDs <b>${fmtNum(r.ftds)}</b></span>`);
+      return `<div class="rep"><div class="rep-h"><b>Semana de ${esc(fnD(r.semana))}</b><span>por ${esc(r.por||'—')}</span><span>${esc(fnDT(r.em))}</span></div>
+        ${nums.length?'<div class="rep-nums">'+nums.join('')+'</div>':''}
+        <div class="rep-txt">${esc(r.texto||'')}</div></div>`;
+    }).join(''):'<span class="fhint">Nenhum relatório ainda. O William preenche um por semana enquanto o card estiver rodando.</span>';
+  }catch(err){el.innerHTML='<span class="fhint">'+esc(fbErr(err))+'</span>';}
+}
+async function fnAddRel(){
+  if(!FN_OPEN)return;
+  const m=document.getElementById('fnRelMsg'),set=(t,k)=>{if(m){m.textContent=t||'';m.className='msg '+(k||'');}};
+  const semana=document.getElementById('r_semana').value;
+  const texto=document.getElementById('r_texto').value.trim();
+  if(!semana){set('Informe a semana.','err');return;}
+  if(!texto){set('Escreva o feedback da semana.','err');return;}
+  set('Salvando…');
+  try{
+    await fnRelCol(FN_OPEN).add({semana:semana,investimento:toNum(document.getElementById('r_invest').value),
+      receita:toNum(document.getElementById('r_receita').value),ftds:toNum(document.getElementById('r_ftds').value),
+      texto:texto,por:ME.name||ME.email||'',em:SVT()});
+    await fnCol().doc(FN_OPEN).update({ultimoRelatorio:SVT(),updatedAt:SVT()});
+    await fnHistAdd(FN_OPEN,'relatorio','Relatório da semana de '+fnD(semana)+' adicionado');
+    document.getElementById('r_texto').value='';['r_invest','r_receita','r_ftds'].forEach(i=>document.getElementById(i).value='');
+    set('Relatório salvo ✓','ok');fnLoadRelatorios(FN_OPEN);fnLoadHist(FN_OPEN);
+  }catch(err){set(fbErr(err),'err');}
+}
+
+/* ---- histórico ---- */
+function fnHistCol(id){return fnCol().doc(id).collection('historico');}
+function fnHistAdd(id,tipo,texto){
+  return fnHistCol(id).add({tipo:tipo,texto:texto,por:ME.name||ME.email||'',uid:ME.uid||'',em:SVT()}).catch(()=>{});
+}
+async function fnLoadHist(id){
+  const el=document.getElementById('fnHist');if(!el)return;
+  try{
+    const snap=await fnHistCol(id).orderBy('em','desc').limit(40).get();
+    const arr=[];snap.forEach(d=>arr.push(d.data()));
+    el.innerHTML=arr.length?arr.map(h=>`<li><span class="h-when">${esc(fnDT(h.em))}</span><span>${esc(h.texto||'')} <span class="muted">— ${esc(h.por||'')}</span></span></li>`).join('')
+      :'<li><span class="fhint">Sem movimentações registradas.</span></li>';
+  }catch(err){el.innerHTML='<li><span class="fhint">'+esc(fbErr(err))+'</span></li>';}
+}
+
+/* ---- gravação ---- */
+function fnLeForm(){
+  const g=id=>{const e=document.getElementById(id);return e?e.value:'';};
+  return{
+    nome:g('f_nome').trim(),
+    dataEntrada:g('f_entrada'),
+    nicho:g('f_nicho'),
+    jaOpera:g('f_opera')==='sim',
+    temResultado:g('f_result')==='sim',
+    linkCard:g('f_linkcard').trim(),
+    contratoLink:g('f_contrato').trim(),
+    contratoObs:g('f_contratoObs').trim(),
+    operacaoAtual:g('f_operacao'),
+    lpModelo:g('f_lpModelo').trim(),
+    lpLinkDestino:g('f_lpDestino').trim(),
+    grupoStatus:g('f_grupo')||'pendente'
+  };
+}
+function fnMsg(t,k){const m=document.getElementById('fnMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}}
+async function fnCreate(){
+  const nome=document.getElementById('f_nome').value.trim(),nicho=document.getElementById('f_nicho').value;
+  if(!nome){fnMsg('Informe o nome do expert.','err');return;}
+  if(!nicho){fnMsg('Escolha o nicho.','err');return;}
+  if(FN_CARDS.some(c=>!c.arquivado&&String(c.nome||'').toLowerCase()===nome.toLowerCase())
+     &&!confirm('Já existe um card ativo com o nome "'+nome+'". Criar assim mesmo?'))return;
+  fnMsg('Criando…');
+  try{
+    const d=fnLeForm();
+    d.etapa=1;d.responsavel=fnEt(1).dono;d.etapaDesde=SVT();d.arquivado=false;d.temCredenciais=false;
+    d.criadoPor=ME.name||ME.email||'';d.createdAt=SVT();d.updatedAt=SVT();
+    const ref=await fnCol().add(d);
+    await fnHistAdd(ref.id,'criado','Card criado na etapa 1 — responsável: '+fnNome(fnEt(1).dono));
+    fnClose(true);setTimeout(()=>fnOpen(ref.id),260);
+  }catch(err){fnMsg(fbErr(err),'err');}
+}
+async function fnSave(){
+  if(!FN_OPEN)return;
+  const d=fnLeForm();
+  if(!d.nome){fnMsg('O nome do expert não pode ficar vazio.','err');return;}
+  fnMsg('Salvando…');
+  try{
+    d.updatedAt=SVT();d.updatedPor=ME.name||ME.email||'';
+    await fnCol().doc(FN_OPEN).update(d);
+    fnMarcaSalvo();
+    fnMsg('Salvo ✓','ok');setTimeout(()=>fnMsg(''),2600);
+  }catch(err){fnMsg(fbErr(err),'err');}
+}
+function fnFaltando(d,etapa,card){
+  const f=[];
+  if(etapa===1){if(!d.nome)f.push('nome do expert');if(!d.nicho)f.push('nicho');if(!d.dataEntrada)f.push('data de entrada');}
+  if(etapa===2){if(!d.linkCard)f.push('link do card/grupo');if(!d.contratoLink&&!d.contratoObs)f.push('contrato (link ou observação)');if(!card.temCredenciais)f.push('login/senha da zona de jogo');}
+  if(etapa===3){if(!String(d.operacaoAtual||'').trim())f.push('descrição de como o expert opera hoje');}
+  if(etapa===4){if(!d.lpLinkDestino)f.push('link de destino do botão da LP');if(d.grupoStatus!=='pronto')f.push('status do grupo em "pronto"');}
+  return f;
+}
+async function fnMove(delta){
+  if(!FN_OPEN)return;
+  const card=FN_CARDS.find(c=>c.id===FN_OPEN);if(!card)return;
+  const de=Number(card.etapa)||1, para=de+delta;
+  if(para<1||para>6)return;
+  const d=fnLeForm();
+  if(delta>0){
+    const falta=fnFaltando(d,de,card);
+    if(falta.length){
+      const txt='Para concluir a etapa '+de+' ainda falta: '+falta.join(', ')+'.';
+      if(!fnAdmin()){fnMsg(txt,'err');return;}
+      if(!confirm(txt+'\n\nVocê é administrador e pode concluir assim mesmo. Seguir?'))return;
+    }
+  }
+  const novoDono=fnEt(para).dono;
+  fnMsg(delta>0?'Concluindo etapa…':'Voltando etapa…');
+  try{
+    d.etapa=para;d.responsavel=novoDono;d.etapaDesde=SVT();d.updatedAt=SVT();d.updatedPor=ME.name||ME.email||'';
+    if(para===6&&de<6)d.entrouRodandoEm=SVT();
+    await fnCol().doc(FN_OPEN).update(d);
+    fnMarcaSalvo();
+    await fnHistAdd(FN_OPEN,'etapa',(delta>0?'Etapa concluída: ':'Card devolvido: ')+de+' → '+para+' ('+fnEt(para).nome+') · responsável agora é '+fnNome(novoDono));
+    fnMsg(delta>0?'Etapa concluída ✓ agora é com '+fnNome(novoDono):'Card devolvido para '+fnNome(novoDono),'ok');
+    const c2=Object.assign({},card,{etapa:para,responsavel:novoDono,etapaDesde:new Date()});
+    fnPaintHeader(c2);document.getElementById('fnMFoot').innerHTML=fnFootHTML(c2);
+    fnLoadHist(FN_OPEN);
+  }catch(err){fnMsg(fbErr(err),'err');}
+}
+async function fnArchive(){
+  if(!FN_OPEN||!fnAdmin())return;
+  const card=FN_CARDS.find(c=>c.id===FN_OPEN);if(!card)return;
+  const arq=!card.arquivado;
+  if(arq&&!confirm('Arquivar o card de "'+(card.nome||'')+'"? Ele sai do board mas o histórico continua guardado.'))return;
+  try{
+    await fnCol().doc(FN_OPEN).update({arquivado:arq,updatedAt:SVT()});
+    await fnHistAdd(FN_OPEN,'arquivo',arq?'Card arquivado':'Card reativado');
+    fnClose(true);
+  }catch(err){fnMsg(fbErr(err),'err');}
+}
+
+/* ---- modal de configuração (prazos + nichos) ---- */
+let CFG_NICHOS=[];
+function fnCfgOpen(){
+  if(!fnAdmin())return;
+  CFG_NICHOS=FN_CFG.nichos.slice();
+  document.getElementById('cfgSlas').innerHTML=FN_ETAPAS.filter(e=>e.n<6).map(e=>
+    `<div class="ff"><label>${e.n}. ${esc(e.nome)}</label><input type="number" min="0" max="60" step="1" id="cfg_sla_${e.n}" value="${fnSla(e.n)}"></div>`).join('');
+  document.getElementById('cfgRep').value=FN_CFG.relatorioDias;
+  fnCfgNichos();
+  document.getElementById('cfgMsg').textContent='';
+  document.getElementById('cfgModal').classList.add('on');
+}
+function fnCfgNichos(){
+  document.getElementById('cfgNichos').innerHTML=CFG_NICHOS.map((x,i)=>
+    `<span class="chip">${esc(x)}<button type="button" data-i="${i}" title="Remover">&times;</button></span>`).join('')
+    ||'<span class="fhint">Nenhum nicho na lista — adicione ao menos um.</span>';
+}
+async function fnCfgSave(){
+  const m=document.getElementById('cfgMsg'),set=(t,k)=>{m.textContent=t||'';m.className='msg '+(k||'');};
+  if(!CFG_NICHOS.length){set('Adicione ao menos um nicho.','err');return;}
+  const slas={};FN_ETAPAS.filter(e=>e.n<6).forEach(e=>{slas[e.n]=Math.max(0,Number(document.getElementById('cfg_sla_'+e.n).value)||0);});
+  set('Salvando…');
+  try{
+    await fbDb.collection('config').doc('funil').set({slas:slas,relatorioDias:Math.max(1,Number(document.getElementById('cfgRep').value)||7),
+      nichos:CFG_NICHOS,updatedAt:SVT(),updatedPor:ME.name||ME.email||''},{merge:true});
+    set('Salvo ✓','ok');setTimeout(()=>document.getElementById('cfgModal').classList.remove('on'),700);
+  }catch(err){set(fbErr(err),'err');}
+}
+
+/* ---- listeners ---- */
+function fnBind(){
+  const $=id=>document.getElementById(id);
+  $('fnNew').addEventListener('click',()=>fnOpen(null));
+  $('fnQ').addEventListener('input',e=>{FN_F.q=e.target.value;fnRender();});
+  $('fnResp').addEventListener('change',e=>{FN_F.resp=e.target.value;fnRender();});
+  $('fnNicho').addEventListener('change',e=>{FN_F.nicho=e.target.value;fnRender();});
+  $('fnStatus').addEventListener('change',e=>{FN_F.status=e.target.value;fnRender();});
+  $('fnArch').addEventListener('click',e=>{FN_ARCH=!FN_ARCH;e.target.textContent=FN_ARCH?'Ver ativos':'Ver arquivados';fnRender();});
+  $('fnCfgBtn').addEventListener('click',fnCfgOpen);
+  $('fnBoard').addEventListener('click',e=>{const b=e.target.closest('.fcard');if(b)fnOpen(b.dataset.id);});
+
+  $('bellBtn').addEventListener('click',e=>{e.stopPropagation();const p=$('bellPop');const on=p.classList.contains('on');
+    if(on){p.classList.remove('on');$('bellBtn').setAttribute('aria-expanded','false');}
+    else{fnBellPop();p.classList.add('on');$('bellBtn').setAttribute('aria-expanded','true');fnBell();}});
+  $('bellPop').addEventListener('click',e=>{const b=e.target.closest('.pop-i');if(b)fnGoto(b.dataset.id);});
+  document.addEventListener('click',e=>{if(!e.target.closest('#bellWrap'))$('bellPop').classList.remove('on');});
+
+  $('fnMClose').addEventListener('click',()=>fnClose()); /* sem repassar o Event, senão viraria "forçar" */
+  $('fnModal').addEventListener('click',e=>{if(e.target.id==='fnModal')fnClose();});
+  $('cfgMClose').addEventListener('click',()=>$('cfgModal').classList.remove('on'));
+  $('cfgCancel').addEventListener('click',()=>$('cfgModal').classList.remove('on'));
+  $('cfgModal').addEventListener('click',e=>{if(e.target.id==='cfgModal')$('cfgModal').classList.remove('on');});
+  $('cfgSave').addEventListener('click',fnCfgSave);
+  $('cfgNichoAdd').addEventListener('click',()=>{const i=$('cfgNichoNew'),v=i.value.trim();
+    if(!v)return; if(CFG_NICHOS.some(x=>x.toLowerCase()===v.toLowerCase())){i.value='';return;}
+    CFG_NICHOS.push(v);i.value='';fnCfgNichos();});
+  $('cfgNichoNew').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('cfgNichoAdd').click();}});
+  $('cfgNichos').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b)return;CFG_NICHOS.splice(Number(b.dataset.i),1);fnCfgNichos();});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
+    if($('cfgModal').classList.contains('on'))$('cfgModal').classList.remove('on');
+    else if($('fnModal').classList.contains('on'))fnClose();});
+
+  /* delegação dentro do modal do card (o conteúdo é recriado a cada abertura) */
+  $('fnModal').addEventListener('click',e=>{
+    const t=e.target.closest('button');if(!t)return;
+    if(t.id==='fnCreate')fnCreate();
+    else if(t.id==='fnSave')fnSave();
+    else if(t.id==='fnCancel')fnClose();
+    else if(t.id==='fnNext')fnMove(1);
+    else if(t.id==='fnPrev')fnMove(-1);
+    else if(t.id==='fnArchive')fnArchive();
+    else if(t.id==='fnCredShow')fnCredReveal();
+    else if(t.id==='fnCredSave')fnCredSave();
+    else if(t.id==='fnCredHide'){const c=FN_CARDS.find(x=>x.id===FN_OPEN);if(c)document.getElementById('fnCredArea').parentElement.outerHTML=fnCredHTML(c);}
+    else if(t.id==='fnAddRel')fnAddRel();
+    else if(t.dataset.anx){if(confirm('Remover este arquivo?'))fnAnxCol(FN_OPEN).doc(t.dataset.anx).delete().then(()=>fnLoadAnexos(FN_OPEN));}
+  });
+  $('fnModal').addEventListener('change',e=>{
+    if(e.target.id==='f_upFoto')fnUpload(e.target.files,'foto','f_upFotoMsg');
+    else if(e.target.id==='f_upContrato')fnUpload(e.target.files,'contrato','f_upContratoMsg');
+  });
 }
 
 /* ---- boot ---- */
@@ -962,9 +1854,17 @@ function boot(){
   });
   document.getElementById('logoutBtn').addEventListener('click',async()=>{try{if(fbAuth)await fbAuth.signOut();}catch(e){}location.reload();});
   const acRole=document.getElementById('acRole');
-  acRole.addEventListener('change',()=>{document.getElementById('acExpertWrap').style.display=acRole.value==='expert'?'':'none';});
+  const acPessoa=document.getElementById('acPessoa');
+  acPessoa.innerHTML='<option value="">— nenhuma —</option>'+Object.keys(FN_PESSOAS).map(k=>`<option value="${k}">${esc(FN_PESSOAS[k])}</option>`).join('');
+  const acRoleVis=()=>{
+    document.getElementById('acExpertWrap').style.display=acRole.value==='expert'?'':'none';
+    document.getElementById('acPessoaWrap').style.display=(acRole.value==='equipe'||acRole.value==='admin')?'':'none';
+  };
+  acRole.addEventListener('change',acRoleVis); acRoleVis();
   document.getElementById('admCreate').addEventListener('submit',adminCreate);
   document.getElementById('admTable').addEventListener('click',adminTableClick);
+  document.getElementById('admTable').addEventListener('change',adminTableChange);
+  fnBind();
   fieldVis();
 
   if(AUTH_ON){
@@ -974,13 +1874,13 @@ function boot(){
       fbAuth=firebase.auth();fbDb=firebase.firestore();
       fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
       fbAuth.onAuthStateChanged(async(user)=>{
-        if(!user){ME={role:null};showApp(false);showLogin(true);loginBusy(false);return;}
+        if(!user){ME={role:null};fnStop();showApp(false);showLogin(true);loginBusy(false);return;}
         try{
           const doc=await fbDb.collection('users').doc(user.uid).get();
           if(!doc.exists){await fbAuth.signOut();loginError('Login válido, mas sem perfil configurado. Peça ao admin para liberar seu acesso.');loginBusy(false);return;}
           const d=doc.data();
           if(d.active===false){await fbAuth.signOut();loginError('Seu acesso está desativado. Fale com o admin.');loginBusy(false);return;}
-          ME={uid:user.uid,email:user.email,role:d.role,name:d.name||user.email,expert:d.expert||''};
+          ME={uid:user.uid,email:user.email,role:d.role,name:d.name||user.email,expert:d.expert||'',pessoa:d.pessoa||''};
           applyRole();showLogin(false);showApp(true);
           await loadAll();
           if(ME.role==='admin')loadUsers();

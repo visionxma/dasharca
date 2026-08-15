@@ -22,6 +22,11 @@ Spark do Firebase). Leva ~15 minutos e só precisa ser feito **uma vez**.
 2. Escolha o modo **produção** e a região (ex.: `southamerica-east1`). **Criar**.
 
 ## Passo 4 — Colar as regras de segurança
+
+> ⚠️ **Se você vai usar o Funil de Experts** (aba do board de onboarding), pule este bloco e
+> cole as regras completas do **`FUNIL-EXPERTS.md`** — elas já incluem tudo o que está aqui,
+> mais a proteção das credenciais da zona de jogo. Não cole os dois.
+
 1. Ainda no Firestore, aba **Regras (Rules)**.
 2. Apague o que estiver lá e cole **exatamente** isto, depois **Publicar**:
 
@@ -97,6 +102,9 @@ Como só um admin pode criar outros acessos, o primeiro precisa ser criado na m�
    - **Expert** — vê **só a própria performance** (informe o *Expert vinculado* com o nome
      **exatamente igual** ao que está na coluna `Expert` das planilhas, ex.: `Expert 1`).
    - **Comercial** — vê **só a aba Time Comercial**.
+   - **Equipe interna** — vê **só a aba Funil de Experts**. Escolha também a *Pessoa no
+     funil* (Camily, William, Márcio, Fábio ou Mizag), que é o que faz os cards caírem no
+     nome dela. Ver `FUNIL-EXPERTS.md`.
 3. Na lista você pode **Desativar/Ativar**, **enviar reset de senha** (vai um e-mail para a
    pessoa) ou **Excluir** o acesso.
 
