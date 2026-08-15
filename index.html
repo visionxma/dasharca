@@ -275,6 +275,43 @@ svg text{font-family:inherit}
 .pop-empty{font-size:12.5px;color:var(--muted);padding:14px 10px;text-align:center}
 .toolwrap{position:relative}
 
+/* Guia de primeiros passos */
+.guia-hero{background:linear-gradient(135deg,var(--surface-2),var(--surface));border-bottom:1px solid var(--border);padding:22px 24px 20px;border-radius:16px 16px 0 0;position:relative;overflow:hidden}
+.guia-hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(var(--gold),var(--gold-2))}
+.guia-hero .g-tag{display:inline-block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--surface);background:var(--ink);border-radius:20px;padding:3px 10px;margin-bottom:9px}
+.guia-hero h3{margin:0;font-size:21px;font-weight:700;letter-spacing:-.01em}
+.guia-hero p{margin:7px 0 0;color:var(--ink-2);font-size:13.5px;line-height:1.5;max-width:60ch}
+.guia-prog{display:flex;align-items:center;gap:10px;margin-top:14px}
+.guia-track{flex:1;height:7px;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.guia-fill{height:100%;background:var(--okc);border-radius:6px;transition:width .4s}
+.guia-prog span{font-size:11.5px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gstep{display:flex;gap:13px;padding:16px 4px;border-top:1px solid var(--grid)}
+.gstep:first-child{border-top:none}
+.gstep.todo{background:var(--attn-bg);margin:0 -12px;padding-left:16px;padding-right:16px;border-radius:11px;border-top-color:transparent}
+.gstep.todo + .gstep{border-top-color:transparent}
+.gnum{width:28px;height:28px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;border:2px solid var(--border);color:var(--muted);background:var(--surface)}
+.gstep.done .gnum{background:var(--okc);border-color:var(--okc);color:#fff}
+.gstep.todo .gnum{border-color:var(--attn);color:var(--attn);background:var(--surface)}
+.gbody{min-width:0;flex:1}
+.gtitle{font-size:14.5px;font-weight:650;display:flex;align-items:center;gap:9px;flex-wrap:wrap;line-height:1.3}
+.gpill{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;border-radius:20px;flex:none}
+.gpill.ok{background:var(--okc-bg);color:var(--okc);border:1px solid var(--okc)}
+.gpill.no{background:var(--attn);color:var(--danger-ink)}
+.gtxt{font-size:13px;color:var(--ink-2);line-height:1.55;margin-top:5px}
+.gcomo{font-size:12.5px;color:var(--ink-2);line-height:1.6;margin-top:9px;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:9px;padding:9px 12px}
+.gcomo b{color:var(--ink)}
+.gstep .btn{margin-top:11px}
+.guia-comofunc{margin-top:6px}
+.gflow{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 14px}
+.gflow .gf{flex:1 1 132px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:9px 10px;min-width:0}
+.gflow .gf b{display:block;font-size:12.5px;font-weight:650;line-height:1.25}
+.gflow .gf span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+.gregras{list-style:none;margin:0;padding:0;font-size:13px;line-height:1.55}
+.gregras li{display:flex;gap:9px;padding:6px 0;color:var(--ink-2)}
+.gregras li b{color:var(--ink)}
+.gregras .gi{flex:none;width:17px;height:17px;margin-top:2px;color:var(--ink)}
+.guia-foot-note{font-size:12px;color:var(--muted);margin-left:auto;text-align:right}
+
 /* Avisos flutuantes */
 #fnToasts{position:fixed;right:18px;bottom:18px;z-index:180;display:flex;flex-direction:column;gap:9px;max-width:330px}
 .toast{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--ink);border-radius:11px;box-shadow:var(--shadow);padding:11px 13px;font:inherit;color:inherit;text-align:left;cursor:pointer;animation:slidein .22s}
@@ -453,6 +490,7 @@ svg text{font-family:inherit}
       <div style="flex:1"></div>
       <button class="btn" id="fnCfgBtn" style="display:none"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9h-.2a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.4-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.9-.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1.1z"/></svg>Prazos e nichos</button>
       <button class="btn" id="fnArch">Ver arquivados</button>
+      <button class="btn" id="fnGuiaBtn" title="Guia de primeiros passos e como o funil funciona"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.8-.9 1.4v.4"/><line x1="12" y1="16.6" x2="12" y2="16.7"/></svg>Como usar</button>
     </div>
     <div class="fk" id="fnKpis"></div>
     <div class="board" id="fnBoard"></div>
@@ -530,6 +568,25 @@ svg text{font-family:inherit}
     </div>
     <div class="modal-b" id="fnMBody"></div>
     <div class="modal-f" id="fnMFoot"></div>
+  </div>
+</div>
+
+<!-- Guia de primeiros passos do funil -->
+<div class="modal" id="guiaModal" role="dialog" aria-modal="true" aria-labelledby="guiaTitle">
+  <div class="modal-card" style="max-width:680px">
+    <div class="guia-hero">
+      <button class="x" id="guiaClose" title="Fechar" aria-label="Fechar" style="position:absolute;top:14px;right:14px">&times;</button>
+      <span class="g-tag" id="guiaTag">Configuração inicial</span>
+      <h3 id="guiaTitle">Falta pouco para o funil rodar</h3>
+      <p id="guiaSub"></p>
+      <div class="guia-prog"><div class="guia-track"><div class="guia-fill" id="guiaFill" style="width:0%"></div></div><span id="guiaCnt"></span></div>
+    </div>
+    <div class="modal-b" id="guiaBody"></div>
+    <div class="modal-f">
+      <button class="btn btn-primary" id="guiaOk">Entendi</button>
+      <button class="btn" id="guiaNunca">Não mostrar de novo</button>
+      <span class="guia-foot-note">Para reabrir: botão <b>Como usar</b> na aba do funil</span>
+    </div>
   </div>
 </div>
 
@@ -1200,6 +1257,7 @@ const FN_CFG_PADRAO={slas:{1:0,2:1,3:1,4:2,5:3},relatorioDias:7,nichos:FN_NICHOS
 
 let FN_CFG=JSON.parse(JSON.stringify(FN_CFG_PADRAO));
 let FN_CARDS=[], FN_UNSUB=null, FN_CFG_UNSUB=null, FN_OPEN=null, FN_ARCH=false, FN_BOOTED=false, FN_FIRST=true, FN_BASE=null;
+let FN_CFG_EXISTS=false, FN_EQUIPE=null, FN_GUIA_AUTO=false;
 const FN_F={q:'',resp:'all',nicho:'all',status:'all'};
 const SVT=()=>firebase.firestore.FieldValue.serverTimestamp();
 
@@ -1248,6 +1306,7 @@ function fnStart(){
   fnFillFiltros(); /* popula os selects já com os padrões, antes da 1ª resposta do Firestore */
   FN_CFG_UNSUB=fbDb.collection('config').doc('funil').onSnapshot(s=>{
     const d=s.exists?s.data():null;
+    FN_CFG_EXISTS=!!(d&&d.updatedAt); /* só conta como revisado se alguém salvou de fato */
     FN_CFG={
       slas:Object.assign({},FN_CFG_PADRAO.slas,(d&&d.slas)||{}),
       relatorioDias:(d&&Number(d.relatorioDias))||FN_CFG_PADRAO.relatorioDias,
@@ -1259,8 +1318,9 @@ function fnStart(){
     const antes=new Map(FN_CARDS.map(c=>[c.id,c.responsavel]));
     FN_CARDS=[];snap.forEach(doc=>{const x=doc.data();x.id=doc.id;FN_CARDS.push(x);});
     if(!FN_FIRST)fnAvisaNovos(antes);
-    FN_FIRST=false;
+    const primeira=FN_FIRST; FN_FIRST=false;
     fnFillFiltros();fnRender();fnBell();
+    if(primeira)fnGuiaAuto();
     if(FN_OPEN){const c=FN_CARDS.find(x=>x.id===FN_OPEN);if(c&&!document.querySelector('#fnMBody :focus'))fnPaintHeader(c);}
   },err=>{
     document.getElementById('funilNotice').innerHTML='<div class="notice">Não foi possível carregar o funil: '+esc(fbErr(err))+' — confira se as regras do Firestore para <code>experts_funil</code> foram publicadas.</div>';
@@ -1788,6 +1848,121 @@ async function fnCfgSave(){
   }catch(err){set(fbErr(err),'err');}
 }
 
+/* ============================================================
+   GUIA DE PRIMEIROS PASSOS
+   Abre sozinho enquanto houver pendência de configuração — a parte que
+   não dá para adivinhar só olhando o board.
+   ============================================================ */
+const FN_DONOS=['camily','william','marcio']; /* pessoas que são donas de alguma etapa */
+function fnGuiaOff(){try{return localStorage.getItem('fnGuia:'+(ME.uid||'x'))==='off';}catch(e){return false;}}
+
+async function fnCheckEquipe(){
+  if(!fnAdmin()){FN_EQUIPE=null;return;}
+  try{
+    const snap=await fbDb.collection('users').get();
+    const s=new Set();snap.forEach(d=>{const u=d.data();if(u.active!==false&&u.pessoa)s.add(u.pessoa);});
+    FN_EQUIPE=s;
+  }catch(e){FN_EQUIPE=null;}
+}
+
+function fnPassos(){
+  const adm=fnAdmin(), p=[];
+  p.push({
+    t:'Vincule seu acesso a uma pessoa do funil',
+    ok:!!fnEu(),
+    txt:fnEu()?'Você está vinculado como <b>'+esc(fnNome(fnEu()))+'</b> — os cards dessa pessoa caem no seu sino.'
+              :'Sem isso o board abre normalmente, mas <b>nenhum card aparece como seu</b> e o sino fica sempre vazio.',
+    como:adm?'Aba <b>Admin</b> → lista <b>Acessos existentes</b> → na sua linha, coluna <b>Pessoa no funil</b>, escolha seu nome no menu.'
+            :'Peça a um administrador (Fábio, Mizag ou Márcio) para vincular seu acesso na aba Admin.',
+    acao:adm?{id:'admin',label:'Abrir a aba Admin'}:null
+  });
+  if(adm){
+    const falta=FN_EQUIPE?FN_DONOS.filter(k=>!FN_EQUIPE.has(k)):null;
+    p.push({
+      t:'Crie os acessos da equipe',
+      ok:!!(falta&&!falta.length),
+      txt:falta===null?'Não consegui verificar os acessos agora.'
+        :falta.length?'Ainda sem acesso vinculado: <b>'+falta.map(fnNome).join(', ')+'</b>. Como são donos de etapa, cards vão parar no nome de quem não consegue entrar.'
+                     :'Camily, William e Márcio já têm acesso vinculado.',
+      como:'Aba <b>Admin</b> → <b>Criar novo acesso</b>. Camily e William como <b>Equipe interna</b>; Márcio como <b>Administrador</b> (só admin revela as credenciais da zona de jogo). Em todos, preencha a <b>Pessoa no funil</b>.',
+      acao:{id:'admin',label:'Abrir a aba Admin'}
+    });
+    p.push({
+      t:'Confirme os prazos e a lista de nichos',
+      ok:FN_CFG_EXISTS,
+      txt:FN_CFG_EXISTS?'Prazos e nichos já foram revisados pelo time.'
+        :'Estão valendo os valores iniciais: captar no mesmo dia, LP em 2 dias e tráfego em 3. As etapas 2 e 3 estão com 1 dia como chute e precisam do aval de vocês.',
+      como:'Botão <b>Prazos e nichos</b>, aqui mesmo nesta aba. Vale para todo o time e pode ser mudado quando quiser.',
+      acao:{id:'cfg',label:'Abrir prazos e nichos'}
+    });
+  }
+  p.push({
+    t:'Cadastre o primeiro expert',
+    ok:FN_CARDS.length>0,
+    txt:FN_CARDS.length?'O funil já tem '+fnPlural(FN_CARDS.length,'card','cards')+'.'
+      :'A partir daqui é o uso do dia a dia: cada expert que entra vira um card na etapa 1.',
+    como:'Botão <b>Novo expert</b>. Preencha nome, nicho e data de entrada — o card nasce na etapa 1, no nome da Camily.',
+    acao:{id:'novo',label:'Criar o primeiro expert'}
+  });
+  return p;
+}
+
+function fnGuiaHTML(passos){
+  let h='<div class="fsec" style="padding-top:2px">';
+  passos.forEach((s,i)=>{
+    h+=`<div class="gstep ${s.ok?'done':'todo'}">
+      <div class="gnum">${s.ok?'&#10003;':(i+1)}</div>
+      <div class="gbody">
+        <div class="gtitle">${esc(s.t)}<span class="gpill ${s.ok?'ok':'no'}">${s.ok?'feito':'pendente'}</span></div>
+        <div class="gtxt">${s.txt}</div>
+        ${s.ok?'':`<div class="gcomo">${s.como}</div>`}
+        ${(!s.ok&&s.acao)?`<button class="btn btn-primary" data-guia="${s.acao.id}">${esc(s.acao.label)}</button>`:''}
+      </div></div>`;
+  });
+  h+='</div>';
+
+  h+='<div class="fsec guia-comofunc"><div class="fsec-h">Como o funil funciona</div><div class="gflow">';
+  FN_ETAPAS.forEach(e=>{
+    const sla=fnSla(e.n);
+    const prazo=e.n===6?'sem prazo fixo':(sla===0?'no mesmo dia':fnPlural(sla,'dia','dias'));
+    h+=`<div class="gf"><b>${e.n}. ${esc(e.nome)}</b><span>${esc(fnNome(e.dono))} · ${esc(prazo)}</span></div>`;
+  });
+  h+='</div>';
+  const ico=d=>`<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  h+=`<ul class="gregras">
+    <li>${ico('<circle cx="12" cy="8" r="3.4"/><path d="M5.5 20c0-3.4 2.9-5.8 6.5-5.8s6.5 2.4 6.5 5.8"/>')}<span><b>Um dono por vez.</b> Abra o card e clique em <b>Concluir etapa</b> quando terminar sua parte. O responsável muda sozinho junto com a etapa — nenhum card fica sem dono.</span></li>
+    <li>${ico('<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>')}<span><b>Atraso salta aos olhos.</b> Selo e borda <span style="color:var(--danger);font-weight:700">vermelhos</span> quando passa do prazo da etapa, âmbar no dia em que vence. O filtro <b>Só atrasados</b> isola esses cards.</span></li>
+    <li>${ico('<path d="M12 3l7 3v5c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6l7-3z"/>')}<span><b>O painel cobra o que falta.</b> Não dá para concluir a etapa 3 sem a descrição da operação, nem a 2 sem contrato e credenciais. Ele diz exatamente o que está faltando.</span></li>
+    <li>${ico('<rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>')}<span><b>Login e senha da zona de jogo</b> ficam mascarados e só administradores revelam — cada revelação fica registrada com nome e data.</span></li>
+    <li>${ico('<path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z"/><path d="M10.4 19a1.9 1.9 0 0 0 3.2 0"/>')}<span><b>O sino no topo</b> mostra seus cards atrasados, os que vencem hoje e os que acabaram de cair no seu nome.</span></li>
+  </ul></div>`;
+  return h;
+}
+
+async function fnGuiaOpen(){
+  await fnCheckEquipe();
+  const passos=fnPassos(), feitos=passos.filter(s=>s.ok).length, tudo=feitos===passos.length;
+  document.getElementById('guiaTag').textContent=tudo?'Tudo pronto':'Configuração inicial';
+  document.getElementById('guiaTitle').textContent=tudo?'O funil está configurado':'Falta pouco para o funil rodar';
+  document.getElementById('guiaSub').innerHTML=tudo
+    ? 'Nada pendente por aqui. Abaixo fica o resumo de como o funil funciona, para consultar quando precisar.'
+    : 'São passos rápidos, todos dentro do painel — não precisa mexer em código. Os que já estão resolvidos aparecem marcados.';
+  document.getElementById('guiaFill').style.width=Math.round(feitos/passos.length*100)+'%';
+  document.getElementById('guiaCnt').textContent=feitos+'/'+passos.length;
+  document.getElementById('guiaBody').innerHTML=fnGuiaHTML(passos);
+  document.getElementById('guiaModal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function fnGuiaClose(){document.getElementById('guiaModal').classList.remove('on');document.body.style.overflow='';}
+
+/* abre sozinho uma vez por sessão, só enquanto houver pendência */
+function fnGuiaAuto(){
+  if(FN_GUIA_AUTO||!fnPode()||fnGuiaOff())return;
+  FN_GUIA_AUTO=true;
+  /* espera as duas assinaturas (cards e config) assentarem antes de julgar o que falta */
+  setTimeout(()=>{fnCheckEquipe().then(()=>{ if(fnPassos().some(s=>!s.ok)) fnGuiaOpen(); });},700);
+}
+
 /* ---- listeners ---- */
 function fnBind(){
   const $=id=>document.getElementById(id);
@@ -1799,6 +1974,21 @@ function fnBind(){
   $('fnArch').addEventListener('click',e=>{FN_ARCH=!FN_ARCH;e.target.textContent=FN_ARCH?'Ver ativos':'Ver arquivados';fnRender();});
   $('fnCfgBtn').addEventListener('click',fnCfgOpen);
   $('fnBoard').addEventListener('click',e=>{const b=e.target.closest('.fcard');if(b)fnOpen(b.dataset.id);});
+
+  /* guia de primeiros passos */
+  $('fnGuiaBtn').addEventListener('click',fnGuiaOpen);
+  $('guiaClose').addEventListener('click',fnGuiaClose);
+  $('guiaOk').addEventListener('click',fnGuiaClose);
+  $('guiaNunca').addEventListener('click',()=>{try{localStorage.setItem('fnGuia:'+(ME.uid||'x'),'off');}catch(e){}fnGuiaClose();});
+  $('guiaModal').addEventListener('click',e=>{
+    if(e.target.id==='guiaModal'){fnGuiaClose();return;}
+    const b=e.target.closest('button[data-guia]');if(!b)return;
+    fnGuiaClose();
+    const irPara=t=>{const b2=document.querySelector('#tabs .tab[data-tab="'+t+'"]');if(b2&&TAB!==t)b2.click();};
+    if(b.dataset.guia==='admin')irPara('admin');
+    else if(b.dataset.guia==='cfg'){irPara('funil');fnCfgOpen();}
+    else if(b.dataset.guia==='novo'){irPara('funil');fnOpen(null);}
+  });
 
   $('bellBtn').addEventListener('click',e=>{e.stopPropagation();const p=$('bellPop');const on=p.classList.contains('on');
     if(on){p.classList.remove('on');$('bellBtn').setAttribute('aria-expanded','false');}
@@ -1818,7 +2008,8 @@ function fnBind(){
   $('cfgNichoNew').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('cfgNichoAdd').click();}});
   $('cfgNichos').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b)return;CFG_NICHOS.splice(Number(b.dataset.i),1);fnCfgNichos();});
   document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
-    if($('cfgModal').classList.contains('on'))$('cfgModal').classList.remove('on');
+    if($('guiaModal').classList.contains('on'))fnGuiaClose();
+    else if($('cfgModal').classList.contains('on'))$('cfgModal').classList.remove('on');
     else if($('fnModal').classList.contains('on'))fnClose();});
 
   /* delegação dentro do modal do card (o conteúdo é recriado a cada abertura) */
