@@ -213,9 +213,15 @@ svg text{font-family:inherit}
 #tab-funil.active{display:flex;flex-direction:column}
 #funilNotice{flex:none}
 .board{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;align-items:stretch;
-  flex:1;min-height:0;padding:1px 1px 4px;scroll-snap-type:x proximity}
+  flex:1;min-height:0;padding:1px 1px 2px;overscroll-behavior-x:contain}
+/* barra de rolagem sempre visível: no Mac ela some e o board parece travado */
+.board{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.board::-webkit-scrollbar{height:10px}
+.board::-webkit-scrollbar-track{background:transparent}
+.board::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;border:2px solid var(--page)}
+.board::-webkit-scrollbar-thumb:hover{background:var(--ink-2)}
 .col{background:var(--surface-2);border:1px solid var(--border);border-radius:13px;
-  flex:1 1 258px;min-width:248px;display:flex;flex-direction:column;max-height:100%;scroll-snap-align:start;transition:background .15s}
+  flex:1 1 268px;min-width:268px;display:flex;flex-direction:column;max-height:100%;transition:background .15s}
 .col-h{padding:12px 13px 11px;border-bottom:1px solid var(--border);flex:none;border-radius:13px 13px 0 0}
 .col-h .c-n{display:flex;align-items:center;gap:8px}
 .col-h .c-step{width:21px;height:21px;border-radius:7px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
@@ -237,8 +243,9 @@ svg text{font-family:inherit}
   .main.board-mode{height:auto;display:block;overflow:visible}
   .main.board-mode .wrap{display:block;overflow:visible;padding:16px 14px 40px}
   #tab-funil.active{display:block}
-  .board{flex:none;overflow-y:visible;padding-bottom:6px}
-  .col{flex:0 0 82vw;min-width:0}
+  .board{flex:none;overflow-y:hidden;padding-bottom:6px;scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch}
+  .col{flex:0 0 82vw;min-width:0;scroll-snap-align:start}
   .col{max-height:none}
   .col-b{overflow-y:visible}
 }
@@ -2546,6 +2553,20 @@ function fnBind(){
 
   /* arrastar card entre colunas (desktop; no toque continua pelo botão do card) */
   const board=$('fnBoard'), limpaDrop=()=>board.querySelectorAll('.col').forEach(c=>c.classList.remove('drop'));
+
+  /* arrastando perto da borda, o board anda sozinho até a coluna de destino */
+  let fnAsTimer=null, fnAsVel=0;
+  function fnAutoScrollPara(){if(fnAsTimer){clearInterval(fnAsTimer);fnAsTimer=null;}fnAsVel=0;}
+  function fnAutoScroll(x){
+    const r=board.getBoundingClientRect(), zona=Math.min(110,r.width/4);
+    fnAsVel = x<r.left+zona ? -Math.ceil((r.left+zona-x)/6)
+            : x>r.right-zona ?  Math.ceil((x-(r.right-zona))/6) : 0;
+    if(!fnAsVel)return fnAutoScrollPara();
+    if(!fnAsTimer)fnAsTimer=setInterval(()=>{
+      const antes=board.scrollLeft;board.scrollLeft+=fnAsVel;
+      if(board.scrollLeft===antes)fnAutoScrollPara();
+    },16);
+  }
   board.addEventListener('dragstart',e=>{
     const c=e.target.closest('.fcard');if(!c)return;
     FN_DRAG=c.dataset.id;c.classList.add('dragging');
@@ -2554,10 +2575,11 @@ function fnBind(){
   });
   board.addEventListener('dragend',e=>{
     const c=e.target.closest('.fcard');if(c)c.classList.remove('dragging');
-    FN_DRAG=null;limpaDrop();
+    FN_DRAG=null;limpaDrop();fnAutoScrollPara();
   });
   board.addEventListener('dragover',e=>{
     if(!FN_DRAG)return;
+    fnAutoScroll(e.clientX);
     const col=e.target.closest('.col');if(!col)return;
     e.preventDefault();e.dataTransfer.dropEffect='move';
     board.querySelectorAll('.col').forEach(c=>c.classList.toggle('drop',c===col));
@@ -2567,9 +2589,25 @@ function fnBind(){
     const col=e.target.closest('.col');if(!col)return;
     e.preventDefault();
     const id=FN_DRAG,para=Number(col.dataset.etapa);
-    FN_DRAG=null;limpaDrop();
+    FN_DRAG=null;limpaDrop();fnAutoScrollPara();
     fnSoltarCard(id,para);
   });
+
+  /* roda do mouse rola o board na horizontal: com mouse comum não há como
+     alcançar as colunas da direita, porque o board só rola em x */
+  board.addEventListener('wheel',e=>{
+    if(board.scrollWidth<=board.clientWidth)return;
+    if(e.ctrlKey)return;                                   // pinça de zoom
+    if(Math.abs(e.deltaX)>Math.abs(e.deltaY))return;        // já é gesto horizontal
+    const corpo=e.target.closest('.col-b');                 // deixa a coluna rolar sozinha primeiro
+    if(corpo&&corpo.scrollHeight>corpo.clientHeight){
+      const fim=e.deltaY>0?corpo.scrollTop+corpo.clientHeight>=corpo.scrollHeight-1:corpo.scrollTop<=0;
+      if(!fim)return;
+    }
+    const antes=board.scrollLeft;
+    board.scrollLeft+=e.deltaY;
+    if(board.scrollLeft!==antes)e.preventDefault();
+  },{passive:false});
 
   /* convites */
   $('fnConvBtn').addEventListener('click',fnConvOpen);
