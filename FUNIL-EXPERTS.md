@@ -32,7 +32,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // prazos por etapa + lista de nichos
+    // pessoas, donos de etapa, prazos e nichos
     match /config/{doc} {
       allow read:  if isEquipe();
       allow write: if isAdmin();
@@ -42,6 +42,18 @@ service cloud.firestore {
     match /credLog/{id} {
       allow read, create:   if isAdmin();
       allow update, delete: if false;
+    }
+
+    // convites do expert: o único ponto que aceita escrita SEM login
+    match /convites/{token} {
+      allow get:            if isEquipe() || resource.data.usado == false;
+      allow list:           if isEquipe();
+      allow create, delete: if isEquipe();
+      allow update: if isEquipe()
+        || (resource.data.usado == false
+            && request.resource.data.usado == true
+            && request.resource.data.diff(resource.data)
+                 .affectedKeys().hasOnly(['usado','resposta','respondidoEm']));
     }
 
     match /experts_funil/{cardId} {
@@ -110,8 +122,12 @@ Experts e o time comercial continuam sem acesso nenhum ao funil.
 A movimentação é **manual**: a pessoa abre o card e clica em **Concluir etapa**. Ao mudar de
 etapa o dono troca sozinho — nenhum card fica órfão.
 
-**Os prazos são editáveis no próprio painel** (botão *Prazos e nichos*, só admin). Os valores
-acima são só o ponto de partida; ajuste com a equipe sem precisar mexer no código.
+**Nada disso está preso ao código.** No botão **Configurações** (só admin) você edita as
+pessoas do time, quem é dono de cada etapa, os prazos e a lista de nichos. A tabela acima é só
+o ponto de partida — entrou gente nova no time, é ali que se resolve.
+
+Ao remover alguém da lista, o painel bloqueia se a pessoa tiver card ativo, for dona de etapa
+ou tiver acesso vinculado, e diz o motivo. Assim nenhum card fica sem dono.
 
 ### O que o sistema cobra antes de deixar concluir
 
@@ -157,7 +173,44 @@ a senha se perder. Se quiserem esse nível, é uma mudança pequena — é só d
 
 ---
 
-## 5. Notificações
+## 5. Convite do expert
+
+Em vez de a Camily perguntar tudo no WhatsApp e digitar no card, o expert preenche sozinho.
+
+**Como usar:** aba do funil → botão **Convites** → *Gerar link de convite*. Copie o link (ou
+use o atalho de WhatsApp) e mande para o expert. Ele abre, preenche e envia.
+
+**O que o expert preenche:** nome, e-mail, WhatsApp, nicho, se já opera e se tem resultado —
+e os materiais da landing page: **link do Drive** com as fotos, **ID do pixel** e **cores da
+marca**. Nome, e-mail e link do Drive são obrigatórios; pixel e cores podem ficar em branco
+se ele ainda não tiver.
+
+**O que acontece depois:** a resposta aparece no botão **Convites** com um contador verde.
+Você confere os dados e clica em **Criar card no funil** — o card nasce na etapa 1, no nome
+de quem for o dono dessa etapa, já com tudo preenchido. Se vier lixo, é só **Descartar**.
+
+### Por que a escrita sem login é segura
+
+Este é o único ponto do sistema que aceita gravação de quem não tem conta. Ele é fechado
+assim:
+
+- O link carrega um **token aleatório de 32 caracteres**, gerado por `crypto`. Sem o token,
+  não há nada a acessar — e a regra `list` impede qualquer um de enumerar convites.
+- A regra de `update` só passa se o convite ainda **não foi usado**, se a gravação **marca
+  como usado** e se ela **mexe apenas** em `usado`, `resposta` e `respondidoEm`. O expert não
+  consegue alterar mais nada, nem responder duas vezes.
+- Depois de respondido, a regra de `get` para de liberar leitura pública — quem tiver o link
+  não lê mais o que foi enviado.
+- **Nada entra no board automaticamente.** A resposta fica numa área de espera até alguém do
+  time revisar e importar. O expert nunca escreve em `experts_funil`.
+- O expert não lê o `config/funil`; a lista de nichos é copiada para dentro do convite no
+  momento em que ele é gerado.
+
+Cancelar um convite ainda não respondido apaga o documento e o link para de funcionar.
+
+---
+
+## 6. Notificações
 
 Hoje o aviso é **dentro do painel**:
 
@@ -174,7 +227,7 @@ Zapier/Make. É um passo separado; me avise quando quiser ligar.
 
 ---
 
-## 6. Anexos e fotos
+## 7. Anexos e fotos
 
 Contrato e fotos do expert podem ir por **link** (Drive, Dropbox) ou **upload direto**.
 
@@ -184,7 +237,7 @@ Firestore — assim não é preciso ativar o Firebase Storage (que exige plano p
 
 ---
 
-## 7. Onde os dados ficam
+## 8. Onde os dados ficam
 
 ```
 experts_funil/{cardId}                  dados do card, etapa, responsável, datas
@@ -192,7 +245,8 @@ experts_funil/{cardId}/secure/credenciais   login e senha da zona de jogo (só a
 experts_funil/{cardId}/historico/{id}   toda mudança de etapa e troca de dono (imutável)
 experts_funil/{cardId}/relatorios/{id}  relatórios semanais da etapa 6
 experts_funil/{cardId}/anexos/{id}      contrato e fotos enviadas
-config/funil                            prazos por etapa e lista de nichos
+config/funil                            pessoas, donos de etapa, prazos e nichos
+convites/{token}                        convites do expert e as respostas recebidas
 credLog/{id}                            quem revelou credencial de quem, e quando
 users/{uid}                             acessos (já existia) + campo "pessoa" do funil
 ```
@@ -202,13 +256,15 @@ o botão **Ver arquivados** traz de volta.
 
 ---
 
-## 8. Ainda em aberto
+## 9. Ainda em aberto
 
 Os dois pontos que você marcou como pendentes ficaram **configuráveis no painel**, então não
 travam a entrega — mas vale fechar com a equipe:
 
 1. **Lista de nichos** — começa com: apostas esportivas, cassino ao vivo, roleta,
-   aviator/crash, slots, poker, bingo, e-sports, outro. Edite em *Prazos e nichos*.
+   aviator/crash, slots, poker, bingo, e-sports, outro. Edite em *Configurações*, onde também
+   ficam as **pessoas do time** e o **dono de cada etapa** (dá para incluir gente nova sem
+   mexer no código).
 2. **Prazo de cada etapa** — os padrões da tabela acima vieram do que você definiu (captar no
    mesmo dia, LP em 2 dias, tráfego em 3). As etapas 2 e 3 ficaram com 1 dia como chute
    inicial e precisam do aval do time.
