@@ -219,7 +219,9 @@ svg text{font-family:inherit}
 .main.board-mode .board{width:100%}
 #tab-funil.active{display:flex;flex-direction:column}
 #funilNotice{flex:none}
-.board{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;align-items:stretch;
+/* align-items:flex-start deixa a lista com a altura do conteúdo, como no
+   Trello: lista com 2 cards é baixa, não uma coluna vazia de tela cheia */
+.board{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;align-items:flex-start;
   flex:1;min-height:0;padding:1px 1px 2px;overscroll-behavior-x:contain}
 /* barra de rolagem sempre visível: no Mac ela some e o board parece travado */
 .board{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -227,8 +229,11 @@ svg text{font-family:inherit}
 .board::-webkit-scrollbar-track{background:transparent}
 .board::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;border:2px solid var(--page)}
 .board::-webkit-scrollbar-thumb:hover{background:var(--ink-2)}
-.col{background:var(--surface-2);border:1px solid var(--border);border-radius:13px;
-  flex:1 1 268px;min-width:268px;display:flex;flex-direction:column;max-height:100%;transition:background .15s}
+/* largura fixa como no Trello: a lista não estica para preencher a tela,
+   o board é que rola. Sobra espaço à direita em monitor largo — é assim
+   que o Trello se comporta e é o preço de listas de largura previsível */
+.col{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
+  flex:0 0 272px;width:272px;display:flex;flex-direction:column;max-height:100%;transition:background .15s}
 .col-h{padding:12px 13px 11px;border-bottom:1px solid var(--border);flex:none;border-radius:13px 13px 0 0}
 .col-h .c-n{display:flex;align-items:center;gap:8px}
 .col-h .c-step{width:21px;height:21px;border-radius:7px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
@@ -238,14 +243,24 @@ svg text{font-family:inherit}
 .col-h .c-meta .av{width:17px;height:17px;font-size:9px}
 .col-h .c-meta b{font-weight:650;color:var(--ink-2)}
 .col-h .c-prazo{margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap}
-.col-b{padding:10px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;flex:1;min-height:64px}
-.col-f{padding:0 10px 10px;flex:none}
-.col-add{width:100%;display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px dashed var(--border);
-  border-radius:10px;background:none;color:var(--ink-2);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:.12s}
-.col-add:hover{background:var(--surface);border-style:solid;color:var(--ink)}
-.col-empty{font-size:12px;color:var(--muted);text-align:center;padding:18px 8px;border:1px dashed var(--border);border-radius:10px;line-height:1.5}
+/* flex:0 1 auto (e não flex:1) é o que deixa a lista encolher até o
+   conteúdo; ela só vira rolável ao encostar no teto do board */
+.col-b{padding:8px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:0 1 auto;min-height:12px}
+.col-b{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.col-b::-webkit-scrollbar{width:8px}
+.col-b::-webkit-scrollbar-track{background:transparent}
+.col-b::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;border:2px solid var(--surface-2)}
+.col-b::-webkit-scrollbar-thumb:hover{background:var(--ink-2)}
+.col-f{padding:0 8px 8px;flex:none}
+.col-add{width:100%;display:flex;align-items:center;gap:8px;padding:8px 10px;border:none;
+  border-radius:8px;background:none;color:var(--ink-2);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:.12s}
+.col-add:hover{background:var(--surface);color:var(--ink)}
+.col-empty{font-size:12px;color:var(--muted);text-align:center;padding:16px 8px;line-height:1.5}
 .col.drop{background:var(--surface)}
-.col.drop .col-b{outline:2px dashed var(--ink);outline-offset:-5px;border-radius:10px}
+/* o vão cinza que abre ao arrastar, no lugar do card. É o placeholder do
+   Trello: o card de origem some e sobra um só buraco, o de destino */
+.fc-holder{flex:none;border-radius:10px;background:rgba(0,0,0,.07);border:1px dashed var(--border)}
+[data-theme="dark"] .fc-holder{background:rgba(255,255,255,.07)}
 @media(max-width:900px){
   .main.board-mode{height:auto;display:block;overflow:visible}
   .main.board-mode .wrap{display:block;overflow:visible;padding:16px 14px 40px}
@@ -260,10 +275,12 @@ svg text{font-family:inherit}
 /* Card do expert */
 .fcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 11px;
   box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:grab;transition:.12s;text-align:left;width:100%;font:inherit;color:inherit;display:block;position:relative}
-.fcard:hover{border-color:var(--ink-2);box-shadow:var(--shadow);transform:translateY(-1px)}
+.fcard:hover{border-color:var(--ink-2);box-shadow:var(--shadow)}
 .fcard:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .fcard:active{cursor:grabbing}
-.fcard.dragging{opacity:.4;transform:scale(.97)}
+/* o card de origem sai da lista enquanto arrasta; quem marca o lugar é o
+   .fc-holder. Sem isso ficariam dois vãos, o de origem e o de destino */
+.fcard.dragging{display:none}
 .fc-labels{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
 .lab{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;
   border-radius:6px;padding:2px 8px;background:var(--surface-2);border:1px solid var(--border);color:var(--ink-2);white-space:nowrap}
@@ -2574,29 +2591,51 @@ function fnBind(){
       if(board.scrollLeft===antes)fnAutoScrollPara();
     },16);
   }
+  /* vão cinza que abre na lista sob o ponteiro, como o placeholder do Trello.
+     Ele vai para o fim da lista, e não onde o ponteiro está, porque a ordem
+     dentro da etapa não é sua: o board ordena atrasado primeiro e depois por
+     tempo na etapa. Abrir o vão no meio prometeria uma posição que o card
+     não teria ao soltar. */
+  let fnHolder=null;
+  function fnHolderPara(){if(fnHolder){fnHolder.remove();fnHolder=null;}}
+  function fnHolderNa(col,alt){
+    const corpo=col.querySelector('.col-b');if(!corpo)return;
+    if(!fnHolder){fnHolder=document.createElement('div');fnHolder.className='fc-holder';}
+    fnHolder.style.height=alt+'px';
+    if(fnHolder.parentNode!==corpo||fnHolder!==corpo.lastElementChild)corpo.appendChild(fnHolder);
+    const vazio=corpo.querySelector('.col-empty');if(vazio)vazio.style.display='none';
+  }
+  let fnDragAlt=64;
   board.addEventListener('dragstart',e=>{
     const c=e.target.closest('.fcard');if(!c)return;
-    FN_DRAG=c.dataset.id;c.classList.add('dragging');
+    FN_DRAG=c.dataset.id;
+    fnDragAlt=Math.round(c.getBoundingClientRect().height);
     e.dataTransfer.effectAllowed='move';
     try{e.dataTransfer.setData('text/plain',c.dataset.id);}catch(_){}
+    /* só depois do tick: esconder o card agora apagaria a própria imagem
+       que o navegador acabou de tirar dele para arrastar */
+    setTimeout(()=>{if(FN_DRAG===c.dataset.id)c.classList.add('dragging');},0);
   });
   board.addEventListener('dragend',e=>{
     const c=e.target.closest('.fcard');if(c)c.classList.remove('dragging');
-    FN_DRAG=null;limpaDrop();fnAutoScrollPara();
+    FN_DRAG=null;limpaDrop();fnHolderPara();fnAutoScrollPara();
+    board.querySelectorAll('.col-empty').forEach(v=>v.style.display='');
   });
   board.addEventListener('dragover',e=>{
     if(!FN_DRAG)return;
     fnAutoScroll(e.clientX);
-    const col=e.target.closest('.col');if(!col)return;
+    const col=e.target.closest('.col');
+    if(!col){fnHolderPara();limpaDrop();return;}
     e.preventDefault();e.dataTransfer.dropEffect='move';
     board.querySelectorAll('.col').forEach(c=>c.classList.toggle('drop',c===col));
+    fnHolderNa(col,fnDragAlt);
   });
   board.addEventListener('drop',e=>{
     if(!FN_DRAG)return;
     const col=e.target.closest('.col');if(!col)return;
     e.preventDefault();
     const id=FN_DRAG,para=Number(col.dataset.etapa);
-    FN_DRAG=null;limpaDrop();fnAutoScrollPara();
+    FN_DRAG=null;limpaDrop();fnHolderPara();fnAutoScrollPara();
     fnSoltarCard(id,para);
   });
 
