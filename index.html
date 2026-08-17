@@ -234,12 +234,14 @@ svg text{font-family:inherit}
    que o Trello se comporta e é o preço de listas de largura previsível */
 .col{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
   flex:0 0 272px;width:272px;display:flex;flex-direction:column;max-height:100%;transition:background .15s}
-.col-h{padding:12px 13px 11px;border-bottom:1px solid var(--border);flex:none;border-radius:13px 13px 0 0}
+/* sem borda inferior: no Trello o cabeçalho é parte do painel da lista,
+   não uma faixa separada */
+.col-h{padding:10px 11px 8px;flex:none;border-radius:12px 12px 0 0}
 .col-h .c-n{display:flex;align-items:center;gap:8px}
 .col-h .c-step{width:21px;height:21px;border-radius:7px;background:var(--ink);color:var(--surface);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
 .col-h .c-t{font-size:13px;font-weight:680;line-height:1.25;min-width:0;letter-spacing:-.01em}
 .col-h .c-count{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink-2);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:1px 9px;flex:none;font-variant-numeric:tabular-nums}
-.col-h .c-meta{font-size:11px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.col-h .c-meta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .col-h .c-meta .av{width:17px;height:17px;font-size:9px}
 .col-h .c-meta b{font-weight:650;color:var(--ink-2)}
 .col-h .c-prazo{margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap}
@@ -273,26 +275,26 @@ svg text{font-family:inherit}
 }
 
 /* Card do expert */
-.fcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 11px;
-  box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:grab;transition:.12s;text-align:left;width:100%;font:inherit;color:inherit;display:block;position:relative}
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;
+  box-shadow:0 1px 1px rgba(0,0,0,.08);cursor:grab;transition:.12s;text-align:left;width:100%;font:inherit;color:inherit;display:block;position:relative}
 .fcard:hover{border-color:var(--ink-2);box-shadow:var(--shadow)}
 .fcard:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .fcard:active{cursor:grabbing}
 /* o card de origem sai da lista enquanto arrasta; quem marca o lugar é o
    .fc-holder. Sem isso ficariam dois vãos, o de origem e o de destino */
 .fcard.dragging{display:none}
-.fc-labels{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.fc-labels{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;align-items:center}
 .lab{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;
   border-radius:6px;padding:2px 8px;background:var(--surface-2);border:1px solid var(--border);color:var(--ink-2);white-space:nowrap}
 .lab i{width:7px;height:7px;border-radius:2px;flex:none}
 .lab.late{background:var(--danger);border-color:var(--danger);color:var(--danger-ink);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .lab.due{background:var(--attn);border-color:var(--attn);color:var(--danger-ink);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
-.fc-name{font-size:13.5px;font-weight:640;line-height:1.35;overflow-wrap:anywhere}
-.fc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.fc-name{font-size:13.5px;font-weight:600;line-height:1.35;overflow-wrap:anywhere}
+.fc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
 .tag{font-size:10.5px;font-weight:600;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:2px 7px;white-space:nowrap}
 .tag.warn{color:var(--attn);border-color:var(--attn)}
 .tag.late{color:var(--danger);border-color:var(--danger);font-weight:700}
-.fc-foot{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+.fc-foot{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:11.5px;color:var(--muted)}
 .fc-when{display:inline-flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums;
   border-radius:6px;padding:2px 6px;white-space:nowrap}
 .fc-when svg{width:12px;height:12px;flex:none}
