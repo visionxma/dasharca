@@ -1887,6 +1887,49 @@ function fnInp(id,label,val,tipo,ph,dis,hint){
 function fnTxt(id,label,val,ph,dis,alt){
   return `<div class="ff"><label>${label}</label><textarea id="${id}" style="min-height:${alt||84}px"${ph?` placeholder="${esc(ph)}"`:''}${dis?' disabled':''}>${esc(val==null?'':val)}</textarea></div>`;
 }
+/* Ativos do expert: a lista do board Negociações Experts, na mesma ordem.
+   Não pertence a uma etapa — é o que se junta sobre o expert ao longo de
+   todas elas, então aparece tanto na criação quanto no card já aberto.
+   "Login e Senha Dashboard / Acordo" não é campo comum: vai para o cofre
+   de credenciais, igual ao da zona de jogo, para não gravar senha em
+   texto puro num documento que o time inteiro lê. Na criação ainda não
+   existe card para guardar o cofre, então ali entram dois campos soltos
+   que o fnCreate move para o cofre assim que o card nasce. */
+function fnAtivosHTML(c,ro,novo){
+  const senha = novo
+    ? (fnAdmin()
+        ? `<div class="cred"><div class="cred-lock">
+             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+             <span>Guardado em área restrita assim que o card for criado. Só administradores veem, e toda consulta fica registrada.</span></div>
+           <div class="frow" style="margin-top:10px">
+             ${fnInp('f_atDashLogin','Login','','text')}
+             ${fnInp('f_atDashSenha','Senha','','password')}
+           </div></div>`
+        : `<div class="cred"><div class="cred-lock">
+             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+             <span>Dado sensível — só administradores cadastram. Crie o card e peça a um admin para preencher.</span></div></div>`)
+    : fnCredHTML(c,'dashboard');
+  return `<div class="fsec"><div class="fsec-h">Ativos do expert</div>
+    <div class="frow">
+      ${fnInp('f_atGrupoWpp','Grupo Afiliado WPP',c.atGrupoWpp,'url','https://chat.whatsapp.com/…',ro)}
+      ${fnInp('f_atInstagram','Perfis | Instagram',c.atInstagram,'text','@perfil, @perfil2',ro)}
+    </div>
+    <div class="frow one" style="margin-top:11px">
+      ${fnTxt('f_atResultados','Resultados | Operação',c.atResultados,'Números e prints do que a operação vem entregando.',ro)}
+    </div>
+    <div class="frow" style="margin-top:11px">
+      ${fnInp('f_atTiktok','Perfis | TikTok',c.atTiktok,'text','@perfil, @perfil2',ro)}
+      ${fnInp('f_atComunidades','Comunidades | Base de Leads',c.atComunidades,'text','Onde está a base e qual o tamanho',ro)}
+      ${fnInp('f_atLandingPages','Landing Pages',c.atLandingPages,'url','https://…',ro)}
+    </div>
+    <div class="ff" style="margin-top:14px"><label>Login e Senha Dashboard / Acordo</label>${senha}</div>
+    <div class="frow" style="margin-top:14px">
+      ${fnInp('f_atDriveFotos','Drive com Fotos',c.atDriveFotos,'url','https://drive.google.com/…',ro)}
+    </div>
+    <div class="frow one" style="margin-top:11px">
+      ${fnTxt('f_atNegociacao','Negociação',c.atNegociacao,'Como está a conversa: percentual, condições, o que falta fechar.',ro)}
+    </div></div>`;
+}
 function fnModalHTML(c,novo){
   const et=Number(c.etapa)||1, ro=!!c.arquivado;
   const nichos=[['','— selecione —']].concat(FN_CFG.nichos.map(x=>[x,x]));
@@ -1903,7 +1946,8 @@ function fnModalHTML(c,novo){
       ${fnInp('f_email','E-mail',c.email,'email','',ro)}
       ${fnInp('f_fone','WhatsApp',c.telefone,'tel','',ro)}
     </div></div>`;
-  if(novo)return h+'<p class="hint" style="margin:16px 0 0">Depois de criar, o card abre com todos os campos das etapas seguintes.</p>';
+  if(novo)return h+fnAtivosHTML(c,ro,true)
+    +'<p class="hint" style="margin:16px 0 0">Os campos das etapas 2 a 6 — contrato, operação, landing page e relatórios — abrem depois de criar o card.</p>';
 
   h+=`<div class="fsec${et===2?' now':''}"><div class="fsec-h"><span class="st">Etapa 2</span>Organização</div>
     <div class="frow">
@@ -1942,31 +1986,7 @@ function fnModalHTML(c,novo){
       <span class="fhint">As imagens são reduzidas automaticamente antes de salvar.</span>
     </div></div>`;
 
-  /* Ativos do expert: a lista do board Negociações Experts, na mesma ordem.
-     Não pertence a uma etapa — é o que se junta sobre o expert ao longo
-     de todas elas. "Login e Senha Dashboard / Acordo" não é campo comum:
-     entra no cofre de credenciais, igual ao da zona de jogo, para não
-     gravar senha em texto puro num documento que o time inteiro lê. */
-  h+=`<div class="fsec"><div class="fsec-h">Ativos do expert</div>
-    <div class="frow">
-      ${fnInp('f_atGrupoWpp','Grupo Afiliado WPP',c.atGrupoWpp,'url','https://chat.whatsapp.com/…',ro)}
-      ${fnInp('f_atInstagram','Perfis | Instagram',c.atInstagram,'text','@perfil, @perfil2',ro)}
-    </div>
-    <div class="frow one" style="margin-top:11px">
-      ${fnTxt('f_atResultados','Resultados | Operação',c.atResultados,'Números e prints do que a operação vem entregando.',ro)}
-    </div>
-    <div class="frow" style="margin-top:11px">
-      ${fnInp('f_atTiktok','Perfis | TikTok',c.atTiktok,'text','@perfil, @perfil2',ro)}
-      ${fnInp('f_atComunidades','Comunidades | Base de Leads',c.atComunidades,'text','Onde está a base e qual o tamanho',ro)}
-      ${fnInp('f_atLandingPages','Landing Pages',c.atLandingPages,'url','https://…',ro)}
-    </div>
-    <div class="ff" style="margin-top:14px"><label>Login e Senha Dashboard / Acordo</label>${fnCredHTML(c,'dashboard')}</div>
-    <div class="frow" style="margin-top:14px">
-      ${fnInp('f_atDriveFotos','Drive com Fotos',c.atDriveFotos,'url','https://drive.google.com/…',ro)}
-    </div>
-    <div class="frow one" style="margin-top:11px">
-      ${fnTxt('f_atNegociacao','Negociação',c.atNegociacao,'Como está a conversa: percentual, condições, o que falta fechar.',ro)}
-    </div></div>`;
+  h+=fnAtivosHTML(c,ro,false);
 
   h+=`<div class="fsec${et===6?' now':''}"><div class="fsec-h"><span class="st">Etapa 6</span>Relatórios semanais</div>
     <div id="fnRelatorios"><span class="fhint">Carregando…</span></div>
@@ -2186,10 +2206,19 @@ async function fnCreate(){
      &&!confirm('Já existe um card ativo com o nome "'+nome+'". Criar assim mesmo?'))return;
   fnMsg('Criando…');
   try{
+    const dashLogin=(document.getElementById('f_atDashLogin')||{}).value||'';
+    const dashSenha=(document.getElementById('f_atDashSenha')||{}).value||'';
+    const temSenha=!!(dashLogin.trim()||dashSenha);
     const d=fnLeForm();
-    d.etapa=1;d.responsavel=fnDono(1);d.etapaDesde=SVT();d.arquivado=false;d.temCredenciais=false;d.temCredDash=false;
+    d.etapa=1;d.responsavel=fnDono(1);d.etapaDesde=SVT();d.arquivado=false;d.temCredenciais=false;d.temCredDash=temSenha;
     d.criadoPor=ME.name||ME.email||'';d.createdAt=SVT();d.updatedAt=SVT();
     const ref=await fnCol().add(d);
+    /* a senha nunca passa pelo documento do card: vai direto para o cofre */
+    if(temSenha){
+      await fnCredDoc(ref.id,'dashboard').set({login:dashLogin.trim(),senha:dashSenha,
+        updatedAt:SVT(),updatedBy:ME.name||ME.email||''});
+      await fnHistAdd(ref.id,'cred','Login e senha do dashboard / acordo cadastrados na criação');
+    }
     await fnHistAdd(ref.id,'criado','Card criado na etapa 1 — responsável: '+fnNome(fnDono(1)));
     fnClose(true);setTimeout(()=>fnOpen(ref.id),260);
   }catch(err){fnMsg(fbErr(err),'err');}
