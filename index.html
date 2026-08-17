@@ -904,6 +904,13 @@ svg text{font-family:inherit}
         <div class="inline"><div class="ff"><input id="cfgNichoNew" placeholder="Ex.: apostas esportivas"></div><button class="btn" id="cfgNichoAdd">Adicionar</button></div>
         <div class="cfg-nichos" id="cfgNichos"></div>
       </div>
+      <div class="fsec">
+        <div class="fsec-h">Importar board do Trello</div>
+        <p class="fhint muted" style="font-size:11.5px;margin:0 0 10px">Exporte o board em <b>Menu → Mais → Imprimir e exportar → Exportar como JSON</b> e mande o arquivo aqui. Cada lista vira um expert na etapa 1 e cada card vira um campo. Experts que já existem no funil são ignorados.</p>
+        <div class="inline"><label class="btn filebtn">Escolher arquivo JSON<input type="file" id="cfgTrelloFile" accept=".json,application/json"></label> <span class="fhint" id="cfgTrelloNome"></span></div>
+        <div id="cfgTrelloPreview" style="margin-top:12px"></div>
+        <div class="msg" id="cfgTrelloMsg"></div>
+      </div>
       <div class="msg" id="cfgMsg"></div>
     </div>
     <div class="modal-f"><button class="btn btn-primary" id="cfgSave">Salvar</button><button class="btn" id="cfgCancel">Cancelar</button></div>
@@ -2448,6 +2455,130 @@ async function fnConvNovo(){
     convMsg('');
   }catch(err){convMsg(fbErr(err),'err');}
 }
+/* ============================================================
+   IMPORTAR BOARD DO TRELLO
+   No board Negociações Experts cada lista é um expert ("NOME - NICHO") e
+   cada card é um campo, com o valor na descrição. É o inverso do funil,
+   onde a coluna é a etapa e o card é o expert — então a importação
+   transpõe: lista vira card do funil, card vira campo.
+   ============================================================ */
+const FN_TR_MAPA=[
+  [/^grupo\s+(de\s+)?afiliad/i,        'atGrupoWpp'],
+  [/^perfis\s*\|?\s*instagram/i,       'atInstagram'],
+  [/^resultados\s*\|?\s*opera/i,       'atResultados'],
+  [/^perfis\s*\|?\s*tiktok/i,          'atTiktok'],
+  [/^comunidades\s*\|?\s*base/i,       'atComunidades'],
+  [/^comunidade\s+no\s+whatsapp/i,     'atComunidades'],
+  [/^grupo\s+do\s+telegram/i,          'atComunidades'],
+  [/^landing\s*pages/i,                'atLandingPages'],
+  [/^drive\s+com\s+fotos/i,            'atDriveFotos'],
+  [/^negocia/i,                        'atNegociacao'],
+  [/^e-?mail\s+de\s+afiliado/i,        'email'],
+  [/^login\s+e\s+senha/i,              '__cred']
+];
+const FN_TR_URL=new Set(['atGrupoWpp','atLandingPages','atDriveFotos']);
+const FN_TR_NICHO=[[/roleta/i,'Roleta'],[/bacar|cassino|ao\s*vivo/i,'Cassino ao vivo'],
+  [/aviator|crash/i,'Aviator / Crash'],[/slot/i,'Slots'],[/tipster|esportiv/i,'Apostas esportivas'],
+  [/poker/i,'Poker'],[/bingo/i,'Bingo'],[/e-?sport/i,'E-sports']];
+/* o Trello grava link como [texto](url "título") e enche de marca de
+   direção de texto; aqui sobra a url, que é o que interessa no campo */
+function fnTrLimpa(s){
+  return String(s||'')
+    .replace(/[​-‏‪-‮﻿]/g,'')
+    .replace(/\[([^\]]*)\]\(\s*([^)\s]+)(?:\s+"[^"]*")?\s*\)/g,'$2')
+    .replace(/^mailto:/i,'')
+    .trim();
+}
+function fnTrNicho(txt){
+  for(const [re,n] of FN_TR_NICHO) if(re.test(txt||'')) return n;
+  return 'Outro';
+}
+function fnTrPlano(j){
+  const listas=(j.lists||[]).filter(l=>!l.closed);
+  const porLista={};
+  (j.cards||[]).forEach(c=>{if(!c.closed)(porLista[c.idList]=porLista[c.idList]||[]).push(c);});
+  const existentes=new Set(FN_CARDS.filter(c=>!c.arquivado).map(c=>String(c.nome||'').trim().toLowerCase()));
+  const plano=[];
+  listas.forEach(l=>{
+    const cards=porLista[l.id]||[];
+    if(!cards.length)return;
+    const bruto=String(l.name||'').trim();
+    const p=bruto.split(/\s+[-–]\s+/);
+    const nome=(p.length>1?p.slice(0,-1).join(' - '):bruto).replace(/[-–\s]+$/,'').trim();
+    const nicho=fnTrNicho(p.length>1?p[p.length-1]:'');
+    if(!nome)return;
+    const campos={},ignorados=[];let cred=null;
+    cards.forEach(c=>{
+      const v=fnTrLimpa(c.desc);
+      const reg=FN_TR_MAPA.find(([re])=>re.test(String(c.name||'').replace(/^[^\p{L}\p{N}]+/u,'')));
+      if(!reg){if(v)ignorados.push(String(c.name||'').trim());return;}
+      if(!v)return;
+      if(reg[1]==='__cred'){cred=v;return;}
+      /* campo de URL guarda só o link: o Trello escreve "Acesse este link
+         para entrar no meu grupo: https://…" e o texto em volta atrapalha */
+      let val=v;
+      if(FN_TR_URL.has(reg[1])){const u=v.match(/https?:\/\/\S+/);if(u)val=u[0];}
+      /* dois cards podem cair no mesmo campo (Comunidades, Telegram…) —
+         junta em vez de deixar o último ganhar */
+      campos[reg[1]]=campos[reg[1]]?campos[reg[1]]+'\n'+val:val;
+    });
+    plano.push({nome:nome,nicho:nicho,campos:campos,cred:cred,ignorados:ignorados,
+      lista:bruto,jaExiste:existentes.has(nome.toLowerCase())});
+  });
+  return plano;
+}
+let FN_TR_PLANO=null;
+function fnTrMsg(t,k){const m=document.getElementById('cfgTrelloMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}}
+function fnTrPreview(){
+  const el=document.getElementById('cfgTrelloPreview');if(!el)return;
+  const p=FN_TR_PLANO||[],novos=p.filter(x=>!x.jaExiste);
+  if(!p.length){el.innerHTML='<span class="fhint">Nenhuma lista com cards neste arquivo.</span>';return;}
+  const rot={atGrupoWpp:'Grupo Afiliado WPP',atInstagram:'Instagram',atResultados:'Resultados',
+    atTiktok:'TikTok',atComunidades:'Comunidades',atLandingPages:'Landing Pages',
+    atDriveFotos:'Drive',atNegociacao:'Negociação',email:'E-mail'};
+  el.innerHTML=`<dl class="cv-dl">${p.map(x=>{
+    const ks=Object.keys(x.campos).map(k=>rot[k]||k);
+    return `<dt>${esc(x.nome)}</dt><dd>${x.jaExiste?'<b>já existe no funil — será pulado</b>':
+      (x.nicho+' · '+(ks.length?ks.length+' campos: '+esc(ks.join(', ')):'nenhum campo preenchido')
+       +(x.cred?' · login/senha':'')
+       +(x.ignorados.length?' · <b>fora do mapa:</b> '+esc(x.ignorados.join(', ')):''))}</dd>`;
+  }).join('')}</dl>
+  <div style="margin-top:12px"><button class="btn btn-primary" id="cfgTrelloGo" type="button"${novos.length?'':' disabled'}>Criar ${novos.length} card${novos.length===1?'':'s'} no funil</button></div>`;
+}
+async function fnTrImportar(){
+  if(!fnAdmin()){fnTrMsg('Só administradores importam.','err');return;}
+  const novos=(FN_TR_PLANO||[]).filter(x=>!x.jaExiste);
+  if(!novos.length)return;
+  if(!confirm('Criar '+novos.length+' cards na etapa 1 do funil?'))return;
+  const btn=document.getElementById('cfgTrelloGo');if(btn)btn.disabled=true;
+  let ok=0,erros=[];
+  for(const x of novos){
+    try{
+      fnTrMsg('Criando '+x.nome+'… ('+(ok+1)+' de '+novos.length+')');
+      const d=Object.assign({
+        nome:x.nome, nicho:x.nicho, email:'', telefone:'', dataEntrada:isoOf(new Date()),
+        jaOpera:false, temGrupo:!!x.campos.atGrupoWpp, linkGrupo:'',
+        linkCard:'', contratoLink:'', contratoObs:'', operacaoAtual:'',
+        lpModelo:'', lpLinkDestino:'', grupoStatus:'pendente', lpDrive:'', lpPixel:'', lpCores:'',
+        atGrupoWpp:'', atInstagram:'', atResultados:'', atTiktok:'', atComunidades:'',
+        atLandingPages:'', atDriveFotos:'', atNegociacao:'',
+        etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false,
+        temCredenciais:false, temCredDash:!!x.cred,
+        origemTrello:x.lista, criadoPor:'Importação do Trello — '+(ME.name||ME.email||''),
+        createdAt:SVT(), updatedAt:SVT()
+      },x.campos);
+      const ref=await fnCol().add(d);
+      if(x.cred){
+        await fnCredDoc(ref.id,'dashboard').set({login:'',senha:x.cred,updatedAt:SVT(),updatedBy:'Importação do Trello'});
+      }
+      await fnHistAdd(ref.id,'criado','Card criado pela importação do board do Trello (lista "'+x.lista+'")');
+      ok++;
+    }catch(err){erros.push(x.nome+': '+fbErr(err));}
+  }
+  FN_TR_PLANO=null;
+  document.getElementById('cfgTrelloPreview').innerHTML='';
+  fnTrMsg(ok+' card'+(ok===1?'':'s')+' criado'+(ok===1?'':'s')+(erros.length?' · falhou: '+erros.join(' | '):' ✓'),erros.length?'err':'ok');
+}
 async function fnConvImportar(token){
   const c=FN_CONV.find(x=>x.token===token);if(!c||!c.resposta)return;
   const r=c.resposta;
@@ -2835,6 +2966,28 @@ function fnBind(){
 
   $('fnMClose').addEventListener('click',()=>fnClose()); /* sem repassar o Event, senão viraria "forçar" */
   $('fnModal').addEventListener('click',e=>{if(e.target.id==='fnModal')fnClose();});
+  $('cfgTrelloFile').addEventListener('change',e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    document.getElementById('cfgTrelloNome').textContent=f.name;
+    fnTrMsg('Lendo…');
+    const fr=new FileReader();
+    fr.onerror=()=>fnTrMsg('Não consegui ler o arquivo.','err');
+    fr.onload=()=>{
+      try{
+        const j=JSON.parse(fr.result);
+        if(!Array.isArray(j.lists)||!Array.isArray(j.cards))throw new Error('Não parece um export de board do Trello: faltam "lists" e "cards".');
+        FN_TR_PLANO=fnTrPlano(j);
+        const novos=FN_TR_PLANO.filter(x=>!x.jaExiste).length;
+        fnTrMsg(FN_TR_PLANO.length+' listas lidas · '+novos+' viram card novo');
+        fnTrPreview();
+      }catch(err){FN_TR_PLANO=null;document.getElementById('cfgTrelloPreview').innerHTML='';fnTrMsg(err.message||String(err),'err');}
+    };
+    fr.readAsText(f);
+    e.target.value='';
+  });
+  $('cfgTrelloPreview').addEventListener('click',e=>{
+    if(e.target.closest('#cfgTrelloGo'))fnTrImportar();
+  });
   $('cfgMClose').addEventListener('click',()=>$('cfgModal').classList.remove('on'));
   $('cfgCancel').addEventListener('click',()=>$('cfgModal').classList.remove('on'));
   $('cfgModal').addEventListener('click',e=>{if(e.target.id==='cfgModal')$('cfgModal').classList.remove('on');});

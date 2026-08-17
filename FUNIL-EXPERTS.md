@@ -228,7 +228,44 @@ Cancelar um convite ainda não respondido apaga o documento e o link para de fun
 
 ---
 
-## 6. Notificações
+## 6. Importar um board do Trello
+
+O board `Negociações Experts` é o inverso do funil: lá **cada lista é um expert**
+(`NOME - NICHO`) e **cada card é um campo**, com o valor na descrição. Aqui a coluna é a
+etapa e o card é o expert. A importação transpõe isso.
+
+**Como usar:** no Trello, `Menu → Mais → Imprimir e exportar → Exportar como JSON`. No funil,
+`Configurações → Importar board do Trello`, escolha o arquivo e confira a prévia antes de
+criar. Só administradores importam.
+
+O nome do card no Trello decide o campo de destino:
+
+| Card no Trello | Campo no funil |
+|---|---|
+| `Grupo Afiliado WPP`, `Grupo de Afiliado no Wpp` | Grupo Afiliado WPP |
+| `Perfis \| Instagram` / `Perfis \| TikTok` | os campos de mesmo nome |
+| `Resultados \| Operação` | Resultados \| Operação |
+| `Comunidades \| Base de Leads`, `Grupo do Telegram`, `Comunidade no WhatsApp` | Comunidades \| Base de Leads |
+| `Landing Pages`, `Drive com Fotos`, `Negociação` | os campos de mesmo nome |
+| `Email de afiliado na zona de jogo` | E-mail |
+| `Login e Senha Dashboard / Acordo` | cofre `secure/dashboard` |
+
+Detalhes que importam:
+
+- Cards que caem no mesmo campo são **juntados**, não sobrescritos — senão o último venceria.
+- Emoji no início do nome do card é ignorado na comparação, e link em markdown vira a URL
+  pura. Nos campos de URL sobra **só o link**, sem o texto em volta.
+- Nicho sai do que vem depois do `-` no nome da lista, mapeado para a lista de nichos do
+  funil; o que não casa vira `Outro`.
+- Lista sem cards, lista arquivada e expert cujo nome **já existe** no funil são pulados.
+- Todo card importado entra na **etapa 1** e guarda o nome da lista de origem em
+  `origemTrello`, além de uma entrada no histórico.
+- O que não estiver no mapa acima aparece na prévia como *fora do mapa* — nada é
+  descartado em silêncio.
+
+---
+
+## 7. Notificações
 
 Hoje o aviso é **dentro do painel**:
 
@@ -245,7 +282,7 @@ Zapier/Make. É um passo separado; me avise quando quiser ligar.
 
 ---
 
-## 7. Anexos e fotos
+## 8. Anexos e fotos
 
 Contrato e fotos do expert podem ir por **link** (Drive, Dropbox) ou **upload direto**.
 
@@ -255,7 +292,7 @@ Firestore — assim não é preciso ativar o Firebase Storage (que exige plano p
 
 ---
 
-## 8. Onde os dados ficam
+## 9. Onde os dados ficam
 
 ```
 experts_funil/{cardId}                  dados do card, etapa, responsável, datas
@@ -275,7 +312,7 @@ o botão **Ver arquivados** traz de volta.
 
 ---
 
-## 9. Ainda em aberto
+## 10. Ainda em aberto
 
 Os dois pontos que você marcou como pendentes ficaram **configuráveis no painel**, então não
 travam a entrega — mas vale fechar com a equipe:
