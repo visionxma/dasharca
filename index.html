@@ -759,16 +759,40 @@ svg text{font-family:inherit}
             <div class="ff"><label>Você já opera hoje?</label><select id="cvOpera"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
             <div class="ff"><label>Você já tem grupo?</label><select id="cvGrupo"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
           </div>
-          <div class="ff" id="cvGrupoWrap" style="display:none;margin-top:11px"><label>Link do seu grupo <span class="req">*</span></label>
+          <div class="ff" id="cvGrupoWrap" style="display:none;margin-top:11px"><label>Grupo Afiliado WPP <span class="req">*</span></label>
             <input id="cvGrupoLink" type="url" placeholder="https://t.me/… ou https://chat.whatsapp.com/…">
             <span class="fhint">Telegram, WhatsApp, Discord — onde sua audiência já está hoje.</span>
           </div>
         </div>
 
         <div class="cv-grp">
+          <div class="cv-grp-h">Seus ativos</div>
+          <div class="cv-grp-s">O que você já tem rodando hoje. Se ainda não tiver algum item, pode deixar em branco.</div>
+          <div class="frow">
+            <div class="ff"><label>Perfis | Instagram</label><input id="cvInstagram" placeholder="@perfil, @perfil2"></div>
+            <div class="ff"><label>Perfis | TikTok</label><input id="cvTiktok" placeholder="@perfil, @perfil2"></div>
+            <div class="ff"><label>Comunidades | Base de Leads</label><input id="cvComunidades" placeholder="Onde está a base e qual o tamanho"></div>
+            <div class="ff"><label>Landing Pages</label><input id="cvLandingPages" type="url" placeholder="https://…"></div>
+          </div>
+          <div class="ff" style="margin-top:11px"><label>Resultados | Operação</label>
+            <textarea id="cvResultados" style="min-height:84px" placeholder="Números do que sua operação vem entregando hoje."></textarea>
+          </div>
+          <div class="ff" style="margin-top:11px"><label>Negociação</label>
+            <textarea id="cvNegociacao" style="min-height:84px" placeholder="O que você espera do acordo: percentual, condições, o que precisa estar combinado."></textarea>
+          </div>
+          <div class="ff" style="margin-top:14px"><label>Login e Senha Dashboard / Acordo</label>
+            <div class="frow">
+              <div class="ff"><input id="cvDashLogin" placeholder="Login" autocomplete="off"></div>
+              <div class="ff"><input id="cvDashSenha" type="password" placeholder="Senha" autocomplete="new-password"></div>
+            </div>
+            <span class="fhint">Guardado em área restrita: só administradores conseguem ver, e toda consulta fica registrada. Se preferir passar por outro canal, deixe em branco.</span>
+          </div>
+        </div>
+
+        <div class="cv-grp">
           <div class="cv-grp-h">Materiais da landing page</div>
           <div class="cv-grp-s">É com isso que montamos sua página. Se ainda não tiver algum item, pode deixar em branco — a gente combina depois.</div>
-          <div class="ff"><label>Link do Drive com fotos e materiais <span class="req">*</span></label>
+          <div class="ff"><label>Drive com Fotos <span class="req">*</span></label>
             <input id="cvDrive" type="url" placeholder="https://drive.google.com/…">
             <span class="fhint">Deixe a pasta com acesso liberado para quem tem o link.</span>
           </div>
@@ -1932,7 +1956,6 @@ function fnModalHTML(c,novo){
       ${fnTxt('f_atResultados','Resultados | Operação',c.atResultados,'Números e prints do que a operação vem entregando.',ro)}
     </div>
     <div class="frow" style="margin-top:11px">
-      ${fnInp('f_atGrupoAfiliado','Grupo de Afiliado no Wpp',c.atGrupoAfiliado,'url','https://chat.whatsapp.com/…',ro)}
       ${fnInp('f_atTiktok','Perfis | TikTok',c.atTiktok,'text','@perfil, @perfil2',ro)}
       ${fnInp('f_atComunidades','Comunidades | Base de Leads',c.atComunidades,'text','Onde está a base e qual o tamanho',ro)}
       ${fnInp('f_atLandingPages','Landing Pages',c.atLandingPages,'url','https://…',ro)}
@@ -2147,7 +2170,6 @@ function fnLeForm(){
     atGrupoWpp:g('f_atGrupoWpp').trim(),
     atInstagram:g('f_atInstagram').trim(),
     atResultados:g('f_atResultados'),
-    atGrupoAfiliado:g('f_atGrupoAfiliado').trim(),
     atTiktok:g('f_atTiktok').trim(),
     atComunidades:g('f_atComunidades').trim(),
     atLandingPages:g('f_atLandingPages').trim(),
@@ -2367,8 +2389,12 @@ function fnConvRender(){
       <div class="cv-item-h"><b>${esc(r.nome||'(sem nome)')}</b><span>respondeu em ${esc(fnDT(c.respondidoEm))}</span></div>
       <dl class="cv-dl">
         ${li('E-mail',r.email)}${li('WhatsApp',r.telefone)}${li('Nicho',r.nicho)}
-        ${li('Já opera',r.jaOpera?'Sim':'Não')}${li('Já tem grupo',r.temGrupo?'Sim':'Não')}${li('Link do grupo',r.linkGrupo,true)}
-        ${li('Materiais',r.drive,true)}${li('Pixel',r.pixel)}${li('Cores',r.cores)}${li('Observações',r.obs)}
+        ${li('Já opera',r.jaOpera?'Sim':'Não')}${li('Já tem grupo',r.temGrupo?'Sim':'Não')}${li('Grupo Afiliado WPP',r.linkGrupo,true)}
+        ${li('Perfis | Instagram',r.instagram)}${li('Perfis | TikTok',r.tiktok)}
+        ${li('Comunidades | Base de Leads',r.comunidades)}${li('Landing Pages',r.landingPages,true)}
+        ${li('Resultados | Operação',r.resultados)}${li('Negociação',r.negociacao)}
+        ${(r.dashLogin||r.dashSenha)?'<dt>Login e Senha Dashboard / Acordo</dt><dd>Enviado — vai para a área restrita ao criar o card</dd>':''}
+        ${li('Drive com Fotos',r.drive,true)}${li('Pixel',r.pixel)}${li('Cores',r.cores)}${li('Observações',r.obs)}
       </dl>
       <div class="cv-acts"><button class="btn btn-primary" data-imp="${esc(c.token)}">Criar card no funil</button>
       <button class="btn" data-desc="${esc(c.token)}">Descartar</button></div></div>`;
@@ -2398,6 +2424,14 @@ async function fnConvImportar(token){
   const r=c.resposta;
   if(FN_CARDS.some(x=>!x.arquivado&&String(x.nome||'').toLowerCase()===String(r.nome||'').toLowerCase())
      &&!confirm('Já existe um card ativo chamado "'+r.nome+'". Criar assim mesmo?'))return;
+  const temSenha=!!(r.dashLogin||r.dashSenha);
+  /* o cofre secure/ só aceita escrita de admin. Se quem importa não for,
+     a senha ficaria presa na resposta do convite, que a equipe toda lê —
+     melhor avisar e deixar um admin importar do que espalhar o dado. */
+  if(temSenha&&!fnAdmin()){
+    convMsg('Esta resposta traz login e senha do dashboard. Peça a um administrador para importar — só ele pode guardar isso na área restrita.','err');
+    return;
+  }
   convMsg('Criando card…');
   try{
     const ref=await fnCol().add({
@@ -2407,11 +2441,22 @@ async function fnConvImportar(token){
       operacaoAtual:r.obs?('Enviado pelo expert no convite:\n'+r.obs):'',
       lpDrive:r.drive||'', lpPixel:r.pixel||'', lpCores:r.cores||'',
       linkCard:'', contratoLink:'', contratoObs:'', lpModelo:'', lpLinkDestino:'', grupoStatus:'pendente',
-      etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false, temCredenciais:false, temCredDash:false,
+      atGrupoWpp:r.linkGrupo||'', atInstagram:r.instagram||'', atResultados:r.resultados||'',
+      atTiktok:r.tiktok||'', atComunidades:r.comunidades||'', atLandingPages:r.landingPages||'',
+      atDriveFotos:r.drive||'', atNegociacao:r.negociacao||'',
+      etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false, temCredenciais:false, temCredDash:temSenha,
       convite:token, criadoPor:'Formulário de convite', createdAt:SVT(), updatedAt:SVT()
     });
+    if(temSenha){
+      await fnCredDoc(ref.id,'dashboard').set({login:r.dashLogin||'',senha:r.dashSenha||'',
+        updatedAt:SVT(),updatedBy:'Formulário de convite'});
+      await fnHistAdd(ref.id,'cred','Login e senha do dashboard / acordo recebidos pelo convite');
+    }
     await fnHistAdd(ref.id,'criado','Card criado a partir do formulário respondido pelo expert — responsável: '+fnNome(fnDono(1)));
-    await fnConvCol().doc(token).update({importado:true,cardId:ref.id,importadoPor:ME.name||ME.email||'',importadoEm:SVT()});
+    const upd={importado:true,cardId:ref.id,importadoPor:ME.name||ME.email||'',importadoEm:SVT()};
+    /* a senha já está no cofre: apaga da resposta do convite */
+    if(temSenha){upd['resposta.dashLogin']='';upd['resposta.dashSenha']='';}
+    await fnConvCol().doc(token).update(upd);
     convMsg('Card criado ✓','ok');
   }catch(err){convMsg(fbErr(err),'err');}
 }
@@ -2476,7 +2521,12 @@ async function cvEnviar(){
       usado:true, respondidoEm:SVT(),
       resposta:{nome:nome,email:email,telefone:g('cvFone'),nicho:g('cvNicho'),
         jaOpera:g('cvOpera')==='sim', temGrupo:temGrupo, linkGrupo:temGrupo?linkGrupo:'',
-        drive:drive, pixel:g('cvPixel'), cores:g('cvCores'), obs:g('cvObs')}
+        drive:drive, pixel:g('cvPixel'), cores:g('cvCores'), obs:g('cvObs'),
+        /* ativos do board; dashLogin/dashSenha saem daqui na importação e
+           vão para o cofre secure/dashboard, que só admin lê */
+        instagram:g('cvInstagram'), tiktok:g('cvTiktok'), comunidades:g('cvComunidades'),
+        landingPages:g('cvLandingPages'), resultados:g('cvResultados'), negociacao:g('cvNegociacao'),
+        dashLogin:g('cvDashLogin'), dashSenha:g('cvDashSenha')}
     });
     cvShow('cvDone');
   }catch(err){

@@ -170,6 +170,11 @@ São **dois cofres**, com o mesmo mecanismo e chaves diferentes:
 | `credenciais` | Etapa 2 — "Login e senha da zona de jogo" | `experts_funil/{card}/secure/credenciais` |
 | `dashboard` | Ativos do expert — "Login e Senha Dashboard / Acordo" | `experts_funil/{card}/secure/dashboard` |
 
+O cofre `dashboard` também é preenchível pelo expert no formulário de convite. Nesse caminho
+a senha passa pela resposta do convite, que a equipe inteira lê — então a importação **move**
+o dado para o cofre e **apaga** da resposta. Como só admin escreve em `secure/`, importar uma
+resposta que traz senha exige perfil admin; para os demais a importação é recusada com aviso.
+
 Estes são os campos sensíveis e eles são tratados à parte:
 
 - Ficam numa **subcoleção separada** (`experts_funil/{card}/secure/…`), **não** no
