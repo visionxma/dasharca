@@ -1860,6 +1860,9 @@ function fnSel(id,label,val,opts,dis){
 function fnInp(id,label,val,tipo,ph,dis,hint){
   return `<div class="ff"><label>${label}</label><input id="${id}" type="${tipo||'text'}" value="${esc(val==null?'':val)}"${ph?` placeholder="${esc(ph)}"`:''}${dis?' disabled':''}>${hint?`<span class="fhint">${hint}</span>`:''}</div>`;
 }
+function fnTxt(id,label,val,ph,dis,alt){
+  return `<div class="ff"><label>${label}</label><textarea id="${id}" style="min-height:${alt||84}px"${ph?` placeholder="${esc(ph)}"`:''}${dis?' disabled':''}>${esc(val==null?'':val)}</textarea></div>`;
+}
 function fnModalHTML(c,novo){
   const et=Number(c.etapa)||1, ro=!!c.arquivado;
   const nichos=[['','— selecione —']].concat(FN_CFG.nichos.map(x=>[x,x]));
@@ -1915,6 +1918,33 @@ function fnModalHTML(c,novo){
       <span class="fhint">As imagens são reduzidas automaticamente antes de salvar.</span>
     </div></div>`;
 
+  /* Ativos do expert: a lista do board Negociações Experts, na mesma ordem.
+     Não pertence a uma etapa — é o que se junta sobre o expert ao longo
+     de todas elas. "Login e Senha Dashboard / Acordo" não é campo comum:
+     entra no cofre de credenciais, igual ao da zona de jogo, para não
+     gravar senha em texto puro num documento que o time inteiro lê. */
+  h+=`<div class="fsec"><div class="fsec-h">Ativos do expert</div>
+    <div class="frow">
+      ${fnInp('f_atGrupoWpp','Grupo Afiliado WPP',c.atGrupoWpp,'url','https://chat.whatsapp.com/…',ro)}
+      ${fnInp('f_atInstagram','Perfis | Instagram',c.atInstagram,'text','@perfil, @perfil2',ro)}
+    </div>
+    <div class="frow one" style="margin-top:11px">
+      ${fnTxt('f_atResultados','Resultados | Operação',c.atResultados,'Números e prints do que a operação vem entregando.',ro)}
+    </div>
+    <div class="frow" style="margin-top:11px">
+      ${fnInp('f_atGrupoAfiliado','Grupo de Afiliado no Wpp',c.atGrupoAfiliado,'url','https://chat.whatsapp.com/…',ro)}
+      ${fnInp('f_atTiktok','Perfis | TikTok',c.atTiktok,'text','@perfil, @perfil2',ro)}
+      ${fnInp('f_atComunidades','Comunidades | Base de Leads',c.atComunidades,'text','Onde está a base e qual o tamanho',ro)}
+      ${fnInp('f_atLandingPages','Landing Pages',c.atLandingPages,'url','https://…',ro)}
+    </div>
+    <div class="ff" style="margin-top:14px"><label>Login e Senha Dashboard / Acordo</label>${fnCredHTML(c,'dashboard')}</div>
+    <div class="frow" style="margin-top:14px">
+      ${fnInp('f_atDriveFotos','Drive com Fotos',c.atDriveFotos,'url','https://drive.google.com/…',ro)}
+    </div>
+    <div class="frow one" style="margin-top:11px">
+      ${fnTxt('f_atNegociacao','Negociação',c.atNegociacao,'Como está a conversa: percentual, condições, o que falta fechar.',ro)}
+    </div></div>`;
+
   h+=`<div class="fsec${et===6?' now':''}"><div class="fsec-h"><span class="st">Etapa 6</span>Relatórios semanais</div>
     <div id="fnRelatorios"><span class="fhint">Carregando…</span></div>
     ${ro?'':`<div style="margin-top:12px;border:1px solid var(--border);border-radius:11px;padding:12px 13px">
@@ -1932,49 +1962,60 @@ function fnModalHTML(c,novo){
   h+=`<div class="fsec"><div class="fsec-h">Histórico do card</div><ul class="hist" id="fnHist"><li><span class="fhint">Carregando…</span></li></ul></div>`;
   return h;
 }
-function fnCredHTML(c){
-  if(!fnAdmin())return `<div class="cred"><div class="cred-lock">
+/* Dois cofres hoje: o da zona de jogo (etapa 2) e o do dashboard/acordo
+   (ativos do expert). Mesmo mecanismo, chaves diferentes. */
+const FN_CRED={
+  credenciais:{flag:'temCredenciais',hist:'Credenciais da zona de jogo atualizadas'},
+  dashboard:{flag:'temCredDash',hist:'Login e senha do dashboard / acordo atualizados'}
+};
+function fnCredHTML(c,k){
+  k=k||'credenciais';
+  const tem=!!c[FN_CRED[k].flag];
+  const cad=tem?'Credenciais cadastradas':'Ainda não cadastradas';
+  if(!fnAdmin())return `<div class="cred" data-cred="${k}"><div class="cred-lock">
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
-    <span>Dado sensível — visível apenas para administradores. <b>${c.temCredenciais?'Credenciais cadastradas':'Ainda não cadastradas'}</b></span></div>
+    <span>Dado sensível — visível apenas para administradores. <b>${cad}</b></span></div>
     <div class="mask" style="margin-top:8px">•••••••••••• / ••••••••••••</div></div>`;
-  return `<div class="cred">
+  return `<div class="cred" data-cred="${k}">
     <div class="cred-lock"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
-      <span>${c.temCredenciais?'Credenciais cadastradas.':'Nenhuma credencial cadastrada.'} Toda revelação fica registrada em log com seu nome e a data.</span></div>
-    <div id="fnCredArea" style="margin-top:10px"><button class="btn" id="fnCredShow" type="button">${c.temCredenciais?'Revelar credenciais':'Cadastrar credenciais'}</button> <span class="msg" id="fnCredMsg"></span></div>
+      <span>${tem?'Credenciais cadastradas.':'Nenhuma credencial cadastrada.'} Toda revelação fica registrada em log com seu nome e a data.</span></div>
+    <div id="fnCredArea_${k}" style="margin-top:10px"><button class="btn" data-credshow="${k}" type="button">${tem?'Revelar credenciais':'Cadastrar credenciais'}</button> <span class="msg" id="fnCredMsg_${k}"></span></div>
   </div>`;
 }
 
 /* ---- credenciais (somente admin, com log de acesso) ---- */
-function fnCredDoc(id){return fnCol().doc(id).collection('secure').doc('credenciais');}
-async function fnCredReveal(){
+function fnCredDoc(id,k){return fnCol().doc(id).collection('secure').doc(k||'credenciais');}
+async function fnCredReveal(k){
+  k=k||'credenciais';
   if(!fnAdmin()||!FN_OPEN)return;
-  const area=document.getElementById('fnCredArea'),msg=(t,k)=>{const m=document.getElementById('fnCredMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}};
+  const area=document.getElementById('fnCredArea_'+k),msg=(t,c)=>{const m=document.getElementById('fnCredMsg_'+k);if(m){m.textContent=t||'';m.className='msg '+(c||'');}};
   msg('Carregando…');
   try{
-    const s=await fnCredDoc(FN_OPEN).get();
+    const s=await fnCredDoc(FN_OPEN,k).get();
     const d=s.exists?s.data():{};
     const card=FN_CARDS.find(x=>x.id===FN_OPEN)||{};
     if(s.exists){
-      fbDb.collection('credLog').add({cardId:FN_OPEN,expert:card.nome||'',uid:ME.uid,nome:ME.name||'',email:ME.email||'',em:SVT()}).catch(()=>{});
+      fbDb.collection('credLog').add({cardId:FN_OPEN,cofre:k,expert:card.nome||'',uid:ME.uid,nome:ME.name||'',email:ME.email||'',em:SVT()}).catch(()=>{});
     }
     area.innerHTML=`<div class="frow">
-      ${fnInp('f_credLogin','Login',d.login||'','text')}
-      ${fnInp('f_credSenha','Senha',d.senha||'','text')}
+      ${fnInp('f_credLogin_'+k,'Login',d.login||'','text')}
+      ${fnInp('f_credSenha_'+k,'Senha',d.senha||'','text')}
     </div>
-    <div style="margin-top:10px"><button class="btn btn-primary" id="fnCredSave" type="button">Salvar credenciais</button> <button class="btn" id="fnCredHide" type="button">Ocultar</button> <span class="msg" id="fnCredMsg"></span></div>
+    <div style="margin-top:10px"><button class="btn btn-primary" data-credsave="${k}" type="button">Salvar credenciais</button> <button class="btn" data-credhide="${k}" type="button">Ocultar</button> <span class="msg" id="fnCredMsg_${k}"></span></div>
     ${d.updatedAt?`<div class="fhint" style="margin-top:8px">Última atualização: ${esc(fnDT(d.updatedAt))} por ${esc(d.updatedBy||'—')}</div>`:''}`;
   }catch(err){msg(fbErr(err),'err');}
 }
-async function fnCredSave(){
+async function fnCredSave(k){
+  k=k||'credenciais';
   if(!fnAdmin()||!FN_OPEN)return;
-  const msg=(t,k)=>{const m=document.getElementById('fnCredMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}};
-  const login=document.getElementById('f_credLogin').value.trim(),senha=document.getElementById('f_credSenha').value;
+  const msg=(t,c)=>{const m=document.getElementById('fnCredMsg_'+k);if(m){m.textContent=t||'';m.className='msg '+(c||'');}};
+  const login=document.getElementById('f_credLogin_'+k).value.trim(),senha=document.getElementById('f_credSenha_'+k).value;
   msg('Salvando…');
   try{
-    await fnCredDoc(FN_OPEN).set({login:login,senha:senha,updatedAt:SVT(),updatedBy:ME.name||ME.email||''},{merge:true});
-    const tem=!!(login||senha);
-    await fnCol().doc(FN_OPEN).update({temCredenciais:tem,updatedAt:SVT()});
-    await fnHistAdd(FN_OPEN,'cred','Credenciais da zona de jogo atualizadas');
+    await fnCredDoc(FN_OPEN,k).set({login:login,senha:senha,updatedAt:SVT(),updatedBy:ME.name||ME.email||''},{merge:true});
+    const upd={updatedAt:SVT()};upd[FN_CRED[k].flag]=!!(login||senha);
+    await fnCol().doc(FN_OPEN).update(upd);
+    await fnHistAdd(FN_OPEN,'cred',FN_CRED[k].hist);
     msg('Credenciais salvas ✓','ok');
   }catch(err){msg(fbErr(err),'err');}
 }
@@ -2101,7 +2142,17 @@ function fnLeForm(){
     telefone:g('f_fone').trim(),
     lpDrive:g('f_lpDrive').trim(),
     lpPixel:g('f_lpPixel').trim(),
-    lpCores:g('f_lpCores').trim()
+    lpCores:g('f_lpCores').trim(),
+    /* ativos do expert (Login e Senha Dashboard fica no cofre, não aqui) */
+    atGrupoWpp:g('f_atGrupoWpp').trim(),
+    atInstagram:g('f_atInstagram').trim(),
+    atResultados:g('f_atResultados'),
+    atGrupoAfiliado:g('f_atGrupoAfiliado').trim(),
+    atTiktok:g('f_atTiktok').trim(),
+    atComunidades:g('f_atComunidades').trim(),
+    atLandingPages:g('f_atLandingPages').trim(),
+    atDriveFotos:g('f_atDriveFotos').trim(),
+    atNegociacao:g('f_atNegociacao')
   };
 }
 function fnMsg(t,k){const m=document.getElementById('fnMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}}
@@ -2114,7 +2165,7 @@ async function fnCreate(){
   fnMsg('Criando…');
   try{
     const d=fnLeForm();
-    d.etapa=1;d.responsavel=fnDono(1);d.etapaDesde=SVT();d.arquivado=false;d.temCredenciais=false;
+    d.etapa=1;d.responsavel=fnDono(1);d.etapaDesde=SVT();d.arquivado=false;d.temCredenciais=false;d.temCredDash=false;
     d.criadoPor=ME.name||ME.email||'';d.createdAt=SVT();d.updatedAt=SVT();
     const ref=await fnCol().add(d);
     await fnHistAdd(ref.id,'criado','Card criado na etapa 1 — responsável: '+fnNome(fnDono(1)));
@@ -2356,7 +2407,7 @@ async function fnConvImportar(token){
       operacaoAtual:r.obs?('Enviado pelo expert no convite:\n'+r.obs):'',
       lpDrive:r.drive||'', lpPixel:r.pixel||'', lpCores:r.cores||'',
       linkCard:'', contratoLink:'', contratoObs:'', lpModelo:'', lpLinkDestino:'', grupoStatus:'pendente',
-      etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false, temCredenciais:false,
+      etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false, temCredenciais:false, temCredDash:false,
       convite:token, criadoPor:'Formulário de convite', createdAt:SVT(), updatedAt:SVT()
     });
     await fnHistAdd(ref.id,'criado','Card criado a partir do formulário respondido pelo expert — responsável: '+fnNome(fnDono(1)));
@@ -2757,9 +2808,10 @@ function fnBind(){
     else if(t.id==='fnNext')fnMove(1);
     else if(t.id==='fnPrev')fnMove(-1);
     else if(t.id==='fnArchive')fnArchive();
-    else if(t.id==='fnCredShow')fnCredReveal();
-    else if(t.id==='fnCredSave')fnCredSave();
-    else if(t.id==='fnCredHide'){const c=FN_CARDS.find(x=>x.id===FN_OPEN);if(c)document.getElementById('fnCredArea').parentElement.outerHTML=fnCredHTML(c);}
+    else if(t.dataset.credshow)fnCredReveal(t.dataset.credshow);
+    else if(t.dataset.credsave)fnCredSave(t.dataset.credsave);
+    else if(t.dataset.credhide){const k=t.dataset.credhide,c=FN_CARDS.find(x=>x.id===FN_OPEN);
+      if(c)document.getElementById('fnCredArea_'+k).parentElement.outerHTML=fnCredHTML(c,k);}
     else if(t.id==='fnAddRel')fnAddRel();
     else if(t.dataset.anx){if(confirm('Remover este arquivo?'))fnAnxCol(FN_OPEN).doc(t.dataset.anx).delete().then(()=>fnLoadAnexos(FN_OPEN));}
   });

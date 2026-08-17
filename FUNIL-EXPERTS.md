@@ -161,11 +161,18 @@ Prazo `0` significa "tem que sair no mesmo dia".
 
 ---
 
-## 4. Credenciais da zona de jogo
+## 4. Credenciais
 
-Este é o campo sensível e ele é tratado à parte:
+São **dois cofres**, com o mesmo mecanismo e chaves diferentes:
 
-- Fica numa **subcoleção separada** (`experts_funil/{card}/secure/credenciais`), **não** no
+| Cofre | Onde aparece no formulário | Documento |
+|---|---|---|
+| `credenciais` | Etapa 2 — "Login e senha da zona de jogo" | `experts_funil/{card}/secure/credenciais` |
+| `dashboard` | Ativos do expert — "Login e Senha Dashboard / Acordo" | `experts_funil/{card}/secure/dashboard` |
+
+Estes são os campos sensíveis e eles são tratados à parte:
+
+- Ficam numa **subcoleção separada** (`experts_funil/{card}/secure/…`), **não** no
   documento do card que a equipe toda lê.
 - As regras acima liberam essa subcoleção **só para perfil admin**. Não é só a tela que
   esconde — quem não é admin não consegue ler o dado nem pelo console do navegador.
@@ -248,6 +255,7 @@ Firestore — assim não é preciso ativar o Firebase Storage (que exige plano p
 ```
 experts_funil/{cardId}                  dados do card, etapa, responsável, datas
 experts_funil/{cardId}/secure/credenciais   login e senha da zona de jogo (só admin)
+experts_funil/{cardId}/secure/dashboard     login e senha do dashboard / acordo (só admin)
 experts_funil/{cardId}/historico/{id}   toda mudança de etapa e troca de dono (imutável)
 experts_funil/{cardId}/relatorios/{id}  relatórios semanais da etapa 6
 experts_funil/{cardId}/anexos/{id}      contrato e fotos enviadas
