@@ -162,10 +162,10 @@ tbody tr:hover{background:var(--surface-2)}
 tfoot td{border-top:2px solid var(--border); font-weight:650}
 td.pos{color:var(--pos-ink)} td.neg{color:var(--neg)}
 .badge{display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; border:1px solid var(--border)}
-.b-esc{background:var(--ink); color:var(--surface); border-color:var(--ink)}
-.b-man{background:transparent; color:var(--ink)}
-.b-rev{background:transparent; color:var(--ink-2)}
-.b-red{background:transparent; color:var(--muted); border-style:dashed}
+.b-esc{background:var(--okc-bg); color:var(--okc); border-color:var(--okc)}
+.b-man{background:var(--info-bg); color:var(--info); border-color:var(--info)}
+.b-rev{background:var(--attn-bg); color:var(--attn); border-color:var(--attn)}
+.b-red{background:var(--danger-bg); color:var(--danger); border-color:var(--danger)}
 
 /* Estratégia */
 .scoregrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px}
@@ -243,6 +243,13 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 .kpi:has(.k-val.pos)::before{background:var(--pos)}
 .kpi:has(.k-val.neg)::before{background:var(--neg)}
 .kpi:has(.k-val.warnc)::before{background:var(--warn)}
+/* etiqueta de nicho colorida por inteiro, e não só o pontinho */
+.fcard .lab{background:color-mix(in srgb,var(--fc-nicho,var(--ink-2)) 14%,var(--surface));
+  border-color:color-mix(in srgb,var(--fc-nicho,var(--border)) 34%,var(--surface));
+  color:var(--fc-nicho,var(--ink-2))}
+.fcard .lab.late,.fcard .lab.due{color:var(--danger-ink)}
+.fcard .lab.late{background:var(--danger);border-color:var(--danger)}
+.fcard .lab.due{background:var(--attn);border-color:var(--attn)}
 
 /* Board estilo Trello: colunas de altura cheia, cada uma com rolagem própria */
 .main.board-mode{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
