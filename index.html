@@ -236,6 +236,86 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 .fcard .lab.late{background:var(--danger);border-color:var(--danger)}
 .fcard .lab.due{background:var(--attn);border-color:var(--attn)}
 
+/* ===== Painel de Experts: layout do painel-experts-modelo-v2 ===== */
+/* sem barra lateral, como no modelo: a navegação foi para o cabeçalho */
+.side,.side-backdrop,.menu-btn{display:none!important}
+.shell{display:block}
+.main{width:100%}
+.wrap{max-width:1320px}
+.px-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;
+  margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--border)}
+.px-eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.px-head h1{font-family:var(--font-display);font-weight:800;font-size:30px;margin:0;letter-spacing:-.01em}
+.px-sub{color:var(--muted);font-size:14px;margin-top:6px}
+.stat-strip{display:flex;gap:12px;flex-wrap:wrap}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;min-width:118px;border-top:3px solid var(--info)}
+.stat.pos{border-top-color:var(--pos)} .stat.neg{border-top-color:var(--neg)} .stat.warn{border-top-color:var(--warn)}
+.stat .num{font-family:var(--font-mono);font-weight:700;font-size:19px;font-variant-numeric:tabular-nums}
+.stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.px-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px;padding:14px 16px;
+  background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.px-filters .flabel{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
+.pill{font:inherit;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:20px;border:1.5px solid transparent;
+  cursor:pointer;background:var(--surface-2);color:var(--ink);opacity:.55;transition:opacity .15s}
+.pill:hover{opacity:.85}
+.pill.active{opacity:1;border-color:currentColor}
+.px-filters select{font:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:20px;
+  border:1px solid var(--border);background:var(--surface);color:var(--ink)}
+.clear-btn{margin-left:auto;font:inherit;font-size:12px;color:var(--muted);background:none;border:none;text-decoration:underline;cursor:pointer}
+.ranking{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:28px}
+.ranking-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:4px}
+.ranking h2{font-family:var(--font-display);font-size:15px;margin:0;display:flex;align-items:center;gap:8px}
+.tabbar{display:flex;gap:4px;background:var(--surface-2);border-radius:10px;padding:3px}
+.tabbar .tb{font:inherit;font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;border:none;background:transparent;cursor:pointer;color:var(--muted)}
+.tabbar .tb.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ranking p.rk-hint{font-size:12.5px;color:var(--muted);margin:2px 0 14px}
+.rank-row{display:grid;grid-template-columns:26px 1.5fr 140px 120px 90px;gap:12px;align-items:center;padding:9px 6px;border-radius:8px;font-size:13.5px}
+.rank-row.head{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px}
+.rank-row:not(.head):hover{background:var(--surface-2)}
+.rank-pos{font-family:var(--font-mono);color:var(--muted)}
+.rank-pos.top{color:var(--pos);font-weight:700}
+.rank-name{font-weight:600;display:flex;align-items:center;gap:7px;min-width:0}
+.rank-name .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.rank-val{font-family:var(--font-mono);text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.badge-priority{display:inline-block;font-family:var(--font-mono);font-size:10px;background:var(--okc-bg);color:var(--okc);padding:2px 7px;border-radius:20px;font-weight:700}
+.xgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px}
+.xcard{background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--xnicho,var(--info));
+  border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:13px}
+.xcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.xcard-name{font-family:var(--font-display);font-weight:700;font-size:17px;overflow-wrap:anywhere}
+.niche-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;
+  background:color-mix(in srgb,var(--xnicho,var(--info)) 14%,var(--surface));color:var(--xnicho,var(--info))}
+.st-chip{font:inherit;font-size:12px;font-weight:700;border:none;border-radius:20px;padding:6px 12px;white-space:nowrap}
+.st-chip.ok{background:var(--okc-bg);color:var(--okc)}
+.st-chip.andamento{background:var(--info-bg);color:var(--info)}
+.st-chip.due{background:var(--attn-bg);color:var(--attn)}
+.st-chip.late{background:var(--danger-bg);color:var(--danger)}
+.meta-line{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.meta-line b{color:var(--ink);font-weight:600}
+.resp-badge{font-family:var(--font-mono);font-size:11px;background:var(--surface-2);padding:3px 9px;border-radius:8px}
+.traffic-line{font-size:12.5px;color:var(--muted);padding:8px 10px;background:var(--surface-2);border-radius:8px;line-height:1.5}
+.traffic-line b{color:var(--ink);font-weight:600}
+.xacts{display:flex;gap:7px;flex-wrap:wrap}
+.xacts .xb{flex:1;min-width:82px;text-align:center;font:inherit;font-size:12px;font-weight:600;padding:8px 9px;border-radius:8px;
+  border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.xacts .xb:hover{background:var(--surface-2)}
+.xacts .xb[aria-disabled="true"]{opacity:.4;pointer-events:none}
+.xpanel{display:none;border-top:1px dashed var(--border);padding-top:13px}
+.xpanel.open{display:block}
+.xpanel h4{margin:0 0 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.xpanel .txt{font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.px-note{margin-top:36px;padding:16px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:12px;
+  font-size:12.5px;color:var(--muted);line-height:1.6}
+.px-note b{color:var(--ink)}
+/* navegação, que saiu da lateral, no formato segmentado do modelo */
+.topbar{gap:10px}
+#tabs{display:flex;gap:4px;background:var(--surface-2);border-radius:10px;padding:3px;flex-wrap:wrap}
+#tabs .tab{width:auto;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:8px;color:var(--muted);background:transparent}
+#tabs .tab .tico{display:none}
+#tabs .tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+@media(max-width:600px){.rank-row{grid-template-columns:22px 1fr 96px}.rank-row>:nth-child(n+4){display:none}}
+
 /* Board estilo Trello: colunas de altura cheia, cada uma com rolagem própria */
 .main.board-mode{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 .main.board-mode .topbar{flex:none}
@@ -540,14 +620,7 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
     <div class="logo"></div>
     <div><h1>Arca Digital</h1><span class="side-sub">Central de Inteligência</span></div>
   </div>
-  <nav class="tabs" id="tabs" aria-label="Seções do painel">
-    <button class="tab active" data-tab="financeira"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="10" width="3" height="9"/><rect x="10.5" y="5" width="3" height="14"/><rect x="15" y="13" width="3" height="6"/></svg>Financeira</button>
-    <button class="tab" data-tab="expert"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>Performance por Expert</button>
-    <button class="tab" data-tab="comercial"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a7 7 0 0 1 14 0"/><rect x="3.3" y="12.5" width="4" height="6" rx="1.6"/><rect x="16.7" y="12.5" width="4" height="6" rx="1.6"/></svg>Time Comercial</button>
-    <button class="tab" data-tab="estrategia"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.2"/></svg>Estratégia</button>
-    <button class="tab" data-tab="funil" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5h17l-6.5 7.6V20l-4-2.2v-5.2z"/></svg>Funil de Experts</button>
-    <button class="tab" data-tab="admin" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg>Admin</button>
-  </nav>
+  
 
   <div class="side-foot">
     <div class="userchip" id="userChip"><span class="u-name" id="userName"></span><span class="u-role" id="userRole"></span></div>
@@ -559,7 +632,16 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 <main class="main">
   <div class="topbar">
     <button class="btn menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false"><svg class="bico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div class="page-title" id="pageTitle">Financeira</div>
+    <nav class="tabs" id="tabs" aria-label="Seções do painel">
+    <button class="tab active" data-tab="painel">Painel de Experts</button>
+    
+    <button class="tab" data-tab="financeira"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="10" width="3" height="9"/><rect x="10.5" y="5" width="3" height="14"/><rect x="15" y="13" width="3" height="6"/></svg>Financeira</button>
+    <button class="tab" data-tab="expert"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>Performance por Expert</button>
+    <button class="tab" data-tab="comercial"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a7 7 0 0 1 14 0"/><rect x="3.3" y="12.5" width="4" height="6" rx="1.6"/><rect x="16.7" y="12.5" width="4" height="6" rx="1.6"/></svg>Time Comercial</button>
+    <button class="tab" data-tab="estrategia"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.2"/></svg>Estratégia</button>
+    <button class="tab" data-tab="funil" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5h17l-6.5 7.6V20l-4-2.2v-5.2z"/></svg>Funil de Experts</button>
+    <button class="tab" data-tab="admin" style="display:none"><svg class="tico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6l7-3z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg>Admin</button>
+  </nav>
     <div class="spacer"></div>
     <div class="tools">
       <div class="toolwrap" id="bellWrap" style="display:none">
@@ -586,7 +668,7 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
   </div>
 
   <!-- ===================== ABA FINANCEIRA ===================== -->
-  <div class="tabpane active" id="tab-financeira">
+  <div class="tabpane" id="tab-financeira">
     <div class="section-label">Indicadores de retorno</div>
     <div class="gauges" id="gaugeFin"></div>
     <div class="section-label">Resultado consolidado da empresa</div>
@@ -662,6 +744,36 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
       <span class="badge b-red">Reduzir · prejuízo</span>
     </div>
     <div class="scoregrid" id="scoreGrid"></div>
+  </div>
+
+  <!-- ===================== PAINEL DE EXPERTS (modelo v2) ===================== -->
+  <div class="tabpane active" id="tab-painel">
+    <div class="px-head">
+      <div>
+        <div class="px-eyebrow">Arca Digital — Operação</div>
+        <h1>Painel de Experts</h1>
+        <div class="px-sub">Status, tráfego, resultados e estrutura — tudo num lugar só, por nicho.</div>
+      </div>
+      <div class="stat-strip" id="pxStats"></div>
+    </div>
+
+    <div class="px-filters" id="pxFilters"></div>
+
+    <div class="ranking">
+      <div class="ranking-head">
+        <h2>🏆 Ranking</h2>
+        <div class="tabbar" id="pxRankTabs"></div>
+      </div>
+      <p class="rk-hint" id="pxRankHint"></p>
+      <div class="rank-row head">
+        <span>#</span><span>Expert</span><span>Nicho</span>
+        <span style="text-align:right">Receita</span><span style="text-align:right">FTD</span>
+      </div>
+      <div id="pxRankBody"></div>
+    </div>
+
+    <div class="xgrid" id="pxGrid"></div>
+    <div class="px-note" id="pxNote"></div>
   </div>
 
   <!-- ===================== ABA FUNIL DE EXPERTS ===================== -->
@@ -1040,7 +1152,7 @@ function normComercial(rows){return rows.map(r=>{const d=toDate(r.Data);return{d
 /* ================= Estado ================= */
 const DATA={resultados:[],trafego:[],operacional:[],comercial:[]};
 const FILTER={de:null,ate:null,expert:'all',operacao:'all',colab:'all'};
-let SOURCE='live', TAB='financeira';
+let SOURCE='live', TAB='painel';
 
 /* ================= Carga ================= */
 async function loadAll(){
@@ -1305,6 +1417,7 @@ function kpiSet(k){
 function renderAll(){
   if(TAB==='admin') return;
   if(TAB==='funil'){ fnRender(); return; }
+  if(TAB==='painel'){ pxRender(); return; }
   const f=filtered();
   if(TAB==='financeira') renderFinanceira(f);
   else if(TAB==='expert') renderExpertTab(f);
@@ -1427,17 +1540,21 @@ function fieldVis(){
   show('fld-operacao', TAB!=='comercial' && TAB!=='admin' && TAB!=='funil');
   show('fld-colab', TAB==='comercial');
   /* o funil não vem das planilhas: filtros de período/expert não se aplicam */
-  document.querySelector('.filters').style.display = (TAB==='admin'||TAB==='funil') ? 'none' : '';
+  document.querySelector('.filters').style.display = (TAB==='admin'||TAB==='funil'||TAB==='painel') ? 'none' : '';
   /* o funil não vem de planilha: nota de fonte e avisos de carga não se aplicam */
   document.getElementById('noticeBox').style.display = (TAB==='funil') ? 'none' : '';
-  document.getElementById('fonteNota').style.display = (TAB==='funil'||TAB==='admin') ? 'none' : '';
+  document.getElementById('fonteNota').style.display = (TAB==='funil'||TAB==='admin'||TAB==='painel') ? 'none' : '';
   /* no funil o board usa a tela toda: sem largura máxima e sem rolagem de página */
   document.querySelector('.main').classList.toggle('board-mode', TAB==='funil');
 }
 /* título da barra superior = rótulo do item ativo da sidebar */
 function syncTitle(){
+  /* a navegação virou segmentada no topo e já mostra onde se está;
+     o título solto saiu junto com a barra lateral */
+  const t=document.getElementById('pageTitle');
+  if(!t)return;
   const b=document.querySelector('#tabs .tab[data-tab="'+TAB+'"]');
-  if(b)document.getElementById('pageTitle').textContent=b.textContent.trim();
+  if(b)t.textContent=b.textContent.trim();
 }
 function sideOpen(on){
   document.getElementById('side').classList.toggle('open',on);
@@ -2485,6 +2602,151 @@ async function fnConvNovo(){
     convMsg('');
   }catch(err){convMsg(fbErr(err),'err');}
 }
+
+/* ============================================================
+   PAINEL DE EXPERTS — layout do painel-experts-modelo-v2
+   Cruza duas fontes que já existiam separadas: a estrutura do expert
+   (cards do funil, no Firestore) e os números (planilhas, via perExpert).
+   O casamento é pelo nome, sem acento e sem caixa.
+   ============================================================ */
+let PX_F={nicho:'all',status:'all'}, PX_PER='mes', PX_ABERTO={};
+function pxNums(){
+  try{
+    const per=perExpert(filtered()).rows, m={};
+    per.forEach(r=>{m[fnSlug(r.expert)]={receita:r.receita,ftds:r.ftds,custo:r.custo,lucro:r.lucro};});
+    return m;
+  }catch(e){return {};}
+}
+function pxCards(){return FN_CARDS.filter(c=>!c.arquivado);}
+function pxStatus(c){
+  const s=fnStatusCard(c);
+  if(s.cls==='late')return{cls:'late',txt:'Atrasado na etapa '+(Number(c.etapa)||1)};
+  if(s.cls==='due') return{cls:'due', txt:'Vence hoje — etapa '+(Number(c.etapa)||1)};
+  if(Number(c.etapa)===6)return{cls:'ok',txt:'Rodando'};
+  return{cls:'andamento',txt:fnEt(c.etapa).nome};
+}
+function pxRender(){
+  const grid=document.getElementById('pxGrid'); if(!grid)return;
+  const todos=pxCards(), nums=pxNums();
+  const nichos=[...new Set(todos.map(c=>c.nicho).filter(Boolean))].sort();
+
+  /* filtros: pílulas de nicho + status, como no modelo */
+  document.getElementById('pxFilters').innerHTML=
+    '<span class="flabel">Nicho</span>'
+    +nichos.map(n=>`<button class="pill${PX_F.nicho===n?' active':''}" data-pxn="${esc(n)}" style="color:var(--c${fnNichoTom(n)})">${esc(n)}</button>`).join('')
+    +'<span class="flabel" style="margin-left:8px">Status</span>'
+    +`<select id="pxStatusSel">${[['all','Todos os status'],['late','Só atrasados'],['due','Vence hoje'],['ok','Rodando']]
+        .map(o=>`<option value="${o[0]}"${PX_F.status===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select>`
+    +'<button class="clear-btn" id="pxClear">limpar filtros</button>';
+
+  const vis=todos.filter(c=>{
+    if(PX_F.nicho!=='all'&&c.nicho!==PX_F.nicho)return false;
+    if(PX_F.status!=='all'&&pxStatus(c).cls!==PX_F.status)return false;
+    return true;
+  });
+
+  /* stat-strip do modelo */
+  const atrasados=todos.filter(c=>pxStatus(c).cls==='late').length;
+  const rodando=todos.filter(c=>Number(c.etapa)===6).length;
+  const receita=Object.values(nums).reduce((a,b)=>a+(b.receita||0),0);
+  const ftds=Object.values(nums).reduce((a,b)=>a+(b.ftds||0),0);
+  document.getElementById('pxStats').innerHTML=
+     `<div class="stat"><div class="num">${fmtNum(todos.length)}</div><div class="lbl">Experts ativos</div></div>`
+    +`<div class="stat pos"><div class="num">${fmtNum(rodando)}</div><div class="lbl">Rodando</div></div>`
+    +`<div class="stat${atrasados?' neg':''}"><div class="num">${fmtNum(atrasados)}</div><div class="lbl">Precisam atenção</div></div>`
+    +`<div class="stat pos"><div class="num">${fmtBRL(receita)}</div><div class="lbl">Receita no período</div></div>`
+    +`<div class="stat"><div class="num">${fmtNum(ftds)}</div><div class="lbl">FTDs no período</div></div>`;
+
+  /* ranking: os experts do funil, ordenados pelo que veio das planilhas */
+  document.getElementById('pxRankTabs').innerHTML=[['dia','Dia'],['semana','Semana'],['mes','Mês']]
+    .map(o=>`<button class="tb${PX_PER===o[0]?' active':''}" data-pxp="${o[0]}">${o[1]}</button>`).join('');
+  document.getElementById('pxRankHint').textContent=
+    'Ordenado pela receita '+({dia:'de hoje',semana:'dos últimos 7 dias',mes:'dos últimos 30 dias'}[PX_PER])
+    +' — quem está no topo é prioridade 80/20.';
+  const rank=vis.map(c=>({c:c,n:nums[fnSlug(c.nome)]||{receita:0,ftds:0}}))
+    .sort((a,b)=>b.n.receita-a.n.receita);
+  document.getElementById('pxRankBody').innerHTML = rank.length? rank.map((r,i)=>{
+    const tom=r.c.nicho?`var(--c${fnNichoTom(r.c.nicho)})`:'var(--muted)';
+    return `<div class="rank-row">
+      <span class="rank-pos${i<3&&r.n.receita>0?' top':''}">${i+1}</span>
+      <span class="rank-name"><i class="dot" style="background:${tom}"></i>${esc(r.c.nome||'—')}
+        ${i<3&&r.n.receita>0?'<span class="badge-priority">80/20</span>':''}</span>
+      <span style="color:${tom};font-weight:600">${esc(r.c.nicho||'—')}</span>
+      <span class="rank-val">${fmtBRL(r.n.receita)}</span>
+      <span class="rank-val">${fmtNum(r.n.ftds)}</span>
+    </div>`;}).join('')
+    : '<div class="rank-row"><span></span><span style="color:var(--muted)">Nenhum expert com esses filtros.</span></div>';
+
+  /* grade de cards do expert */
+  grid.innerHTML = vis.length? vis.map(c=>{
+    const st=pxStatus(c), tom=c.nicho?`--xnicho:var(--c${fnNichoTom(c.nicho)});`:'';
+    const n=nums[fnSlug(c.nome)]||{};
+    const estrutura=[c.atComunidades?'Comunidades: '+c.atComunidades.split('\n')[0]:'',
+      c.atInstagram?'Instagram: '+c.atInstagram:'', c.atTiktok?'TikTok: '+c.atTiktok:'',
+      c.grupoStatus==='pronto'?'Grupo pronto':''].filter(Boolean).join(' · ')
+      || 'Estrutura ainda não preenchida.';
+    const lk=(rot,url,ico)=>`<a class="xb" ${url?`href="${esc(url)}" target="_blank" rel="noopener"`:'aria-disabled="true"'}>${ico} ${rot}</a>`;
+    const bt=(rot,chave,ico)=>`<button class="xb" data-pxp2="${esc(c.id)}" data-pane="${chave}">${ico} ${rot}</button>`;
+    const aberto=PX_ABERTO[c.id];
+    return `<article class="xcard" style="${tom}">
+      <div class="xcard-top">
+        <div><div class="xcard-name">${esc(c.nome||'(sem nome)')}</div>
+          ${c.nicho?`<div style="margin-top:6px"><span class="niche-tag">${esc(c.nicho)}</span></div>`:''}</div>
+        <span class="st-chip ${st.cls}">${esc(st.txt)}</span>
+      </div>
+      <div class="meta-line"><span>Responsável atual: <span class="resp-badge">${esc(fnNome(c.responsavel))}</span></span>
+        <span>Atualizado ${esc(fnDT(c.updatedAt))}</span></div>
+      <div class="traffic-line"><b>Estrutura:</b> ${esc(estrutura)}</div>
+      <div class="xacts">
+        ${bt('Resultados','res','📊')}${bt('Negociação','neg','🤝')}${bt('Emails','mail','✉️')}
+      </div>
+      <div class="xacts">
+        ${lk('LP',c.atLandingPages,'🔗')}${lk('Grupo',c.atGrupoWpp,'💬')}${lk('Drive fotos',c.atDriveFotos,'🖼️')}
+      </div>
+      <div class="xpanel${aberto==='res'?' open':''}"><h4>Resultados | Operação</h4>
+        <div class="txt">${esc(c.atResultados||'Nada registrado ainda.')}</div>
+        ${(n.receita!=null)?`<div class="meta-line" style="margin-top:10px"><span>Receita <b>${fmtBRL(n.receita||0)}</b></span><span>FTDs <b>${fmtNum(n.ftds||0)}</b></span><span>Lucro <b>${fmtBRL(n.lucro||0)}</b></span></div>`:''}</div>
+      <div class="xpanel${aberto==='neg'?' open':''}"><h4>Negociação</h4>
+        <div class="txt">${esc(c.atNegociacao||'Nada registrado ainda.')}</div></div>
+      <div class="xpanel${aberto==='mail'?' open':''}"><h4>Contato</h4>
+        <div class="meta-line"><span>E-mail</span><span class="resp-badge">${esc(c.email||'—')}</span></div>
+        <div class="meta-line" style="margin-top:6px"><span>WhatsApp</span><span class="resp-badge">${esc(c.telefone||'—')}</span></div></div>
+    </article>`;}).join('')
+    : '<div class="px-note">Nenhum expert com esses filtros. Limpe os filtros ou cadastre no Funil de Experts.</div>';
+
+  document.getElementById('pxNote').innerHTML =
+    '<b>De onde vem cada coisa:</b> nome, nicho, responsável, status, estrutura e links vêm dos cards do '
+    +'<b>Funil de Experts</b>. Receita e FTD vêm das planilhas, casando pelo nome do expert — se o nome não bater '
+    +'nos dois lados, o número aparece zerado. O período do ranking segue os filtros gerais do painel.';
+}
+/* Dia/Semana/Mês não é enfeite: mexe no mesmo filtro de datas que
+   alimenta perExpert(), senão o número do ranking não mudaria */
+function pxPeriodo(){
+  const de=document.getElementById('fDe'), ate=document.getElementById('fAte');
+  if(!de||!ate){pxRender();return;}
+  const hoje=new Date(), ini=new Date();
+  if(PX_PER==='semana')ini.setDate(hoje.getDate()-6);
+  else if(PX_PER==='mes')ini.setDate(hoje.getDate()-29);
+  de.value=isoOf(ini); ate.value=isoOf(hoje);
+  onFilterChange();
+}
+function pxBind(){
+  const p=document.getElementById('tab-painel'); if(!p)return;
+  p.addEventListener('click',e=>{
+    const n=e.target.closest('[data-pxn]');
+    if(n){PX_F.nicho=(PX_F.nicho===n.dataset.pxn)?'all':n.dataset.pxn;pxRender();return;}
+    const per=e.target.closest('[data-pxp]');
+    if(per){PX_PER=per.dataset.pxp;pxPeriodo();return;}
+    const cl=e.target.closest('#pxClear');
+    if(cl){PX_F={nicho:'all',status:'all'};pxRender();return;}
+    const pane=e.target.closest('[data-pxp2]');
+    if(pane){const id=pane.dataset.pxp2;PX_ABERTO[id]=(PX_ABERTO[id]===pane.dataset.pane)?null:pane.dataset.pane;pxRender();return;}
+  });
+  p.addEventListener('change',e=>{
+    if(e.target.id==='pxStatusSel'){PX_F.status=e.target.value;pxRender();}
+  });
+}
+
 /* ============================================================
    IMPORTAR BOARD DO TRELLO
    No board Negociações Experts cada lista é um expert ("NOME - NICHO") e
@@ -3118,6 +3380,7 @@ function boot(){
   document.getElementById('sideBackdrop').addEventListener('click',()=>sideOpen(false));
   document.addEventListener('keydown',e=>{if(e.key==='Escape')sideOpen(false);});
   fnBind();
+  pxBind();
   fieldVis();
 
   if(AUTH_ON){
