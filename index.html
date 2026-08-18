@@ -305,6 +305,24 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 .xpanel.open{display:block}
 .xpanel h4{margin:0 0 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .xpanel .txt{font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.evol{font-family:var(--font-mono);font-size:11px;font-weight:700;padding:1px 6px;border-radius:20px;vertical-align:middle}
+.evol.up{background:var(--okc-bg);color:var(--okc)}
+.evol.down{background:var(--danger-bg);color:var(--danger)}
+.t48{background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--okc);
+  border-radius:12px;padding:14px 16px;margin-bottom:22px}
+.t48.vazio{border-left-color:var(--border);color:var(--muted);font-size:12.5px}
+.t48-h{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.t48-tag{font-family:var(--font-mono);font-size:11px;font-weight:700;background:var(--okc-bg);color:var(--okc);padding:3px 9px;border-radius:20px}
+.t48-s{font-size:12.5px;color:var(--muted)}
+.t48-l{margin:10px 0 0;padding-left:20px;font-size:12.5px;line-height:1.7}
+.rm-alert{background:var(--attn-bg);border:1px solid var(--attn);border-radius:12px;padding:13px 16px;margin-bottom:22px}
+.rm-h{font-weight:700;font-size:13.5px;color:var(--attn);margin-bottom:9px}
+.rm-b{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rm-chip{font:inherit;font-size:12px;font-weight:600;padding:4px 11px;border-radius:20px;cursor:pointer;
+  background:var(--surface);border:1px solid var(--border);color:var(--ink)}
+.rm-chip:hover{border-color:var(--attn)}
+.rm-mais{font-size:12px;color:var(--muted)}
+.rm-f{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.5}
 .px-note{margin-top:36px;padding:16px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:12px;
   font-size:12.5px;color:var(--muted);line-height:1.6}
 .px-note b{color:var(--ink)}
@@ -762,6 +780,8 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
     </div>
 
     <div class="px-filters" id="pxFilters"></div>
+    <div id="pxRemarketing"></div>
+    <div id="pxTeste48"></div>
 
     <div class="ranking">
       <div class="ranking-head">
@@ -1051,6 +1071,13 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
         <div class="fsec-h">Nichos / verticais</div>
         <div class="inline"><div class="ff"><input id="cfgNichoNew" placeholder="Ex.: apostas esportivas"></div><button class="btn" id="cfgNichoAdd">Adicionar</button></div>
         <div class="cfg-nichos" id="cfgNichos"></div>
+      </div>
+      <div class="fsec">
+        <div class="fsec-h">Placar 48h de teste grátis</div>
+        <p class="fhint muted" style="font-size:11.5px;margin:0 0 10px">Fica no topo do Painel de Experts, para quando um expert quiser rodar já estar tudo à mão.</p>
+        <div class="ff"><label>Link para criar a conta</label><input id="cfgT48Link" type="url" placeholder="https://…"></div>
+        <div class="ff" style="margin-top:11px"><label>Passo a passo</label>
+          <textarea id="cfgT48Passos" style="min-height:96px" placeholder="Um passo por linha."></textarea></div>
       </div>
       <div class="fsec">
         <div class="fsec-h">Importar board do Trello</div>
@@ -1732,6 +1759,7 @@ const FN_ETAPAS=[
 const FN_NICHOS_PADRAO=['Apostas esportivas','Cassino ao vivo','Roleta','Aviator / Crash','Slots','Poker','Bingo','E-sports','Outro'];
 const FN_CFG_PADRAO={
   slas:{1:0,2:1,3:1,4:2,5:3}, relatorioDias:7, nichos:FN_NICHOS_PADRAO.slice(),
+  teste48:{link:'',passos:''},
   pessoas:FN_PESSOAS_PADRAO.map(p=>({k:p.k,nome:p.nome})),
   donos:{1:'camily',2:'camily',3:'william',4:'marcio',5:'william',6:'william'},
   apoio:['fabio','mizag'] /* quem acompanha junto na etapa 6 */
@@ -1817,6 +1845,7 @@ function fnStart(){
     FN_CFG={
       slas:Object.assign({},FN_CFG_PADRAO.slas,(d&&d.slas)||{}),
       relatorioDias:(d&&Number(d.relatorioDias))||FN_CFG_PADRAO.relatorioDias,
+      teste48:(d&&d.teste48)||{link:'',passos:''},
       nichos:(d&&Array.isArray(d.nichos)&&d.nichos.length)?d.nichos.slice():FN_NICHOS_PADRAO.slice(),
       pessoas:pessoas.length?pessoas:FN_CFG_PADRAO.pessoas.map(p=>({k:p.k,nome:p.nome})),
       donos:Object.assign({},FN_CFG_PADRAO.donos,(d&&d.donos)||{}),
@@ -1826,7 +1855,7 @@ function fnStart(){
     fnFillFiltros();fillPessoaSelect();fnRender();
   },()=>{});
   FN_UNSUB=fnCol().onSnapshot(snap=>{
-    const antes=new Map(FN_CARDS.map(c=>[c.id,c.responsavel]));
+    const antes=new Map(FN_CARDS.map(c=>[c.id,{resp:c.responsavel,etapa:Number(c.etapa)||1}]));
     FN_CARDS=[];snap.forEach(doc=>{const x=doc.data();x.id=doc.id;FN_CARDS.push(x);});
     if(!FN_FIRST)fnAvisaNovos(antes);
     const primeira=FN_FIRST; FN_FIRST=false;
@@ -1845,12 +1874,35 @@ function fnStart(){
 function fnStop(){[FN_UNSUB,FN_CFG_UNSUB,FN_CONV_UNSUB].forEach(u=>{if(u)u();});FN_UNSUB=FN_CFG_UNSUB=FN_CONV_UNSUB=null;FN_BOOTED=false;}
 
 /* avisa quando um card cai no seu colo (aba aberta) */
+/* texto do aviso por etapa alcançada: quem lê tem que saber o que
+   aconteceu sem abrir o card */
+function fnAvisoEtapa(c){
+  const n=c.nome||'expert', et=Number(c.etapa)||1, resp=fnNome(c.responsavel);
+  if(et===6)return{t:n+' — tráfego rodando',s:'Etapa final. Acompanhamento com '+resp+'.'};
+  const txt={
+    2:['Organização de '+n,'Dados captados. Agora com '+resp+'.'],
+    3:['Operação de '+n+' para alinhar','Organização concluída. Agora com '+resp+'.'],
+    4:['LP de '+n+' para criar','Operação alinhada. Agora com '+resp+'.'],
+    5:['LP de '+n+' pronta','Falta publicar. Agora com '+resp+'.']
+  }[et];
+  return txt?{t:txt[0],s:txt[1]}:{t:n,s:fnEt(et).nome+' — agora com '+resp+'.'};
+}
+/* etapa concluída avisa o time inteiro, não só quem recebeu o card */
 function fnAvisaNovos(antes){
-  const eu=fnEu();if(!eu)return;
+  const eu=fnEu();
   FN_CARDS.forEach(c=>{
-    if(c.arquivado||c.responsavel!==eu)return;
-    if(!antes.has(c.id)||antes.get(c.id)===eu)return;
-    fnToast(c.nome||'Novo card',(fnEt(c.etapa).nome)+' — agora é com você',c.id);
+    if(c.arquivado)return;
+    const a=antes.get(c.id); if(!a)return;
+    const et=Number(c.etapa)||1;
+    if(et!==a.etapa){
+      const av=fnAvisoEtapa(c);
+      const meu=eu&&c.responsavel===eu;
+      fnToast(av.t,(meu?'Agora é com você. ':'')+av.s,c.id);
+      return;
+    }
+    /* mudou de dono sem mudar de etapa: só interessa a quem recebeu */
+    if(eu&&c.responsavel===eu&&a.resp!==eu)
+      fnToast(c.nome||'Card',(fnEt(et).nome)+' — agora é com você',c.id);
   });
 }
 function fnToast(titulo,texto,id){
@@ -2488,6 +2540,8 @@ async function fnCfgOpen(){
   document.getElementById('cfgRep').value=FN_CFG.relatorioDias;
   fnCfgNichos();fnCfgPessoas();
   cfgMsg('');
+  document.getElementById('cfgT48Link').value=(FN_CFG.teste48&&FN_CFG.teste48.link)||'';
+  document.getElementById('cfgT48Passos').value=(FN_CFG.teste48&&FN_CFG.teste48.passos)||'';
   document.getElementById('cfgModal').classList.add('on');
   fnCheckEquipe().then(fnCfgPessoas); /* saber quem tem acesso, para avisar antes de remover */
 }
@@ -2536,6 +2590,8 @@ async function fnCfgSave(){
     await fbDb.collection('config').doc('funil').set({
       slas:slas, relatorioDias:Math.max(1,Number(document.getElementById('cfgRep').value)||7),
       nichos:CFG_NICHOS, pessoas:CFG_PESSOAS, donos:donos, apoio:CFG_APOIO.filter(k=>chaves.has(k)),
+      teste48:{link:(document.getElementById('cfgT48Link').value||'').trim(),
+               passos:(document.getElementById('cfgT48Passos').value||'').trim()},
       updatedAt:SVT(), updatedPor:ME.name||ME.email||''},{merge:true});
     cfgMsg('Salvo ✓','ok');setTimeout(()=>document.getElementById('cfgModal').classList.remove('on'),700);
   }catch(err){cfgMsg(fbErr(err),'err');}
@@ -2621,12 +2677,56 @@ async function fnConvNovo(){
    O casamento é pelo nome, sem acento e sem caixa.
    ============================================================ */
 let PX_F={nicho:'all',status:'all'}, PX_PER='mes', PX_ABERTO={};
+/* janela atual e a imediatamente anterior, do mesmo tamanho — é contra
+   ela que a % de evolução compara */
+function pxJanela(){
+  const hoje=isoOf(new Date());
+  const de=FILTER.de||hoje, ate=FILTER.ate||hoje;
+  const d1=new Date(de+'T00:00:00'), d2=new Date(ate+'T00:00:00');
+  const dur=Math.max(0,Math.round((d2-d1)/864e5));
+  const aAte=new Date(d1);aAte.setDate(aAte.getDate()-1);
+  const aDe=new Date(aAte);aDe.setDate(aDe.getDate()-dur);
+  return {de:de,ate:ate,ant:{de:isoOf(aDe),ate:isoOf(aAte)}};
+}
+function pxAgrega(de,ate){
+  const m={},dentro=r=>r.iso>=de&&r.iso<=ate;
+  const põe=(k,campo,v)=>{const x=m[k]||(m[k]={receita:0,ftds:0,cadastros:0,trafego:0,op:0});x[campo]+=v||0;};
+  (DATA.resultados||[]).filter(dentro).forEach(r=>{const k=fnSlug(r.expert);
+    põe(k,'receita',r.receita);põe(k,'ftds',r.ftds);põe(k,'cadastros',r.cadastros);});
+  (DATA.trafego||[]).filter(dentro).forEach(r=>põe(fnSlug(r.expert),'trafego',r.valor));
+  (DATA.operacional||[]).filter(dentro).forEach(r=>põe(fnSlug(r.expert),'op',r.valor));
+  return m;
+}
+function pxVar(a,b){ if(!b)return a>0?1:null; return (a-b)/Math.abs(b); }
 function pxNums(){
   try{
-    const per=perExpert(filtered()).rows, m={};
-    per.forEach(r=>{m[fnSlug(r.expert)]={receita:r.receita,ftds:r.ftds,custo:r.custo,lucro:r.lucro};});
+    const j=pxJanela(), at=pxAgrega(j.de,j.ate), an=pxAgrega(j.ant.de,j.ant.ate), m={};
+    new Set([...Object.keys(at),...Object.keys(an)]).forEach(k=>{
+      const a=at[k]||{receita:0,ftds:0,trafego:0,op:0}, b=an[k]||{receita:0,ftds:0,trafego:0,op:0};
+      m[k]={receita:a.receita,ftds:a.ftds,trafego:a.trafego,custo:a.trafego+a.op,
+        lucro:a.receita-(a.trafego+a.op),
+        evolDep:pxVar(a.receita,b.receita), evolTraf:pxVar(a.trafego,b.trafego),
+        antReceita:b.receita, antTrafego:b.trafego};
+    });
     return m;
   }catch(e){return {};}
+}
+/* experts sem nenhum movimento hoje — os dois lados: nem resultado do
+   expert (FTD/receita) nem depósito registrado pelo time comercial */
+function pxSemDeposito(){
+  const hoje=isoOf(new Date());
+  const porExp={};
+  (DATA.resultados||[]).filter(r=>r.iso===hoje).forEach(r=>{
+    const k=fnSlug(r.expert);porExp[k]=(porExp[k]||0)+(r.receita||0)+(r.ftds||0);});
+  const depHoje=(DATA.comercial||[]).filter(r=>r.iso===hoje)
+    .reduce((a,r)=>a+(r.depositos||0),0);
+  const parados=pxCards().filter(c=>!porExp[fnSlug(c.nome)]);
+  return {parados:parados,depHoje:depHoje};
+}
+function pxPct(v){
+  if(v==null)return '';
+  const p=Math.round(v*100);
+  return (p>0?'+':'')+p+'%';
 }
 /* o expert manda "@fulano" ou a URL inteira; o botão só liga se der para
    montar um endereço */
@@ -2669,12 +2769,42 @@ function pxRender(){
   const rodando=todos.filter(c=>Number(c.etapa)===6).length;
   const receita=Object.values(nums).reduce((a,b)=>a+(b.receita||0),0);
   const ftds=Object.values(nums).reduce((a,b)=>a+(b.ftds||0),0);
+  const trafego=Object.values(nums).reduce((a,b)=>a+(b.trafego||0),0);
+  const antRec=Object.values(nums).reduce((a,b)=>a+(b.antReceita||0),0);
+  const antTraf=Object.values(nums).reduce((a,b)=>a+(b.antTrafego||0),0);
+  const evR=pxVar(receita,antRec), evT=pxVar(trafego,antTraf);
+  const delta=v=>v==null?'':`<span class="evol ${v>=0?'up':'down'}">${pxPct(v)}</span>`;
   document.getElementById('pxStats').innerHTML=
      `<div class="stat"><div class="num">${fmtNum(todos.length)}</div><div class="lbl">Experts ativos</div></div>`
     +`<div class="stat pos"><div class="num">${fmtNum(rodando)}</div><div class="lbl">Rodando</div></div>`
     +`<div class="stat${atrasados?' neg':''}"><div class="num">${fmtNum(atrasados)}</div><div class="lbl">Precisam atenção</div></div>`
-    +`<div class="stat pos"><div class="num">${fmtBRL(receita)}</div><div class="lbl">Receita no período</div></div>`
+    +`<div class="stat${evR!=null&&evR<0?' neg':' pos'}"><div class="num">${fmtBRL(receita)} ${delta(evR)}</div><div class="lbl">Depósito no período</div></div>`
+    +`<div class="stat${evT!=null&&evT<0?' neg':''}"><div class="num">${fmtBRL(trafego)} ${delta(evT)}</div><div class="lbl">Tráfego no período</div></div>`
     +`<div class="stat"><div class="num">${fmtNum(ftds)}</div><div class="lbl">FTDs no período</div></div>`;
+
+  /* remarketing: quem não teve movimento nenhum hoje */
+  const rm=pxSemDeposito();
+  const cx=document.getElementById('pxRemarketing');
+  if(cx){
+    cx.innerHTML = rm.parados.length
+      ? `<div class="rm-alert"><div class="rm-h">⚠️ ${rm.parados.length} expert${rm.parados.length===1?'':'s'} sem depósito hoje</div>
+         <div class="rm-b">${rm.parados.slice(0,12).map(c=>`<button class="rm-chip" data-pxgo="${esc(c.id)}">${esc(c.nome||'—')}</button>`).join('')}
+         ${rm.parados.length>12?`<span class="rm-mais">+${rm.parados.length-12}</span>`:''}</div>
+         <div class="rm-f">Depósitos registrados pelo time comercial hoje: <b>${fmtNum(rm.depHoje)}</b>. Sem resultado do expert e sem depósito, entra na fila de remarketing.</div></div>`
+      : '';
+  }
+
+  /* placar do teste de 48h: fica à mão para quando o expert quiser rodar */
+  const t48=FN_CFG.teste48||{}, cx48=document.getElementById('pxTeste48');
+  if(cx48){
+    const passos=String(t48.passos||'').split('\n').map(x=>x.trim()).filter(Boolean);
+    cx48.innerHTML=(t48.link||passos.length)
+      ? `<div class="t48"><div class="t48-h"><span class="t48-tag">48h</span>
+           <b>Teste grátis</b><span class="t48-s">Tudo o que o expert precisa para criar a conta.</span>
+           ${t48.link?`<a class="xb" style="margin-left:auto;flex:none" href="${esc(t48.link)}" target="_blank" rel="noopener">Criar conta</a>`:''}</div>
+         ${passos.length?`<ol class="t48-l">${passos.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:''}</div>`
+      : (fnAdmin()?`<div class="t48 vazio">Placar de 48h ainda vazio — preencha em <b>Configurações → Placar 48h de teste grátis</b>.</div>`:'');
+  }
 
   /* ranking: os experts do funil, ordenados pelo que veio das planilhas */
   document.getElementById('pxRankTabs').innerHTML=[['dia','Dia'],['semana','Semana'],['mes','Mês']]
@@ -2691,7 +2821,7 @@ function pxRender(){
       <span class="rank-name"><i class="dot" style="background:${tom}"></i>${esc(r.c.nome||'—')}
         ${i<3&&r.n.receita>0?'<span class="badge-priority">80/20</span>':''}</span>
       <span style="color:${tom};font-weight:600">${esc(r.c.nicho||'—')}</span>
-      <span class="rank-val">${fmtBRL(r.n.receita)}</span>
+      <span class="rank-val">${fmtBRL(r.n.receita)} ${r.n.evolDep!=null?`<span class="evol ${r.n.evolDep>=0?'up':'down'}">${pxPct(r.n.evolDep)}</span>`:''}</span>
       <span class="rank-val">${fmtNum(r.n.ftds)}</span>
     </div>`;}).join('')
     : '<div class="rank-row"><span></span><span style="color:var(--muted)">Nenhum expert com esses filtros.</span></div>';
@@ -2774,6 +2904,8 @@ function pxBind(){
     if(per){PX_PER=per.dataset.pxp;pxPeriodo();return;}
     const cl=e.target.closest('#pxClear');
     if(cl){PX_F={nicho:'all',status:'all'};pxRender();return;}
+    const go=e.target.closest('[data-pxgo]');
+    if(go){fnOpen(go.dataset.pxgo);return;}
     const pane=e.target.closest('[data-pxp2]');
     if(pane){
       const id=pane.dataset.pxp2;
