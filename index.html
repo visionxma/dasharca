@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,6 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{
+  color-scheme:light;
   /* paleta do painel-experts-modelo-v2: fundo sage, superfície branca e
      acentos por nicho — as cores voltaram a ser informação, não decoração */
   --font-display:'Archivo',system-ui,sans-serif;
@@ -33,22 +34,6 @@
   --danger:#b0281b; --danger-bg:#fbe6e3; --danger-ink:#fff;
   --attn:#b4600a;   --attn-bg:#fbeedd;
   --okc:#0b6e4f;    --okc-bg:#e4f2eb;
-}
-html[data-theme="dark"]{
-  /* mesmas matizes do tema claro, clareadas para contraste no escuro */
-  --page:#0e1210; --surface:#161c19; --surface-2:#1e2622;
-  --ink:#eaf0eb; --ink-2:#aebbb2; --muted:#7e8c84;
-  --grid:#242d28; --axis:#3a463f; --border:rgba(234,240,235,.14);
-  --gold:#4ecb84; --gold-2:#2fa96a;
-  --c1:#4ecb84; --c2:#6fa8e8; --c3:#a78bfa; --c4:#4fd1c5;
-  --c5:#f0864a; --c6:#f472b6; --c7:#f0b34a; --c8:#cbd5ce;
-  --pos:#4ecb84; --pos-ink:#4ecb84; --neg:#ff6b5e; --warn:#f0b34a; --warn-ink:#f0b34a;
-  --receita:#4ecb84; --custo:#ff6b5e; --lucro:#6fa8e8;
-  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.5);
-  --info:#6fa8e8; --info-bg:rgba(111,168,232,.14);
-  --danger:#ff6b5e; --danger-bg:rgba(255,107,94,.12); --danger-ink:#160707;
-  --attn:#f0b34a;   --attn-bg:rgba(240,179,74,.12);
-  --okc:#4ecb84;    --okc-bg:rgba(78,203,132,.12);
 }
 *{box-sizing:border-box} html,body{margin:0}
 body{background:var(--page); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased}
@@ -308,7 +293,6 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 /* o vão cinza que abre ao arrastar, no lugar do card. É o placeholder do
    Trello: o card de origem some e sobra um só buraco, o de destino */
 .fc-holder{flex:none;border-radius:10px;background:rgba(0,0,0,.07);border:1px dashed var(--border)}
-[data-theme="dark"] .fc-holder{background:rgba(255,255,255,.07)}
 @media(max-width:900px){
   .main.board-mode{height:auto;display:block;overflow:visible}
   .main.board-mode .wrap{display:block;overflow:visible;padding:16px 14px 40px}
@@ -1478,9 +1462,7 @@ document.getElementById('resetBtn').addEventListener('click',()=>{
   onFilterChange();
 });
 let rz; window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(renderAll,180);});
-(function(){const q=new URLSearchParams(location.search).get('theme');let saved=null;try{saved=localStorage.getItem('dashTheme');}catch(e){}
-  const sysLight=matchMedia&&matchMedia('(prefers-color-scheme: light)').matches;const t=q||saved||(sysLight?'light':'dark');
-  document.documentElement.setAttribute('data-theme',t);})();
+/* painel só em modo claro — sem alternador, sem preferência do sistema */
 (function(){const qt=new URLSearchParams(location.search).get('tab');
  if(qt&&document.getElementById('tab-'+qt)){TAB=qt;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===qt));
@@ -1655,7 +1637,7 @@ function fnApoio(n){
   if(Number(n)!==6)return [];
   return (FN_CFG.apoio||[]).filter(k=>FN_PESSOAS[k]&&k!==fnDono(n));
 }
-/* cada nicho ganha um tom fixo da escala do tema — reconhecível sem sair do preto e branco */
+/* cada nicho ganha um tom fixo da paleta (--c1..--c8), o mesmo em etiqueta, borda do card e gráfico */
 function fnNichoTom(n){let h=0;const t=String(n);for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return (h%8)+1;}
 function fnLista(ks){const n=ks.map(fnNome); return n.length<2?(n[0]||'') : n.slice(0,-1).join(', ')+' e '+n[n.length-1];}
 function fnSlug(s){
