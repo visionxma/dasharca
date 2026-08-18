@@ -30,6 +30,10 @@
   --shadow:0 1px 2px rgba(20,26,22,.05),0 8px 24px rgba(20,26,22,.07);
   --r:14px;
   --info:#2461a8; --info-bg:#e2ecf7;
+  /* níveis da observação da operação: leve, moderado, prioridade */
+  --niv-leve:#a07800; --niv-leve-bg:#fdf3d4;
+  --niv-mod:#c2410c;  --niv-mod-bg:#fce7d9;
+  --niv-pri:#b0281b;  --niv-pri-bg:#fbe6e3;
   /* alertas do funil — únicas cores fora da escala de cinza, por serem sinal e não decoração */
   --danger:#b0281b; --danger-bg:#fbe6e3; --danger-ink:#fff;
   --attn:#b4600a;   --attn-bg:#fbeedd;
@@ -308,6 +312,17 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 .evol{font-family:var(--font-mono);font-size:11px;font-weight:700;padding:1px 6px;border-radius:20px;vertical-align:middle}
 .evol.up{background:var(--okc-bg);color:var(--okc)}
 .evol.down{background:var(--danger-bg);color:var(--danger)}
+.sel-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:-4px}
+.sel{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em}
+.sel-parado1{background:var(--niv-leve-bg);color:var(--niv-leve)}
+.sel-parado2{background:var(--danger);color:var(--danger-ink)}
+.niv-leve{background:var(--niv-leve-bg);color:var(--niv-leve)}
+.niv-mod{background:var(--niv-mod-bg);color:var(--niv-mod)}
+.niv-pri{background:var(--niv-pri);color:#fff}
+/* botão com informação salta; sem informação fica apagado */
+.xacts .xb[href]{border-color:color-mix(in srgb,var(--xnicho,var(--info)) 45%,var(--border));
+  color:var(--xnicho,var(--ink));font-weight:700}
+.xacts .xb[href]:hover{background:color-mix(in srgb,var(--xnicho,var(--info)) 10%,var(--surface))}
 .t48{background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--okc);
   border-radius:12px;padding:14px 16px;margin-bottom:22px}
 .t48.vazio{border-left-color:var(--border);color:var(--muted);font-size:12.5px}
@@ -2142,6 +2157,13 @@ function fnAtivosHTML(c,ro,novo){
     </div>
     <div class="frow one" style="margin-top:11px">
       ${fnTxt('f_atNegociacao','Negociação',c.atNegociacao,'Como está a conversa: percentual, condições, o que falta fechar.',ro)}
+    </div>
+    <div class="frow" style="margin-top:11px">
+      ${fnSel('f_obsNivel','Nível da operação',c.obsNivel||'leve',
+        [['leve','Leve'],['moderado','Moderado'],['prioridade','Prioridade']],ro)}
+    </div>
+    <div class="frow one" style="margin-top:11px">
+      ${fnTxt('f_obsOperacao','Observação da operação',c.obsOperacao,'O que precisa de olho nesse expert agora.',ro)}
     </div></div>`;
 }
 function fnModalHTML(c,novo){
@@ -2410,7 +2432,9 @@ function fnLeForm(){
     atTrafego:g('f_atTrafego').trim(),
     atDocOperacao:g('f_atDocOperacao').trim(),
     atDriveFotos:g('f_atDriveFotos').trim(),
-    atNegociacao:g('f_atNegociacao')
+    atNegociacao:g('f_atNegociacao'),
+    obsNivel:g('f_obsNivel')||'leve',
+    obsOperacao:g('f_obsOperacao')
   };
 }
 function fnMsg(t,k){const m=document.getElementById('fnMsg');if(m){m.textContent=t||'';m.className='msg '+(k||'');}}
@@ -2737,6 +2761,13 @@ function pxPerfil(v){
   return a?('https://instagram.com/'+a[1]):'';
 }
 function pxCards(){return FN_CARDS.filter(c=>!c.arquivado);}
+/* dias sem ninguém tocar no card. A etapa 6 fica de fora: card rodando
+   não precisa de edição diária, o alerta dele é o relatório semanal. */
+function pxParado(c){
+  if(Number(c.etapa)===6)return 0;
+  return dias(tsDate(c.updatedAt)||tsDate(c.etapaDesde));
+}
+const PX_NIVEL={leve:['Leve','leve'],moderado:['Moderado','mod'],prioridade:['Prioridade','pri']};
 function pxStatus(c){
   const s=fnStatusCard(c);
   if(s.cls==='late')return{cls:'late',txt:'Atrasado na etapa '+(Number(c.etapa)||1)};
@@ -2828,7 +2859,11 @@ function pxRender(){
 
   /* grade de cards do expert */
   grid.innerHTML = vis.length? vis.map(c=>{
-    const st=pxStatus(c), tom=c.nicho?`--xnicho:var(--c${fnNichoTom(c.nicho)});`:'';
+    const st=pxStatus(c);
+    /* nível alto manda na borda: é o que precisa saltar aos olhos */
+    const cor=c.obsNivel==='prioridade'?'var(--niv-pri)':c.obsNivel==='moderado'?'var(--niv-mod)'
+      :(c.nicho?`var(--c${fnNichoTom(c.nicho)})`:'');
+    const tom=cor?`--xnicho:${cor};`:'';
     const n=nums[fnSlug(c.nome)]||{};
     const estrutura=[c.atComunidades?'Comunidades: '+c.atComunidades.split('\n')[0]:'',
       c.atInstagram?'Instagram: '+c.atInstagram:'', c.atTiktok?'TikTok: '+c.atTiktok:'',
@@ -2843,14 +2878,21 @@ function pxRender(){
           ${c.nicho?`<div style="margin-top:6px"><span class="niche-tag">${esc(c.nicho)}</span></div>`:''}</div>
         <span class="st-chip ${st.cls}">${esc(st.txt)}</span>
       </div>
+      ${(()=>{const par=pxParado(c),niv=PX_NIVEL[c.obsNivel||'leve'];
+        const selos=[];
+        if(par>=1)selos.push(`<span class="sel ${par>=2?'sel-parado2':'sel-parado1'}">⏱ ${par} dia${par===1?'':'s'} sem atualizar</span>`);
+        if(c.obsNivel&&c.obsNivel!=='leve')selos.push(`<span class="sel niv-${niv[1]}">${esc(niv[0])}</span>`);
+        else if(c.obsOperacao)selos.push(`<span class="sel niv-leve">Leve</span>`);
+        return selos.length?`<div class="sel-row">${selos.join('')}</div>`:'';})()}
       <div class="meta-line"><span>Responsável atual: <span class="resp-badge">${esc(fnNome(c.responsavel))}</span></span>
         <span>Atualizado ${esc(fnDT(c.updatedAt))}</span></div>
       <div class="traffic-line"><b>Estrutura:</b> ${esc(estrutura)}</div>
       <div class="xacts">
         ${bt('Resultados','res','📊')}${bt('Operação','op','⚙️')}${bt('Negociação','neg','🤝')}
+        ${bt('Contato','mail','✉️')}
       </div>
       <div class="xacts">
-        ${bt('Contato','mail','✉️')}${bt('Base de leads','leads','👥')}${bt('Editar','edit','✏️')}
+        ${bt('Observação','obs','📝')}${bt('Base de leads','leads','👥')}${bt('Editar','edit','✏️')}
       </div>
       <div class="xacts">
         ${lk('LP',c.atLandingPages,'🔗')}${lk('Tráfego',c.atTrafego,'📈')}${lk('Documento',c.atDocOperacao,'📄')}
@@ -2867,6 +2909,8 @@ function pxRender(){
       <div class="xpanel${aberto==='op'?' open':''}"><h4>Como a operação funciona hoje</h4>
         <div class="txt">${esc(c.operacaoAtual||'Nada registrado ainda.')}</div>
         ${c.atDocOperacao?`<div style="margin-top:10px"><a class="xb" href="${esc(c.atDocOperacao)}" target="_blank" rel="noopener">📄 Abrir documento</a></div>`:''}</div>
+      <div class="xpanel${aberto==='obs'?' open':''}"><h4>Observação da operação</h4>
+        <div class="txt">${esc(c.obsOperacao||'Nada registrado ainda.')}</div></div>
       <div class="xpanel${aberto==='neg'?' open':''}"><h4>Negociação</h4>
         <div class="txt">${esc(c.atNegociacao||'Nada registrado ainda.')}</div></div>
       <div class="xpanel${aberto==='leads'?' open':''}"><h4>Base de leads</h4>
