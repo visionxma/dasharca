@@ -913,12 +913,14 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 
         <div class="cv-grp">
           <div class="cv-grp-h">Seus ativos</div>
-          <div class="cv-grp-s">O que você já tem rodando hoje. Se ainda não tiver algum item, pode deixar em branco.</div>
+          <div class="cv-grp-s">Todos os campos são obrigatórios — é com isso que montamos sua operação.</div>
           <div class="frow">
             <div class="ff"><label>Perfis | Instagram</label><input id="cvInstagram" placeholder="@perfil, @perfil2"></div>
             <div class="ff"><label>Perfis | TikTok</label><input id="cvTiktok" placeholder="@perfil, @perfil2"></div>
             <div class="ff"><label>Comunidades | Base de Leads</label><input id="cvComunidades" placeholder="Onde está a base e qual o tamanho"></div>
             <div class="ff"><label>Landing Pages</label><input id="cvLandingPages" type="url" placeholder="https://…"></div>
+            <div class="ff"><label>Tráfego (painel/campanha)</label><input id="cvTrafego" type="url" placeholder="https://…"></div>
+            <div class="ff"><label>Documento: como sua operação funciona</label><input id="cvDocOperacao" type="url" placeholder="https://docs.google.com/…"></div>
           </div>
           <div class="ff" style="margin-top:11px"><label>Resultados | Operação</label>
             <textarea id="cvResultados" style="min-height:84px" placeholder="Números do que sua operação vem entregando hoje."></textarea>
@@ -931,13 +933,13 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
               <div class="ff"><input id="cvDashLogin" placeholder="Login" autocomplete="off"></div>
               <div class="ff"><input id="cvDashSenha" type="password" placeholder="Senha" autocomplete="new-password"></div>
             </div>
-            <span class="fhint">Guardado em área restrita: só administradores conseguem ver, e toda consulta fica registrada. Se preferir passar por outro canal, deixe em branco.</span>
+            <span class="fhint">Guardado em área restrita: só administradores conseguem ver, e toda consulta fica registrada.</span>
           </div>
         </div>
 
         <div class="cv-grp">
           <div class="cv-grp-h">Materiais da landing page</div>
-          <div class="cv-grp-s">É com isso que montamos sua página. Se ainda não tiver algum item, pode deixar em branco — a gente combina depois.</div>
+          <div class="cv-grp-s">É com isso que montamos sua página. Todos os campos são obrigatórios.</div>
           <div class="ff"><label>Drive com Fotos <span class="req">*</span></label>
             <input id="cvDrive" type="url" placeholder="https://drive.google.com/…">
             <span class="fhint">Deixe a pasta com acesso liberado para quem tem o link.</span>
@@ -950,7 +952,7 @@ h1,h2,h3,h4,.card-h h3,.modal-h h3,.fsec-h,.cv-grp-h{font-family:var(--font-disp
 
         <div class="cv-grp">
           <div class="cv-grp-h">Mais alguma coisa?</div>
-          <div class="ff"><label>Observações</label><textarea id="cvObs" style="min-height:84px" placeholder="Como você opera hoje, o que funciona, o que espera da gente."></textarea></div>
+          <div class="ff"><label>Como você opera hoje <span class="req">*</span></label><textarea id="cvObs" style="min-height:84px" placeholder="Como você opera hoje, o que funciona, o que espera da gente."></textarea></div>
         </div>
         <div class="msg" id="cvMsg" style="margin-top:14px"></div>
       </div>
@@ -2079,6 +2081,8 @@ function fnAtivosHTML(c,ro,novo){
       ${fnInp('f_atTiktok','Perfis | TikTok',c.atTiktok,'text','@perfil, @perfil2',ro)}
       ${fnInp('f_atComunidades','Comunidades | Base de Leads',c.atComunidades,'text','Onde está a base e qual o tamanho',ro)}
       ${fnInp('f_atLandingPages','Landing Pages',c.atLandingPages,'url','https://…',ro)}
+      ${fnInp('f_atTrafego','Tráfego (painel/campanha)',c.atTrafego,'url','https://…',ro)}
+      ${fnInp('f_atDocOperacao','Documento: como a operação funciona',c.atDocOperacao,'url','https://docs.google.com/…',ro)}
     </div>
     <div class="ff" style="margin-top:14px"><label>Login e Senha Dashboard / Acordo</label>${senha}</div>
     <div class="frow" style="margin-top:14px">
@@ -2351,6 +2355,8 @@ function fnLeForm(){
     atTiktok:g('f_atTiktok').trim(),
     atComunidades:g('f_atComunidades').trim(),
     atLandingPages:g('f_atLandingPages').trim(),
+    atTrafego:g('f_atTrafego').trim(),
+    atDocOperacao:g('f_atDocOperacao').trim(),
     atDriveFotos:g('f_atDriveFotos').trim(),
     atNegociacao:g('f_atNegociacao')
   };
@@ -2579,6 +2585,7 @@ function fnConvRender(){
         ${li('Já opera',r.jaOpera?'Sim':'Não')}${li('Já tem grupo',r.temGrupo?'Sim':'Não')}${li('Grupo Afiliado WPP',r.linkGrupo,true)}
         ${li('Perfis | Instagram',r.instagram)}${li('Perfis | TikTok',r.tiktok)}
         ${li('Comunidades | Base de Leads',r.comunidades)}${li('Landing Pages',r.landingPages,true)}
+        ${li('Tráfego',r.trafego,true)}${li('Documento da operação',r.docOperacao,true)}
         ${li('Resultados | Operação',r.resultados)}${li('Negociação',r.negociacao)}
         ${(r.dashLogin||r.dashSenha)?'<dt>Login e Senha Dashboard / Acordo</dt><dd>Enviado — vai para a área restrita ao criar o card</dd>':''}
         ${li('Drive com Fotos',r.drive,true)}${li('Pixel',r.pixel)}${li('Cores',r.cores)}${li('Observações',r.obs)}
@@ -2620,6 +2627,14 @@ function pxNums(){
     per.forEach(r=>{m[fnSlug(r.expert)]={receita:r.receita,ftds:r.ftds,custo:r.custo,lucro:r.lucro};});
     return m;
   }catch(e){return {};}
+}
+/* o expert manda "@fulano" ou a URL inteira; o botão só liga se der para
+   montar um endereço */
+function pxPerfil(v){
+  const t=String(v||'').trim(); if(!t)return '';
+  const u=t.match(/https?:\/\/\S+/); if(u)return u[0];
+  const a=t.match(/@([A-Za-z0-9._]+)/);
+  return a?('https://instagram.com/'+a[1]):'';
 }
 function pxCards(){return FN_CARDS.filter(c=>!c.arquivado);}
 function pxStatus(c){
@@ -2702,16 +2717,32 @@ function pxRender(){
         <span>Atualizado ${esc(fnDT(c.updatedAt))}</span></div>
       <div class="traffic-line"><b>Estrutura:</b> ${esc(estrutura)}</div>
       <div class="xacts">
-        ${bt('Resultados','res','📊')}${bt('Negociação','neg','🤝')}${bt('Emails','mail','✉️')}
+        ${bt('Resultados','res','📊')}${bt('Operação','op','⚙️')}${bt('Negociação','neg','🤝')}
       </div>
       <div class="xacts">
-        ${lk('LP',c.atLandingPages,'🔗')}${lk('Grupo',c.atGrupoWpp,'💬')}${lk('Drive fotos',c.atDriveFotos,'🖼️')}
+        ${bt('Contato','mail','✉️')}${bt('Base de leads','leads','👥')}${bt('Editar','edit','✏️')}
+      </div>
+      <div class="xacts">
+        ${lk('LP',c.atLandingPages,'🔗')}${lk('Tráfego',c.atTrafego,'📈')}${lk('Documento',c.atDocOperacao,'📄')}
+      </div>
+      <div class="xacts">
+        ${lk('Grupo',c.atGrupoWpp,'💬')}${lk('Instagram',pxPerfil(c.atInstagram),'📱')}${lk('TikTok',pxPerfil(c.atTiktok),'🎵')}
+      </div>
+      <div class="xacts">
+        ${lk('Drive fotos',c.atDriveFotos,'🖼️')}${lk('Contrato',c.contratoLink,'📑')}${lk('Card/grupo',c.linkCard,'🗂️')}
       </div>
       <div class="xpanel${aberto==='res'?' open':''}"><h4>Resultados | Operação</h4>
         <div class="txt">${esc(c.atResultados||'Nada registrado ainda.')}</div>
         ${(n.receita!=null)?`<div class="meta-line" style="margin-top:10px"><span>Receita <b>${fmtBRL(n.receita||0)}</b></span><span>FTDs <b>${fmtNum(n.ftds||0)}</b></span><span>Lucro <b>${fmtBRL(n.lucro||0)}</b></span></div>`:''}</div>
+      <div class="xpanel${aberto==='op'?' open':''}"><h4>Como a operação funciona hoje</h4>
+        <div class="txt">${esc(c.operacaoAtual||'Nada registrado ainda.')}</div>
+        ${c.atDocOperacao?`<div style="margin-top:10px"><a class="xb" href="${esc(c.atDocOperacao)}" target="_blank" rel="noopener">📄 Abrir documento</a></div>`:''}</div>
       <div class="xpanel${aberto==='neg'?' open':''}"><h4>Negociação</h4>
         <div class="txt">${esc(c.atNegociacao||'Nada registrado ainda.')}</div></div>
+      <div class="xpanel${aberto==='leads'?' open':''}"><h4>Base de leads</h4>
+        ${fnAdmin()
+          ? `<div class="txt">${esc(c.atComunidades||'Nada registrado ainda.')}</div>`
+          : '<div class="txt" style="color:var(--muted)">Visível apenas para sócios.</div>'}</div>
       <div class="xpanel${aberto==='mail'?' open':''}"><h4>Contato</h4>
         <div class="meta-line"><span>E-mail</span><span class="resp-badge">${esc(c.email||'—')}</span></div>
         <div class="meta-line" style="margin-top:6px"><span>WhatsApp</span><span class="resp-badge">${esc(c.telefone||'—')}</span></div></div>
@@ -2744,7 +2775,10 @@ function pxBind(){
     const cl=e.target.closest('#pxClear');
     if(cl){PX_F={nicho:'all',status:'all'};pxRender();return;}
     const pane=e.target.closest('[data-pxp2]');
-    if(pane){const id=pane.dataset.pxp2;PX_ABERTO[id]=(PX_ABERTO[id]===pane.dataset.pane)?null:pane.dataset.pane;pxRender();return;}
+    if(pane){
+      const id=pane.dataset.pxp2;
+      if(pane.dataset.pane==='edit'){fnOpen(id);return;}   /* abre o card do funil para editar */
+      PX_ABERTO[id]=(PX_ABERTO[id]===pane.dataset.pane)?null:pane.dataset.pane;pxRender();return;}
   });
   p.addEventListener('change',e=>{
     if(e.target.id==='pxStatusSel'){PX_F.status=e.target.value;pxRender();}
@@ -2857,7 +2891,7 @@ async function fnTrImportar(){
         linkCard:'', contratoLink:'', contratoObs:'', operacaoAtual:'',
         lpModelo:'', lpLinkDestino:'', grupoStatus:'pendente', lpDrive:'', lpPixel:'', lpCores:'',
         atGrupoWpp:'', atInstagram:'', atResultados:'', atTiktok:'', atComunidades:'',
-        atLandingPages:'', atDriveFotos:'', atNegociacao:'',
+        atLandingPages:'', atTrafego:'', atDocOperacao:'', atDriveFotos:'', atNegociacao:'',
         etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false,
         temCredenciais:false, temCredDash:!!x.cred,
         origemTrello:x.lista, criadoPor:'Importação do Trello — '+(ME.name||ME.email||''),
@@ -2899,6 +2933,7 @@ async function fnConvImportar(token){
       linkCard:'', contratoLink:'', contratoObs:'', lpModelo:'', lpLinkDestino:'', grupoStatus:'pendente',
       atGrupoWpp:r.linkGrupo||'', atInstagram:r.instagram||'', atResultados:r.resultados||'',
       atTiktok:r.tiktok||'', atComunidades:r.comunidades||'', atLandingPages:r.landingPages||'',
+      atTrafego:r.trafego||'', atDocOperacao:r.docOperacao||'',
       atDriveFotos:r.drive||'', atNegociacao:r.negociacao||'',
       etapa:1, responsavel:fnDono(1), etapaDesde:SVT(), arquivado:false, temCredenciais:false, temCredDash:temSenha,
       convite:token, criadoPor:'Formulário de convite', createdAt:SVT(), updatedAt:SVT()
@@ -2966,11 +3001,39 @@ function cvMsg(t,k){const m=document.getElementById('cvMsg');m.textContent=t||''
 async function cvEnviar(){
   const g=id=>document.getElementById(id).value.trim();
   const nome=g('cvNome'), email=g('cvEmail'), drive=g('cvDrive');
-  if(!nome){cvMsg('Preencha seu nome.','err');document.getElementById('cvNome').focus();return;}
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){cvMsg('Informe um e-mail válido.','err');document.getElementById('cvEmail').focus();return;}
-  if(!drive){cvMsg('Cole o link do Drive com seus materiais.','err');document.getElementById('cvDrive').focus();return;}
+  /* todo campo é obrigatório: o card nasce completo ou não nasce. O link
+     do grupo é o único condicional, porque só existe se houver grupo. */
   const temGrupo=g('cvGrupo')==='sim', linkGrupo=g('cvGrupoLink');
-  if(temGrupo&&!linkGrupo){cvMsg('Cole o link do seu grupo.','err');document.getElementById('cvGrupoLink').focus();return;}
+  const obrig=[
+    ['cvNome','Preencha seu nome.'],
+    ['cvEmail','Informe seu e-mail.'],
+    ['cvFone','Informe seu WhatsApp.'],
+    ['cvNicho','Escolha seu nicho.'],
+    ['cvInstagram','Informe seu perfil no Instagram.'],
+    ['cvTiktok','Informe seu perfil no TikTok.'],
+    ['cvComunidades','Diga onde está sua base de leads.'],
+    ['cvLandingPages','Cole o link da sua landing page.'],
+    ['cvTrafego','Cole o link do painel de tráfego.'],
+    ['cvDocOperacao','Cole o link do documento de como sua operação funciona.'],
+    ['cvResultados','Descreva os resultados da sua operação.'],
+    ['cvNegociacao','Diga o que espera da negociação.'],
+    ['cvDashLogin','Informe o login do dashboard.'],
+    ['cvDashSenha','Informe a senha do dashboard.'],
+    ['cvDrive','Cole o link do Drive com suas fotos.'],
+    ['cvPixel','Informe o ID do Pixel.'],
+    ['cvCores','Informe as cores da sua marca.'],
+    ['cvObs','Conte como você opera hoje.']
+  ];
+  if(temGrupo)obrig.splice(6,0,['cvGrupoLink','Cole o link do seu grupo.']);
+  for(const [id,msg] of obrig){
+    if(!String(g(id)||'').trim()){
+      cvMsg(msg,'err');
+      const el=document.getElementById(id);
+      if(el){el.focus();el.scrollIntoView({block:'center',behavior:'smooth'});}
+      return;
+    }
+  }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){cvMsg('Informe um e-mail válido.','err');document.getElementById('cvEmail').focus();return;}
   const b=document.getElementById('cvSend');b.disabled=true;b.textContent='Enviando…';cvMsg('');
   try{
     await fnConvCol().doc(CV_TOKEN).update({
@@ -2981,7 +3044,8 @@ async function cvEnviar(){
         /* ativos do board; dashLogin/dashSenha saem daqui na importação e
            vão para o cofre secure/dashboard, que só admin lê */
         instagram:g('cvInstagram'), tiktok:g('cvTiktok'), comunidades:g('cvComunidades'),
-        landingPages:g('cvLandingPages'), resultados:g('cvResultados'), negociacao:g('cvNegociacao'),
+        landingPages:g('cvLandingPages'), trafego:g('cvTrafego'), docOperacao:g('cvDocOperacao'),
+        resultados:g('cvResultados'), negociacao:g('cvNegociacao'),
         dashLogin:g('cvDashLogin'), dashSenha:g('cvDashSenha')}
     });
     cvShow('cvDone');
